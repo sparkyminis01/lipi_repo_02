@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LipiKit.com</title>
+    <!-- PWA Manifest for offline capabilities and app theme -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CryptoJS for secure client-side hashing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3e8ff; /* Light purple background */
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .status-online {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-offline {
+            background-color: #fce7f3; /* Light pink/purple for offline status */
+            color: #9d174d; /* Darker pink/purple text */
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccb9e6; /* Purple-toned slider background */
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #a855f7; /* Dark purple when checked */
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .quick-select-btn {
+            background-color: #e5e7eb;
+            color: #4b5563;
+            font-weight: 500;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            line-height: 1rem;
+            transition: background-color 0.15s ease-in-out;
+            flex: 1 1 auto;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .quick-select-btn.active {
+            background-color: #9333ea; /* Dark purple for active button */
+            color: white;
+        }
+        .flex-row-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mx-auto">
+    <!-- Website Header -->
+    <div class="card text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">LipiKit.com</h1>
+        <p class="text-gray-600 mb-4">
+            A website hosting many functionally useful apps.
+        </p>
+        <p class="text-sm text-gray-500">
+            Powered by SparkyMinis Media-Tech. For inquiries, contact <a href="mailto:connect@sparkyminis.com" class="text-purple-600 hover:underline">connect@sparkyminis.com</a>.
+        </p>
+    </div>
+
+    <!-- App Title and Description -->
+    <div class="card text-center">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Trip Tracker</h1>
+        <p class="text-gray-600 mb-4">
+            Effortlessly track your trip expenses, even offline! This app saves your expenses locally and automatically syncs them to a Google Sheet when you're back online.
+        </p>
+    </div>
+    
+    <!-- Central Configuration Block -->
+    <script>
+        // Use a simple, client-side hash of the PIN for security.
+        // For a real application, PIN validation should happen on a secure server.
+        const HASHED_PIN = "07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c";
+
+        const APP_CONFIG = {
+            googleFormActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
+            googleFormFields: {
+                tripName: 'entry.123456789',
+                expenseDate: 'entry.987654321',
+                amount: 'entry.111222333',
+                currency: 'entry.444555666',
+                category: 'entry.777888999',
+                notes: 'entry.999888777',
+                location: 'entry.666555444',
+                place: 'entry.555444333',
+                mode: 'entry.321654987'
+            },
+            categories: ["Food", "Transport", "Accommodation", "Shopping", "Activities", "Groceries", "Other"],
+            currencies: ["INR", "USD", "EUR", "SGD", "THB", "MYR", "VND", "GBP", "JPY", "CAD", "AUD"],
+            modes: ["Cash", "Credit Card", "Prepaid Card"],
+            pin: HASHED_PIN
+        };
+    </script>
+    
+    <!-- PIN Entry Modal -->
+    <div id="pin-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Enter PIN to Sync</h2>
+            <p class="text-gray-600 mb-4">
+                Please enter the security PIN to sync your data.
+            </p>
+            <form id="pin-modal-form" class="space-y-4">
+                <div>
+                    <input type="password" id="pin-modal-input" placeholder="Enter PIN" maxlength="4" required class="mt-1 block w-full text-center rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                    Submit
+                </button>
+                <div id="pin-modal-message" class="text-red-500 text-sm mt-2"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- General Message Modal -->
+    <div id="message-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="message-modal-title" class="text-xl font-bold text-gray-800 mb-2"></h2>
+            <p id="message-modal-body" class="text-gray-600 mb-4"></p>
+            <button id="message-modal-close" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- App UI -->
+    <div id="trip-list-view">
+        <div class="card">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">Your Trips</h1>
+            <button id="add-trip-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out mb-4">
+                Add New Trip
+            </button>
+            <form id="add-trip-form" class="space-y-4 hidden">
+                <div>
+                    <label for="new-trip-name" class="block text-sm font-medium text-gray-700">Trip Name</label>
+                    <input type="text" id="new-trip-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="new-trip-currencies" class="block text-sm font-medium text-gray-700">Select Trip Currencies (Hold Ctrl/Cmd to select multiple)</label>
+                    <select id="new-trip-currencies" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border h-32">
+                        <!-- Currencies populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label for="new-trip-start" class="block text-sm font-medium text-gray-700">Start Date</label>
+                    <input type="date" id="new-trip-start" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="new-trip-end" class="block text-sm font-medium text-gray-700">End Date</label>
+                    <input type="date" id="new-trip-end" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <div id="trip-date-message" class="text-red-500 text-sm mt-2 hidden"></div>
+                <button type="submit" id="save-trip-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                    Save Trip
+                </button>
+            </form>
+            <ul id="trip-list" class="space-y-4"></ul>
+        </div>
+    </div>
+
+    <div id="expense-form-view" class="hidden">
+        <div class="card">
+            <!-- Back to Trips button moved here -->
+            <button type="button" id="back-to-trips-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-semibold text-sm transition duration-150 ease-in-out">
+                &larr; Back to Trips
+            </button>
+            
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Trip: <span id="active-trip-name" class="font-semibold text-purple-600"></span></h1>
+            <p class="text-gray-500 text-sm mb-4">Add a new expense</p>
+            <div class="flex items-center justify-between mb-4">
+                <div id="status-message" class="p-2 rounded-lg text-center font-semibold flex-grow status-offline mr-4">
+                    You are currently offline. Data will be saved locally.
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-600">Auto Sync</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="auto-sync-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <button id="manual-sync-btn" class="w-full py-4 px-8 border border-transparent rounded-md shadow-sm text-md font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out mb-4">
+                Sync Now
+            </button>
+
+            <form id="expense-form" class="space-y-4">
+                <!-- Hidden inputs to store quick-select values -->
+                <input type="hidden" id="selected-currency">
+                <input type="hidden" id="selected-category">
+                <input type="hidden" id="selected-mode">
+                <div id="offline-message" class="hidden text-sm text-red-600 bg-red-100 p-2 rounded-md mb-4">
+                    You are offline. Please connect to the internet to sync data.
+                </div>
+
+                <!-- Date and Category in the same row -->
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <label for="expense-date" class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="expense-date" name="expenseDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Category</label>
+                        <div id="quick-category-buttons" class="mt-1 flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Amount, Currency, and Mode in the same row -->
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                        <input type="number" id="amount" name="amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Currency</label>
+                        <div id="quick-currency-buttons" class="mt-1 flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Mode</label>
+                        <div id="quick-mode-buttons" class="mt-1 flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+                
+                <!-- Place and Add Location in the same row -->
+                <div class="flex flex-col md:flex-row gap-4 items-end">
+                    <div class="flex-1 w-full">
+                        <label for="place" class="block text-sm font-medium text-gray-700">Place (e.g., Cafe, Store Name)</label>
+                        <input type="text" id="place" name="place" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                    </div>
+                    <button id="add-location-btn" type="button" class="w-full md:w-auto py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 ease-in-out">
+                        Add Current Location
+                    </button>
+                </div>
+
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                    <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border"></textarea>
+                </div>
+                <div id="location-display" class="text-sm text-gray-500 mt-2 hidden"></div>
+                <button type="submit" id="submit-btn" class="w-full py-4 px-8 border border-transparent rounded-md shadow-sm text-md font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                    Add Expense
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Data Queue Section -->
+    <div id="data-queue-section" class="card hidden">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Data Queue</h2>
+        <div id="synced-data" class="mb-6">
+            <h3 class="text-lg font-semibold text-green-700 mb-2">Synced Data</h3>
+            <ul id="synced-list" class="list-disc list-inside space-y-2 text-gray-600"></ul>
+        </div>
+        <div id="unsynced-data">
+            <h3 class="text-lg font-semibold text-red-700 mb-2">Unsynced Data</h3>
+            <ul id="unsynced-list" class="list-disc list-inside space-y-2 text-gray-600"></ul>
+        </div>
+        <button id="export-data-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 ease-in-out mt-4">
+            Export Data as JSON
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- Local Storage Keys ---
+    const UNSYNCED_EXPENSES_KEY = 'unsyncedExpenses';
+    const SYNCED_EXPENSES_KEY = 'syncedExpenses';
+    const AUTO_SYNC_TOGGLE_KEY = 'autoSyncEnabled';
+    const TRIPS_KEY = 'tripList';
+    const ACTIVE_TRIP_KEY = 'activeTrip';
+
+    // --- DOM Elements ---
+    const tripListView = document.getElementById('trip-list-view');
+    const expenseFormView = document.getElementById('expense-form-view');
+    const dataQueueSection = document.getElementById('data-queue-section');
+    const addTripBtn = document.getElementById('add-trip-btn');
+    const addTripForm = document.getElementById('add-trip-form');
+    const newTripNameInput = document.getElementById('new-trip-name');
+    const newTripCurrenciesSelect = document.getElementById('new-trip-currencies');
+    const newTripStartInput = document.getElementById('new-trip-start');
+    const newTripEndInput = document.getElementById('new-trip-end');
+    const tripListUl = document.getElementById('trip-list');
+    const activeTripNameSpan = document.getElementById('active-trip-name');
+    const backToTripsBtn = document.getElementById('back-to-trips-btn');
+    const expenseForm = document.getElementById('expense-form');
+    const expenseDateInput = document.getElementById('expense-date');
+    const amountInput = document.getElementById('amount');
+    const placeInput = document.getElementById('place');
+    const notesTextarea = document.getElementById('notes');
+    const addLocationBtn = document.getElementById('add-location-btn');
+    const locationDisplay = document.getElementById('location-display');
+    const quickCategoryButtonsContainer = document.getElementById('quick-category-buttons');
+    const quickCurrencyButtonsContainer = document.getElementById('quick-currency-buttons');
+    const quickModeButtonsContainer = document.getElementById('quick-mode-buttons');
+    const statusMessage = document.getElementById('status-message');
+    const syncedList = document.getElementById('synced-list');
+    const unsyncedList = document.getElementById('unsynced-list');
+    const autoSyncToggle = document.getElementById('auto-sync-toggle');
+    const manualSyncBtn = document.getElementById('manual-sync-btn');
+    const exportDataBtn = document.getElementById('export-data-btn');
+    const selectedCurrencyInput = document.getElementById('selected-currency');
+    const selectedCategoryInput = document.getElementById('selected-category');
+    const selectedModeInput = document.getElementById('selected-mode');
+    const offlineMessageDiv = document.getElementById('offline-message');
+    const tripDateMessageDiv = document.getElementById('trip-date-message');
+
+    // New PIN modal elements
+    const pinModal = document.getElementById('pin-modal');
+    const pinModalForm = document.getElementById('pin-modal-form');
+    const pinModalInput = document.getElementById('pin-modal-input');
+    const pinModalMessage = document.getElementById('pin-modal-message');
+
+    // New General Message Modal elements
+    const messageModal = document.getElementById('message-modal');
+    const messageModalTitle = document.getElementById('message-modal-title');
+    const messageModalBody = document.getElementById('message-modal-body');
+    const messageModalClose = document = document.getElementById('message-modal-close');
+    
+    // --- State Variables ---
+    let activeTrip = null;
+    let currentLocation = null;
+    let syncAttemptOrigin = null;
+
+    // --- Utility Functions ---
+    // Custom function to show a message modal instead of alert()
+    function showMessage(title, message) {
+        messageModalTitle.textContent = title;
+        messageModalBody.textContent = message;
+        messageModal.classList.remove('hidden');
+    }
+
+    // Function to close the message modal
+    function closeMessageModal() {
+        messageModal.classList.add('hidden');
+    }
+
+    function getLocalData(key) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || [];
+        } catch (e) {
+            console.error('Failed to parse data from localStorage:', e);
+            return [];
+        }
+    }
+
+    function saveDataLocally(data, key) {
+        let currentData = getLocalData(key);
+        currentData.push(data);
+        localStorage.setItem(key, JSON.stringify(currentData));
+    }
+
+    function updateActiveTrip(trip) {
+        activeTrip = trip;
+        if (trip) {
+            localStorage.setItem(ACTIVE_TRIP_KEY, JSON.stringify(trip));
+            activeTripNameSpan.textContent = trip.name;
+            renderQuickCategories();
+            renderQuickCurrencies();
+            renderQuickModes();
+
+            // Set the min/max dates for the expense date input
+            const startDate = new Date(trip.start);
+            const endDate = new Date(trip.end);
+
+            const minDate = new Date(startDate);
+            minDate.setDate(minDate.getDate() - 7);
+
+            const maxDate = new Date(endDate);
+            maxDate.setDate(maxDate.getDate() + 7);
+
+            expenseDateInput.min = minDate.toISOString().split('T')[0];
+            expenseDateInput.max = maxDate.toISOString().split('T')[0];
+            
+            showView('expense-form');
+        } else {
+            localStorage.removeItem(ACTIVE_TRIP_KEY);
+            showView('trip-list');
+            renderTripList();
+        }
+    }
+
+    // --- UI State Management Functions ---
+    function showView(viewId) {
+        tripListView.classList.add('hidden');
+        expenseFormView.classList.add('hidden');
+        dataQueueSection.classList.add('hidden');
+
+        if (viewId === 'trip-list') {
+            tripListView.classList.remove('hidden');
+        } else if (viewId === 'expense-form') {
+            expenseFormView.classList.remove('hidden');
+            dataQueueSection.classList.remove('hidden');
+        }
+    }
+
+    // --- Rendering Functions ---
+    function renderTripList() {
+        const trips = getLocalData(TRIPS_KEY);
+        tripListUl.innerHTML = ''; // Clear the list to prevent duplicates
+        if (trips.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'text-center text-gray-500 italic';
+            li.textContent = 'No trips found. Add one above!';
+            tripListUl.appendChild(li);
+        } else {
+            trips.forEach(trip => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm';
+                li.innerHTML = `
+                    <div>
+                        <h3 class="font-semibold text-gray-800">${trip.name}</h3>
+                        <p class="text-sm text-gray-500">${trip.start} to ${trip.end}</p>
+                    </div>
+                    <button class="start-trip-btn py-1 px-3 rounded-full text-white bg-purple-500 hover:bg-purple-600 transition duration-150 ease-in-out" data-trip-id="${trip.id}">Select</button>
+                `;
+                tripListUl.appendChild(li);
+            });
+        }
+    }
+
+    function renderExpenses() {
+        const unsyncedData = getLocalData(UNSYNCED_EXPENSES_KEY);
+        const syncedData = getLocalData(SYNCED_EXPENSES_KEY);
+
+        syncedList.innerHTML = ''; // Clear the list
+        syncedData.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.tripName}: ${item.amount} ${item.currency} for ${item.category} on ${item.expenseDate} (Synced)`;
+            syncedList.appendChild(li);
+        });
+
+        unsyncedList.innerHTML = ''; // Clear the list
+        unsyncedData.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.tripName}: ${item.amount} ${item.currency} for ${item.category} on ${item.expenseDate} (Unsynced)`;
+            unsyncedList.appendChild(li);
+        });
+    }
+
+    function renderQuickCategories() {
+        quickCategoryButtonsContainer.innerHTML = '';
+        APP_CONFIG.categories.forEach(category => {
+            const button = document.createElement('button');
+            button.className = 'quick-select-btn';
+            button.textContent = category;
+            button.dataset.value = category;
+            quickCategoryButtonsContainer.appendChild(button);
+        });
+    }
+
+    function renderQuickCurrencies() {
+        quickCurrencyButtonsContainer.innerHTML = '';
+        if (activeTrip && activeTrip.currencies) {
+            activeTrip.currencies.forEach(currency => {
+                const button = document.createElement('button');
+                button.className = 'quick-select-btn';
+                button.textContent = currency;
+                button.dataset.value = currency;
+                quickCurrencyButtonsContainer.appendChild(button);
+            });
+        }
+    }
+
+    function renderQuickModes() {
+        quickModeButtonsContainer.innerHTML = '';
+        APP_CONFIG.modes.forEach(mode => {
+            const button = document.createElement('button');
+            button.className = 'quick-select-btn';
+            button.textContent = mode;
+            button.dataset.value = mode;
+            quickModeButtonsContainer.appendChild(button);
+        });
+    }
+
+    function populateTripCurrenciesSelect() {
+        newTripCurrenciesSelect.innerHTML = '';
+        APP_CONFIG.currencies.forEach(currency => {
+            const option = document.createElement('option');
+            option.value = currency;
+            option.textContent = currency;
+            newTripCurrenciesSelect.appendChild(option);
+        });
+    }
+
+    function handleQuickSelectClick(event, inputElement) {
+        if (event.target.classList.contains('quick-select-btn')) {
+            // Check if the clicked button is already active
+            if (event.target.classList.contains('active')) {
+                return; // Do nothing if already active
+            }
+            const buttons = event.target.parentElement.querySelectorAll('.quick-select-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            inputElement.value = event.target.dataset.value;
+        }
+    }
+    
+    // Function to handle the actual sync process
+    async function startSync() {
+        const unsyncedData = getLocalData(UNSYNCED_EXPENSES_KEY);
+        if (unsyncedData.length === 0) {
+            console.log("No data to sync.");
+            return;
+        }
+
+        console.log(`Starting sync for ${unsyncedData.length} items...`);
+        
+        const dataToSync = [...unsyncedData];
+        let syncedItemsCount = 0;
+
+        for (const item of dataToSync) {
+            const formData = new FormData();
+            formData.append(APP_CONFIG.googleFormFields.tripName, item.tripName);
+            formData.append(APP_CONFIG.googleFormFields.expenseDate, item.expenseDate);
+            formData.append(APP_CONFIG.googleFormFields.amount, item.amount);
+            formData.append(APP_CONFIG.googleFormFields.currency, item.currency);
+            formData.append(APP_CONFIG.googleFormFields.category, item.category);
+            formData.append(APP_CONFIG.googleFormFields.place, item.place);
+            formData.append(APP_CONFIG.googleFormFields.notes, item.notes);
+            formData.append(APP_CONFIG.googleFormFields.location, item.location);
+            formData.append(APP_CONFIG.googleFormFields.mode, item.mode);
+
+            try {
+                await fetch(APP_CONFIG.googleFormActionUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData,
+                });
+
+                const successfullySyncedItem = { ...item, syncDate: new Date() };
+
+                let syncedItems = getLocalData(SYNCED_EXPENSES_KEY);
+                syncedItems.push(successfullySyncedItem);
+                localStorage.setItem(SYNCED_EXPENSES_KEY, JSON.stringify(syncedItems));
+
+                let remainingUnsynced = getLocalData(UNSYNCED_EXPENSES_KEY).filter(unsyncedItem => unsyncedItem.id !== item.id);
+                localStorage.setItem(UNSYNCED_EXPENSES_KEY, JSON.stringify(remainingUnsynced));
+
+                console.log(`Successfully synced item with ID: ${item.id}`);
+                syncedItemsCount++;
+
+            } catch (error) {
+                console.error('Failed to sync data with Google Forms:', error);
+            }
+        }
+
+        if (syncedItemsCount > 0) {
+            console.log(`Sync process complete! ${syncedItemsCount} items were synced.`);
+            renderExpenses();
+        } else {
+            console.log("No items were synced this time.");
+        }
+    }
+    
+    // --- Data Export Function ---
+    function exportDataAsJson() {
+        const allData = {
+            trips: getLocalData(TRIPS_KEY),
+            syncedExpenses: getLocalData(SYNCED_EXPENSES_KEY),
+            unsyncedExpenses: getLocalData(UNSYNCED_EXPENSES_KEY)
+        };
+        const jsonData = JSON.stringify(allData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trip_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // --- Event Listeners ---
+    addTripBtn.addEventListener('click', () => {
+        addTripForm.classList.toggle('hidden');
+    });
+
+    // Handle new trip form submission with date validation
+    addTripForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const startDate = new Date(newTripStartInput.value);
+        const endDate = new Date(newTripEndInput.value);
+
+        // Simple validation: end date cannot be before start date
+        if (endDate < startDate) {
+            tripDateMessageDiv.textContent = 'Trip end date cannot be before the start date.';
+            tripDateMessageDiv.classList.remove('hidden');
+            return;
+        } else {
+            tripDateMessageDiv.classList.add('hidden');
+        }
+        
+        // Proceed with saving the trip
+        const trips = getLocalData(TRIPS_KEY);
+        const selectedCurrencies = Array.from(newTripCurrenciesSelect.selectedOptions).map(option => option.value);
+
+        const newTrip = {
+            id: Date.now(),
+            name: newTripNameInput.value,
+            currencies: selectedCurrencies,
+            start: newTripStartInput.value,
+            end: newTripEndInput.value
+        };
+        trips.push(newTrip);
+        localStorage.setItem(TRIPS_KEY, JSON.stringify(trips));
+        addTripForm.classList.add('hidden');
+        newTripNameInput.value = '';
+        newTripStartInput.value = '';
+        newTripEndInput.value = '';
+        renderTripList();
+    });
+
+    // Handle PIN modal form submission
+    pinModalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const enteredPin = pinModalInput.value;
+        const enteredPinHash = CryptoJS.SHA256(enteredPin).toString();
+
+        if (enteredPinHash === APP_CONFIG.pin) {
+            pinModal.classList.add('hidden');
+            pinModalMessage.textContent = '';
+            pinModalInput.value = '';
+            
+            // Execute the correct sync function based on the origin
+            if (syncAttemptOrigin === 'manual' || syncAttemptOrigin === 'auto') {
+                startSync();
+            }
+            
+        } else {
+            pinModalMessage.textContent = 'Invalid PIN. Please try again.';
+        }
+    });
+
+    messageModalClose.addEventListener('click', closeMessageModal);
+
+    tripListUl.addEventListener('click', (e) => {
+        if (e.target.classList.contains('start-trip-btn')) {
+            const tripId = parseInt(e.target.dataset.tripId, 10);
+            const trips = getLocalData(TRIPS_KEY);
+            const selectedTrip = trips.find(t => t.id === tripId);
+            if (selectedTrip) {
+                updateActiveTrip(selectedTrip);
+            }
+        }
+    });
+
+    backToTripsBtn.addEventListener('click', () => {
+        updateActiveTrip(null);
+    });
+
+    expenseForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const expenseData = {
+            tripName: activeTrip.name,
+            expenseDate: expenseDateInput.value,
+            amount: amountInput.value,
+            currency: selectedCurrencyInput.value,
+            category: selectedCategoryInput.value,
+            place: placeInput.value,
+            notes: notesTextarea.value,
+            location: currentLocation ? `Lat: ${currentLocation.latitude}, Lon: ${currentLocation.longitude}` : 'N/A',
+            mode: selectedModeInput.value,
+            id: Date.now()
+        };
+
+        saveDataLocally(expenseData, UNSYNCED_EXPENSES_KEY);
+        
+        // This is the only line that needs to be reset for location display.
+        locationDisplay.classList.add('hidden');
+        currentLocation = null;
+        
+        renderExpenses();
+    });
+
+    manualSyncBtn.addEventListener('click', () => {
+        if (navigator.onLine) {
+            syncAttemptOrigin = 'manual';
+            pinModal.classList.remove('hidden');
+            pinModalInput.focus();
+            offlineMessageDiv.classList.add('hidden');
+        } else {
+            offlineMessageDiv.textContent = 'You are offline. Please connect to the internet to sync data.';
+            offlineMessageDiv.classList.remove('hidden');
+        }
+    });
+    
+    exportDataBtn.addEventListener('click', exportDataAsJson);
+
+    addLocationBtn.addEventListener('click', () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                currentLocation = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+                locationDisplay.textContent = `Location Captured: ${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`;
+                locationDisplay.classList.remove('hidden');
+            }, error => {
+                console.error("Geolocation error:", error);
+                locationDisplay.textContent = "Unable to get location.";
+                locationDisplay.classList.remove('hidden');
+            });
+        } else {
+            locationDisplay.textContent = "Geolocation is not supported by your browser.";
+            locationDisplay.classList.remove('hidden');
+        }
+    });
+    
+    quickCategoryButtonsContainer.addEventListener('click', (e) => {
+        handleQuickSelectClick(e, selectedCategoryInput);
+    });
+    quickCurrencyButtonsContainer.addEventListener('click', (e) => {
+        handleQuickSelectClick(e, selectedCurrencyInput);
+    });
+    quickModeButtonsContainer.addEventListener('click', (e) => {
+        handleQuickSelectClick(e, selectedModeInput);
+    });
+
+    function updateStatus() {
+        if (navigator.onLine) {
+            statusMessage.textContent = 'You are online.';
+            statusMessage.classList.remove('status-offline');
+            statusMessage.classList.add('status-online');
+            if (autoSyncToggle.checked) {
+                syncAttemptOrigin = 'auto';
+                pinModal.classList.remove('hidden');
+                pinModalInput.focus();
+            }
+        } else {
+            statusMessage.textContent = 'You are currently offline. Data will be saved locally.';
+            statusMessage.classList.remove('status-online');
+            statusMessage.classList.add('status-offline');
+        }
+    }
+
+    autoSyncToggle.addEventListener('change', () => {
+        localStorage.setItem(AUTO_SYNC_TOGGLE_KEY, autoSyncToggle.checked);
+        if (autoSyncToggle.checked && navigator.onLine) {
+            syncAttemptOrigin = 'auto';
+            pinModal.classList.remove('hidden');
+            pinModalInput.focus();
+        }
+    });
+
+    // --- Initialization ---
+    // Load saved auto-sync state
+    const savedAutoSyncState = localStorage.getItem(AUTO_SYNC_TOGGLE_KEY);
+    if (savedAutoSyncState === 'true') {
+        autoSyncToggle.checked = true;
+    }
+
+    // Populate the trip currencies select dropdown
+    populateTripCurrenciesSelect();
+
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+
+    // Initial render
+    renderExpenses();
+    renderTripList();
+    updateStatus();
+
+    // Check if there is a saved active trip and resume that view
+    const savedActiveTrip = getLocalData(ACTIVE_TRIP_KEY);
+    if (savedActiveTrip.name) {
+        updateActiveTrip(savedActiveTrip);
+    } else {
+        showView('trip-list');
+    }
+</script>
+
+</body>
+</html>
