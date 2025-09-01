@@ -7,6 +7,7 @@ const urlsToCache = [
     '/index.html',
     '/manifest.json',
     '/tailwind.css',      // Add this line
+    '/tailwind-compiler.js',  // Use the compiler script instead
     '/crypto-js.min.js'   // Add this line
 ];
 
