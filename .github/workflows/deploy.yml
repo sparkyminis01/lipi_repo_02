@@ -1,0 +1,28 @@
+# .github/workflows/cloudflare-pages.yml
+
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main  # This should be your main branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          accountId: ${{ secrets.ORG_CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.ORG_CLOUDFLARE_API_TOKEN }}
+          projectName: 'cf-pages-site-02' # <-- IMPORTANT: Replace with your Cloudflare Pages project name
+          directory: '.' # The directory containing your project's files (e.g., your index.html, manifest.json, etc.)
+
