@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LipiKit.com</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="tailwind.css">
+    <script src="tailwind-compiler.js"></script>
+    <script src="crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3e8ff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .status-online {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-offline {
+            background-color: #fce7f3;
+            color: #9d174d;
+        }
+        .quick-select-btn {
+            background-color: #e5e7eb;
+            color: #4b5563;
+            font-weight: 500;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            line-height: 1rem;
+            transition: background-color 0.15s ease-in-out;
+            flex: 1 1 auto;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .quick-select-btn.active {
+            background-color: #9333ea;
+            color: white;
+        }
+        .flex-row-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .summary-table {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+        }
+        .summary-table th, .summary-table td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .summary-table th {
+            font-weight: 600;
+            color: #374151;
+            background-color: #f9fafb;
+        }
+        details summary {
+            cursor: pointer;
+            padding: 0.5rem;
+            font-weight: 500;
+        }
+        details p {
+            padding: 0.5rem;
+            margin: 0;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            background-color: transparent; /* Ensure no inherited background */
+            padding: 0.25rem 0.5rem; /* Small padding for clarity */
+            border-radius: 0.25rem; /* Subtle rounding */
+        }
+        .status-online .status-dot {
+            background-color: #065f46; /* Green for online */
+        }
+        .status-offline .status-dot {
+            background-color: #9d174d; /* Red for offline */
+        }
+        .status-online {
+            color: #065f46; /* Match text to dot for online */
+        }
+        .status-offline {
+            color: #9d174d; /* Match text to dot for offline */
+        }
+
+        #base-conversion-panel .flex-wrap {
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        #base-inputs > div {
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container mx-auto">
+    <script>
+        const HASHED_PIN = "07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c";
+        const APP_CONFIG = {
+            googleFormActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
+            googleFormFields: {
+                name: 'entry.1731583832',
+                tripName: 'entry.1093227282',
+                expenseDate: 'entry.505163115',
+                amount: 'entry.1623455754',
+                currency: 'entry.1004211902',
+                category: 'entry.59253883',
+                place: 'entry.283121596',
+                notes: 'entry.261715790',
+                location: 'entry.56139846',
+                mode: 'entry.1829164279'
+            },
+            categories: ["Food", "Transport", "Accommodation", "Shopping", "Activities", "Groceries", "Other"],
+            currencies: ["INR", "USD", "EUR", "SGD", "THB", "MYR", "VND", "GBP", "JPY", "CAD", "AUD"],
+            currencyNames: {
+                INR: "Indian Rupee",
+                USD: "United States Dollar",
+                EUR: "Euro",
+                SGD: "Singapore Dollar",
+                THB: "Thai Baht",
+                MYR: "Malaysian Ringgit",
+                VND: "Vietnamese Dong",
+                GBP: "British Pound Sterling",
+                JPY: "Japanese Yen",
+                CAD: "Canadian Dollar",
+                AUD: "Australian Dollar"
+            },
+            modes: ["Cash", "Credit Card", "Prepaid Card"],
+            pin: HASHED_PIN,
+            faqs: [
+                {
+                    question: "How do I reset my data?",
+                    answer: "To reset all data, go to your browser's settings, find the site data for LipiKit.com (usually under Privacy or Site Settings), and delete it. This will clear all local data, including trips and expenses."
+                },
+                {
+                    question: "How can I change my username?",
+                    answer: "Usernames cannot be changed once set. To use a new username, delete the site data in your browser's settings and reload the app to create a new profile."
+                },
+                {
+                    question: "How is my privacy protected?",
+                    answer: "All data is stored locally in your browser and never leaves your device unless you choose to sync. Syncing requires a secure PIN and sends data only to our secure servers."
+                },
+                {
+                    question: "How do I sync my data?",
+                    answer: "Click 'Sync Now,' enter the secure PIN, and ensure you're online. Your expenses will be sent to our secure servers."
+                },
+                {
+                    question: "How can I get an expense report across all trips?",
+                    answer: "This is exactly why you sync data. For a consolidated report across multiple trips, email connect@sparkyminis.com with your request, and we will assist with generating the report manually."
+                }
+            ]
+        };
+    </script>
+   
+    <div id="pin-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Enter PIN to Sync</h2>
+            <p class="text-gray-600 mb-4">Please enter the security PIN to sync your data.</p>
+            <form id="pin-modal-form" class="space-y-4">
+                <div>
+                    <input type="password" id="pin-modal-input" placeholder="Enter PIN" maxlength="4" required class="mt-1 block w-full text-center rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                    Submit
+                </button>
+                <div id="pin-modal-message" class="text-red-500 text-sm mt-2"></div>
+            </form>
+        </div>
+    </div>
+    <div id="message-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="message-modal-title" class="text-xl font-bold text-gray-800 mb-2"></h2>
+            <p id="message-modal-body" class="text-gray-600 mb-4"></p>
+            <button id="message-modal-close" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                OK
+            </button>
+        </div>
+    </div>
+    <div id="user-creation-view" class="card hidden">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Create Your Profile</h1>
+        <p class="text-gray-600 mb-4">Enter a local username (optionally mapped to synced data if you sync to our servers). This cannot be changed later.</p>
+        <form id="user-creation-form" class="space-y-4">
+            <div>
+                <label for="user-display-name" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" id="user-display-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+            </div>
+            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                Create Profile
+            </button>
+        </form>
+    </div>
+    <div id="trip-list-view" class="card hidden">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4"><span id="user-greeting"></span>Your Trips</h1>
+        <button id="add-trip-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out mb-4">
+            Add New Trip
+        </button>
+        <form id="add-trip-form" class="space-y-4 hidden">
+            <div>
+                <label for="new-trip-name" class="block text-sm font-medium text-gray-700">Trip Name</label>
+                <input type="text" id="new-trip-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+            </div>
+            <div>
+                <label for="new-trip-currencies" class="block text-sm font-medium text-gray-700">Select Trip Currencies (Hold Ctrl/Cmd to select multiple)</label>
+                <select id="new-trip-currencies" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border h-32">
+                </select>
+            </div>
+            <div>
+                <label for="new-trip-base-currency" class="block text-sm font-medium text-gray-700">Base Currency (for exchange rates and reports)</label>
+                <select id="new-trip-base-currency" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                    <option value="" disabled selected>Select a base currency</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">This currency will be used for fetching exchange rates and generating the base currency expense report.</p>
+            </div>
+            <div>
+                <label for="new-trip-start" class="block text-sm font-medium text-gray-700">Start Date</label>
+                <input type="date" id="new-trip-start" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+            </div>
+            <div>
+                <label for="new-trip-end" class="block text-sm font-medium text-gray-700">End Date</label>
+                <input type="date" id="new-trip-end" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+            </div>
+            <div id="trip-date-message" class="text-red-500 text-sm mt-2 hidden"></div>
+            <button type="submit" id="save-trip-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                Save Trip
+            </button>
+        </form>
+        <ul id="trip-list" class="space-y-4"></ul>
+    </div>
+    <div id="expense-form-view" class="card hidden">
+        <button type="button" id="back-to-trips-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-semibold text-sm transition duration-150 ease-in-out">
+            &larr; Back to Trips
+        </button>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Trip: <span id="active-trip-name" class="font-semibold text-purple-600"></span> (<span id="active-trip-base-currency" class="font-semibold text-purple-600"></span>)</h1>
+        <p class="text-gray-500 text-sm mb-4">Add a new expense</p>
+        <div id="status-indicator" class="absolute top-4 left-4 flex items-center text-xs font-medium">
+            <span id="status-dot" class="w-2 h-2 rounded-full mr-1 bg-red-500"></span>
+            <span id="status-text">Offline</span>
+        </div>
+        <button id="manual-sync-btn" class="w-full py-4 px-8 border border-transparent rounded-md shadow-sm text-md font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150 ease-in-out mb-4">
+        Sync Now (PIN needed)
+        </button>
+        <form id="expense-form" class="space-y-4">
+            <input type="hidden" id="selected-currency">
+            <input type="hidden" id="selected-category">
+            <input type="hidden" id="selected-mode">
+            <div id="offline-message" class="hidden text-sm text-red-600 bg-red-100 p-2 rounded-md mb-4">
+                You are offline. Please connect to the internet to sync data.
+            </div>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="expense-date" class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" id="expense-date" name="expenseDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">Category</label>
+                    <div id="quick-category-buttons" class="mt-1 flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                    <input type="number" id="amount" name="amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">Currency</label>
+                    <div id="quick-currency-buttons" class="mt-1 flex flex-wrap gap-2"></div>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">Mode</label>
+                    <div id="quick-mode-buttons" class="mt-1 flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 items-end">
+                <div class="flex-1 w-full">
+                    <label for="place" class="block text-sm font-medium text-gray-700">Place (e.g., Cafe, Store Name)</label>
+                    <input type="text" id="place" name="place" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border">
+                </div>
+                <button id="add-location-btn" type="button" class="w-full md:w-auto py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 ease-in-out">
+                    Add Current Location
+                </button>
+            </div>
+            <div>
+                <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-2 border"></textarea>
+            </div>
+            <div id="location-display" class="text-sm text-gray-500 mt-2 hidden"></div>
+            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                <button type="submit" id="submit-btn" class="w-full sm:flex-grow py-4 px-8 border border-transparent rounded-md shadow-sm text-md font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                    Add Expense
+                </button>
+                <button type="button" id="reset-btn" class="w-full sm:w-auto py-4 px-8 border border-gray-300 rounded-md shadow-sm text-md font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+                    Reset
+                </button>
+            </div>
+        </form>
+    </div>
+   
+    <div id="data-queue-section" class="card hidden">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Data Queue</h2>
+        <div id="synced-data" class="mb-6">
+            <h3 class="text-lg font-semibold text-green-700 mb-2">Synced Data</h3>
+            <ul id="synced-list" class="list-disc list-inside space-y-2 text-gray-600"></ul>
+        </div>
+        <div id="unsynced-data">
+            <h3 class="text-lg font-semibold text-red-700 mb-2">Unsynced Data</h3>
+            <ul id="unsynced-list" class="list-disc list-inside space-y-2 text-gray-600"></ul>
+        </div>
+        <button id="export-data-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 ease-in-out mt-4">
+            Export Data as JSON
+        </button>
+    </div>
+    <div id="summary-section" class="card hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Trip Expenses Summary</h2>
+        <div class="mb-4 inline-flex rounded-full bg-gray-100 p-1">
+            <button id="summary-tab-local" class="px-3 py-1 text-sm font-medium rounded-full bg-white text-purple-700 shadow">Local currencies</button>
+            <button id="summary-tab-base" class="px-3 py-1 text-sm font-medium rounded-full text-gray-600">Base Currency</button>
+        </div>
+        <div id="base-conversion-panel" class="hidden mb-2">
+            <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <p class="text-sm text-gray-600">Rates to <span id="base-currency-label"></span> (1 unit = ? <span id="base-currency-label-2"></span>)</p>
+                <button id="fetch-rates-btn" class="py-1 px-2 rounded-md text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">Fetch Rates</button>
+                <p id="rates-fetch-note" class="text-xs text-gray-500 hidden"></p>
+            </div>
+            <div id="base-inputs" class="grid grid-cols-2 gap-1 sm:grid-cols-3"></div>
+            <div id="base-missing-warning" class="hidden text-xs text-red-600 mt-1"></div>
+        </div>
+        <div id="total-expenses-summary"></div>
+        <div id="category-expenses-summary" class="mt-6"></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+        <div class="card text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">LipiKit.com</h1>
+            <p class="text-gray-600 mb-4">A website hosting many functionally useful apps.</p>
+            <p class="text-sm text-gray-500">Powered by SparkyMinis Media-Tech LLP. For inquiries, contact <a href="mailto:connect@sparkyminis.com" class="text-purple-600 hover:underline">connect@sparkyminis.com</a>.</p>
+        </div>
+        <div class="card text-center">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Trip Tracker</h1>
+            <p class="text-gray-600 mb-4">Effortlessly track your trip expenses, even offline! Totally Free!! This app saves your expenses locally and syncs them to a our secure servers when you choose. Currency conversion and summar reports built-in.</p>
+        </div>
+    </div>
+    <div id="faq-section" class="card">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+        <div id="faq-list" class="space-y-2"></div>
+    </div>
+<script>
+    // --- Local Storage Keys ---
+    const UNSYNCED_EXPENSES_KEY = 'unsyncedExpenses';
+    const SYNCED_EXPENSES_KEY = 'syncedExpenses';
+    const TRIPS_KEY = 'tripList';
+    const ACTIVE_TRIP_KEY = 'activeTrip';
+    const CONVERSION_RATES_KEY = 'tripConversionRatesBase';
+    const APP_USER_KEY = 'appUser';
+    // --- DOM Elements ---
+    const userCreationView = document.getElementById('user-creation-view');
+    const userCreationForm = document.getElementById('user-creation-form');
+    const userDisplayNameInput = document.getElementById('user-display-name');
+    const userGreeting = document.getElementById('user-greeting');
+    const tripListView = document.getElementById('trip-list-view');
+    const expenseFormView = document.getElementById('expense-form-view');
+    const dataQueueSection = document.getElementById('data-queue-section');
+    const summarySection = document.getElementById('summary-section');
+    const totalExpensesSummaryDiv = document.getElementById('total-expenses-summary');
+    const categoryExpensesSummaryDiv = document.getElementById('category-expenses-summary');
+    const summaryTabLocal = document.getElementById('summary-tab-local');
+    const summaryTabBase = document.getElementById('summary-tab-base');
+    const basePanel = document.getElementById('base-conversion-panel');
+    const baseInputsDiv = document.getElementById('base-inputs');
+    const baseMissingWarning = document.getElementById('base-missing-warning');
+    const baseCurrencyLabel = document.getElementById('base-currency-label');
+    const baseCurrencyLabel2 = document.getElementById('base-currency-label-2');
+    const fetchRatesBtn = document.getElementById('fetch-rates-btn');
+    const ratesFetchNote = document.getElementById('rates-fetch-note');
+    const addTripBtn = document.getElementById('add-trip-btn');
+    const addTripForm = document.getElementById('add-trip-form');
+    const newTripNameInput = document.getElementById('new-trip-name');
+    const newTripCurrenciesSelect = document.getElementById('new-trip-currencies');
+    const newTripBaseCurrencySelect = document.getElementById('new-trip-base-currency');
+    const newTripStartInput = document.getElementById('new-trip-start');
+    const newTripEndInput = document.getElementById('new-trip-end');
+    const tripListUl = document.getElementById('trip-list');
+    const activeTripNameSpan = document.getElementById('active-trip-name');
+    const activeTripBaseCurrencySpan = document.getElementById('active-trip-base-currency');
+    const backToTripsBtn = document.getElementById('back-to-trips-btn');
+    const expenseForm = document.getElementById('expense-form');
+    const expenseDateInput = document.getElementById('expense-date');
+    const amountInput = document.getElementById('amount');
+    const placeInput = document.getElementById('place');
+    const notesTextarea = document.getElementById('notes');
+    const addLocationBtn = document.getElementById('add-location-btn');
+    const locationDisplay = document.getElementById('location-display');
+    const quickCategoryButtonsContainer = document.getElementById('quick-category-buttons');
+    const quickCurrencyButtonsContainer = document.getElementById('quick-currency-buttons');
+    const quickModeButtonsContainer = document.getElementById('quick-mode-buttons');
+    const statusMessage = document.getElementById('status-message');
+    const syncedList = document.getElementById('synced-list');
+    const unsyncedList = document.getElementById('unsynced-list');
+    const manualSyncBtn = document.getElementById('manual-sync-btn');
+    const exportDataBtn = document.getElementById('export-data-btn');
+    const selectedCurrencyInput = document.getElementById('selected-currency');
+    const selectedCategoryInput = document.getElementById('selected-category');
+    const selectedModeInput = document.getElementById('selected-mode');
+    const offlineMessageDiv = document.getElementById('offline-message');
+    const tripDateMessageDiv = document.getElementById('trip-date-message');
+    const resetBtn = document.getElementById('reset-btn');
+    const faqList = document.getElementById('faq-list');
+    // PIN modal elements
+    const pinModal = document.getElementById('pin-modal');
+    const pinModalForm = document.getElementById('pin-modal-form');
+    const pinModalInput = document.getElementById('pin-modal-input');
+    const pinModalMessage = document.getElementById('pin-modal-message');
+    // General Message Modal elements
+    const messageModal = document.getElementById('message-modal');
+    const messageModalTitle = document.getElementById('message-modal-title');
+    const messageModalBody = document.getElementById('message-modal-body');
+    const messageModalClose = document.getElementById('message-modal-close');
+   
+    // --- State Variables ---
+    let appUser = null;
+    let activeTrip = null;
+    let currentLocation = null;
+    let syncAttemptOrigin = null;
+    let summaryMode = 'local';
+    let conversionRates = {};
+    let lastRatesFetchDate = null;
+   
+    // --- Utility Functions ---
+    function showMessage(title, message) {
+        messageModalTitle.textContent = title;
+        messageModalBody.textContent = message;
+        messageModal.classList.remove('hidden');
+    }
+    function closeMessageModal() {
+        messageModal.classList.add('hidden');
+    }
+    function getLocalData(key) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || [];
+        } catch (e) {
+            console.error('Failed to parse data from localStorage:', e);
+            return [];
+        }
+    }
+    function saveDataLocally(data, key) {
+        let currentData = getLocalData(key);
+        currentData.push(data);
+        localStorage.setItem(key, JSON.stringify(currentData));
+    }
+    function updateActiveTrip(trip) {
+        activeTrip = trip;
+        if (trip) {
+            localStorage.setItem(ACTIVE_TRIP_KEY, JSON.stringify(trip));
+            activeTripNameSpan.textContent = trip.name;
+            activeTripBaseCurrencySpan.textContent = trip.baseCurrency;
+            baseCurrencyLabel.textContent = trip.baseCurrency;
+            baseCurrencyLabel2.textContent = trip.baseCurrency;
+            renderQuickCategories();
+            renderQuickCurrencies();
+            renderQuickModes();
+            try {
+                const allRates = JSON.parse(localStorage.getItem(CONVERSION_RATES_KEY)) || {};
+                conversionRates = allRates[trip.name] || {};
+                lastRatesFetchDate = allRates[trip.name]?.lastFetchDate || null;
+            } catch (e) {
+                conversionRates = {};
+                lastRatesFetchDate = null;
+            }
+            renderConversionInputs();
+            const startDate = new Date(trip.start);
+            const endDate = new Date(trip.end);
+            const minDate = new Date(startDate);
+            minDate.setDate(minDate.getDate() - 7);
+            const maxDate = new Date(endDate);
+            maxDate.setDate(maxDate.getDate() + 7);
+            expenseDateInput.min = minDate.toISOString().split('T')[0];
+            expenseDateInput.max = maxDate.toISOString().split('T')[0];
+            showView('expense-form');
+            renderExpenses();
+        } else {
+            localStorage.removeItem(ACTIVE_TRIP_KEY);
+            showView('trip-list');
+            renderTripList();
+            activeTripBaseCurrencySpan.textContent = '';
+            baseCurrencyLabel.textContent = '';
+            baseCurrencyLabel2.textContent = '';
+        }
+    }
+    function showView(viewId) {
+        userCreationView.classList.add('hidden');
+        tripListView.classList.add('hidden');
+        expenseFormView.classList.add('hidden');
+        dataQueueSection.classList.add('hidden');
+        summarySection.classList.add('hidden');
+        if (viewId === 'user-creation') {
+            userCreationView.classList.remove('hidden');
+        } else if (viewId === 'trip-list') {
+            tripListView.classList.remove('hidden');
+        } else if (viewId === 'expense-form') {
+            expenseFormView.classList.remove('hidden');
+            dataQueueSection.classList.remove('hidden');
+            summarySection.classList.remove('hidden');
+        }
+    }
+   
+    function resetExpenseForm() {
+        expenseForm.reset();
+        document.querySelectorAll('.quick-select-btn.active').forEach(btn => btn.classList.remove('active'));
+        locationDisplay.classList.add('hidden');
+        currentLocation = null;
+        expenseDateInput.valueAsDate = new Date();
+    }
+    function renderTripList() {
+        const trips = getLocalData(TRIPS_KEY);
+        tripListUl.innerHTML = '';
+        if (trips.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'text-center text-gray-500 italic';
+            li.textContent = 'No trips found. Add one above!';
+            tripListUl.appendChild(li);
+        } else {
+            trips.forEach(trip => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm';
+                li.innerHTML = `
+                    <div>
+                        <h3 class="font-semibold text-gray-800">${trip.name} (${trip.baseCurrency})</h3>
+                        <p class="text-sm text-gray-500">${trip.start} to ${trip.end}</p>
+                    </div>
+                    <button class="start-trip-btn py-1 px-3 rounded-full text-white bg-purple-500 hover:bg-purple-600 transition duration-150 ease-in-out" data-trip-id="${trip.id}">Select</button>
+                `;
+                tripListUl.appendChild(li);
+            });
+        }
+    }
+    function renderExpenses() {
+        const unsyncedData = getLocalData(UNSYNCED_EXPENSES_KEY);
+        const syncedData = getLocalData(SYNCED_EXPENSES_KEY);
+        syncedList.innerHTML = '';
+        syncedData.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.tripName}: ${item.amount} ${item.currency} for ${item.category} on ${item.expenseDate} (Synced)`;
+            syncedList.appendChild(li);
+        });
+        unsyncedList.innerHTML = '';
+        unsyncedData.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.tripName}: ${item.amount} ${item.currency} for ${item.category} on ${item.expenseDate} (Unsynced)`;
+            unsyncedList.appendChild(li);
+        });
+        renderSummary();
+    }
+   
+    function renderSummary() {
+        if (!activeTrip) {
+            summarySection.classList.add('hidden');
+            return;
+        }
+        summarySection.classList.remove('hidden');
+        const allExpenses = [
+            ...getLocalData(SYNCED_EXPENSES_KEY).filter(e => e.tripName === activeTrip.name),
+            ...getLocalData(UNSYNCED_EXPENSES_KEY).filter(e => e.tripName === activeTrip.name)
+        ];
+        if (allExpenses.length === 0) {
+            totalExpensesSummaryDiv.innerHTML = `<h3 class="text-xl font-semibold text-gray-700 mb-2">Overall Trip Total (${summaryMode === 'base' ? activeTrip.baseCurrency : 'Local'})</h3><p class="text-gray-500 italic">No expenses recorded for this trip yet.</p>`;
+            categoryExpensesSummaryDiv.innerHTML = '';
+            return;
+        }
+        if (summaryMode === 'local') {
+            basePanel.classList.add('hidden');
+            const totalsByCurrency = {};
+            const totalsByCategory = {};
+            allExpenses.forEach(expense => {
+                const amount = parseFloat(expense.amount) || 0;
+                const currency = expense.currency;
+                const category = expense.category;
+                if (amount > 0 && currency && category) {
+                    totalsByCurrency[currency] = (totalsByCurrency[currency] || 0) + amount;
+                    if (!totalsByCategory[category]) totalsByCategory[category] = {};
+                    totalsByCategory[category][currency] = (totalsByCategory[category][currency] || 0) + amount;
+                }
+            });
+            let totalHtml = '<h3 class="text-xl font-semibold text-gray-700 mb-2">Overall Trip Total</h3>';
+            if (Object.keys(totalsByCurrency).length > 0) {
+                totalHtml += '<ul class="list-disc list-inside space-y-1 text-gray-600">';
+                for (const currency in totalsByCurrency) {
+                    const name = APP_CONFIG.currencyNames[currency] || currency;
+                    totalHtml += `<li><span class="font-semibold text-gray-800">${totalsByCurrency[currency].toLocaleString()}</span> ${currency} (${name})</li>`;
+                }
+                totalHtml += '</ul>';
+            } else {
+                totalHtml += `<p class="text-gray-500 italic">No valid expenses recorded for this trip yet.</p>`;
+            }
+            totalExpensesSummaryDiv.innerHTML = totalHtml;
+            let categoryHtml = '<h3 class="text-xl font-semibold text-gray-700 mb-2">Expenses by Category</h3>';
+            if (Object.keys(totalsByCategory).length > 0) {
+                categoryHtml += '<table class="summary-table"><thead><tr><th>Category</th><th>Total Spent</th></tr></thead><tbody>';
+                for (const category in totalsByCategory) {
+                    const currencyStrings = Object.entries(totalsByCategory[category]).map(([currency, total]) => {
+                        const name = APP_CONFIG.currencyNames[currency] || currency;
+                        return `<span class="font-semibold">${total.toLocaleString()}</span> ${currency} (${name})`;
+                    });
+                    categoryHtml += `<tr><td>${category}</td><td>${currencyStrings.join('<br>')}</td></tr>`;
+                }
+                categoryHtml += '</tbody></table>';
+            } else {
+                categoryHtml = '';
+            }
+            categoryExpensesSummaryDiv.innerHTML = categoryHtml;
+        } else {
+            basePanel.classList.remove('hidden');
+            const missing = new Set();
+            let totalBase = 0;
+            const totalsByCategoryBase = {};
+            allExpenses.forEach(expense => {
+                const amount = parseFloat(expense.amount) || 0;
+                const currency = expense.currency;
+                const category = expense.category;
+                if (currency !== activeTrip.baseCurrency && !(currency in conversionRates)) missing.add(currency);
+                const rate = currency === activeTrip.baseCurrency ? 1 : parseFloat(conversionRates[currency]);
+                if (amount > 0 && category && !isNaN(rate) && rate > 0) {
+                    const val = amount * rate;
+                    totalBase += val;
+                    totalsByCategoryBase[category] = (totalsByCategoryBase[category] || 0) + val;
+                }
+            });
+            const missingCurrencies = Array.from(missing).filter(c => c !== activeTrip.baseCurrency);
+            if (missingCurrencies.length > 0) {
+                baseMissingWarning.textContent = `Add rates for: ${missingCurrencies.map(c => `${c} (${APP_CONFIG.currencyNames[c] || c})`).join(', ')}`;
+                baseMissingWarning.classList.remove('hidden');
+            } else {
+                baseMissingWarning.classList.add('hidden');
+            }
+            const totalHtml = `<h3 class="text-xl font-semibold text-gray-700 mb-2">Overall Trip Total (${activeTrip.baseCurrency})</h3><div class="text-2xl font-bold text-purple-700">${totalBase.toLocaleString(undefined, { maximumFractionDigits: 0 })} ${activeTrip.baseCurrency}</div>`;
+            totalExpensesSummaryDiv.innerHTML = totalHtml;
+            let categoryHtml = `<h3 class="text-xl font-semibold text-gray-700 mb-2">Expenses by Category (${activeTrip.baseCurrency})</h3>`;
+            if (Object.keys(totalsByCategoryBase).length > 0) {
+                categoryHtml += '<table class="summary-table"><thead><tr><th>Category</th><th>Total Spent (${activeTrip.baseCurrency})</th></tr></thead><tbody>';
+                for (const category in totalsByCategoryBase) {
+                    categoryHtml += `<tr><td>${category}</td><td><span class="font-semibold">${totalsByCategoryBase[category].toLocaleString(undefined, { maximumFractionDigits: 0 })} ${activeTrip.baseCurrency}</span></td></tr>`;
+                }
+                categoryHtml += '</tbody></table>';
+            } else {
+                categoryHtml += `<p class="text-gray-500 italic">No valid expenses with conversion rates yet.</p>`;
+            }
+            categoryExpensesSummaryDiv.innerHTML = categoryHtml;
+        }
+    }
+    function renderConversionInputs() {
+        if (!activeTrip) return;
+        baseInputsDiv.innerHTML = '';
+        ratesFetchNote.classList.add('hidden');
+        if (lastRatesFetchDate) {
+            ratesFetchNote.textContent = `Rates fetched from internet sources as of ${lastRatesFetchDate}`;
+            ratesFetchNote.classList.remove('hidden');
+        }
+        const currencies = (activeTrip.currencies || []).slice();
+        const includeBase = currencies.includes(activeTrip.baseCurrency);
+        currencies.forEach(curr => {
+            if (curr === activeTrip.baseCurrency) {
+                const wrap = document.createElement('div');
+                wrap.className = 'flex items-center gap-2 bg-gray-50 rounded-md px-2 py-1';
+                wrap.innerHTML = `<span class="text-xs text-gray-500">${curr} (${APP_CONFIG.currencyNames[curr] || curr})</span><div class="flex-1 text-right font-medium">1</div>`;
+                baseInputsDiv.appendChild(wrap);
+            } else {
+                const rateVal = conversionRates[curr] ?? '';
+                const wrap = document.createElement('div');
+                wrap.className = 'flex items-center gap-2 bg-gray-50 rounded-md px-2 py-1';
+                wrap.innerHTML = `
+                    <label class="text-xs text-gray-500" for="base-rate-${curr}">${curr} (${APP_CONFIG.currencyNames[curr] || curr})</label>
+                    <input id="base-rate-${curr}" data-currency="${curr}" type="number" step="any" min="0" placeholder="e.g., 80" value="${rateVal}"
+                           class="flex-1 w-full text-right rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm p-1 border" />
+                `;
+                baseInputsDiv.appendChild(wrap);
+            }
+        });
+        if (!includeBase) {
+            const info = document.createElement('div');
+            info.className = 'col-span-2 sm:col-span-3 text-xs text-gray-500';
+            info.textContent = `Note: ${activeTrip.baseCurrency} amounts are calculated using the above rates.`;
+            baseInputsDiv.appendChild(info);
+        }
+    }
+    function persistConversionRates() {
+        try {
+            const allRates = JSON.parse(localStorage.getItem(CONVERSION_RATES_KEY)) || {};
+            allRates[activeTrip.name] = { ...conversionRates, lastFetchDate: lastRatesFetchDate };
+            localStorage.setItem(CONVERSION_RATES_KEY, JSON.stringify(allRates));
+        } catch (e) { /* ignore */ }
+    }
+    function updateSummaryTabs() {
+        if (summaryMode === 'local') {
+            summaryTabLocal.classList.add('bg-white', 'text-purple-700', 'shadow');
+            summaryTabBase.classList.remove('bg-white', 'text-purple-700', 'shadow');
+            summaryTabBase.classList.add('text-gray-600');
+        } else {
+            summaryTabBase.classList.add('bg-white', 'text-purple-700', 'shadow');
+            summaryTabLocal.classList.remove('bg-white', 'text-purple-700', 'shadow');
+            summaryTabLocal.classList.add('text-gray-600');
+        }
+    }
+    function renderQuickCategories() {
+        quickCategoryButtonsContainer.innerHTML = '';
+        APP_CONFIG.categories.forEach(category => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'quick-select-btn';
+            button.textContent = category;
+            button.dataset.value = category;
+            quickCategoryButtonsContainer.appendChild(button);
+        });
+    }
+    function renderQuickCurrencies() {
+        quickCurrencyButtonsContainer.innerHTML = '';
+        if (activeTrip && activeTrip.currencies) {
+            activeTrip.currencies.forEach(currency => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'quick-select-btn';
+                button.textContent = currency;
+                button.dataset.value = currency;
+                quickCurrencyButtonsContainer.appendChild(button);
+            });
+        }
+    }
+    function renderQuickModes() {
+        quickModeButtonsContainer.innerHTML = '';
+        APP_CONFIG.modes.forEach(mode => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'quick-select-btn';
+            button.textContent = mode;
+            button.dataset.value = mode;
+            quickModeButtonsContainer.appendChild(button);
+        });
+    }
+    function populateTripCurrenciesSelect() {
+        newTripCurrenciesSelect.innerHTML = '';
+        APP_CONFIG.currencies.forEach(currency => {
+            const option = document.createElement('option');
+            option.value = currency;
+            option.textContent = `${currency} - ${APP_CONFIG.currencyNames[currency] || currency}`;
+            newTripCurrenciesSelect.appendChild(option);
+        });
+    }
+    function populateTripBaseCurrencySelect(currencies) {
+        newTripBaseCurrencySelect.innerHTML = '<option value="" disabled selected>Select a base currency</option>';
+        currencies.forEach(currency => {
+            const option = document.createElement('option');
+            option.value = currency;
+            option.textContent = `${currency} - ${APP_CONFIG.currencyNames[currency] || currency}`;
+            newTripBaseCurrencySelect.appendChild(option);
+        });
+    }
+    function renderFaqs() {
+        faqList.innerHTML = '';
+        APP_CONFIG.faqs.forEach(faq => {
+            const details = document.createElement('details');
+            details.className = 'border border-gray-200 rounded-md';
+            const summary = document.createElement('summary');
+            summary.className = 'p-2 font-medium text-gray-700';
+            summary.textContent = faq.question;
+            const p = document.createElement('p');
+            p.className = 'p-2 text-gray-600 text-sm';
+            p.textContent = faq.answer;
+            details.appendChild(summary);
+            details.appendChild(p);
+            faqList.appendChild(details);
+        });
+    }
+    function handleQuickSelectClick(event, inputElement) {
+        if (event.target.classList.contains('quick-select-btn')) {
+            if (event.target.classList.contains('active')) return;
+            const buttons = event.target.parentElement.querySelectorAll('.quick-select-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            inputElement.value = event.target.dataset.value;
+        }
+    }
+    async function fetchExchangeRates(baseCurrency, targetCurrencies) {
+        if (!navigator.onLine) {
+            showMessage('Offline', 'Cannot fetch rates offline. Please enter manually.');
+            return false;
+        }
+        const date = 'latest';
+        const primaryUrl = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${baseCurrency.toLowerCase()}.min.json`;
+        const fallbackUrl = `https://${date}.currency-api.pages.dev/v1/currencies/${baseCurrency.toLowerCase()}.min.json`;
+        try {
+            const response = await fetch(primaryUrl);
+            if (!response.ok) throw new Error('Primary fetch failed');
+            const data = await response.json();
+            const rates = data[baseCurrency.toLowerCase()];
+            targetCurrencies.forEach(curr => {
+                if (curr !== baseCurrency && rates[curr.toLowerCase()]) {
+                    conversionRates[curr] = parseFloat((1 / rates[curr.toLowerCase()]).toFixed(4));
+                }
+            });
+            lastRatesFetchDate = new Date().toISOString().split('T')[0];
+            persistConversionRates();
+            return true;
+        } catch (error) {
+            console.error('Primary fetch failed, trying fallback:', error);
+            try {
+                const response = await fetch(fallbackUrl);
+                if (!response.ok) throw new Error('Fallback fetch failed');
+                const data = await response.json();
+                const rates = data[baseCurrency.toLowerCase()];
+                targetCurrencies.forEach(curr => {
+                    if (curr !== baseCurrency && rates[curr.toLowerCase()]) {
+                        conversionRates[curr] = parseFloat((1 / rates[curr.toLowerCase()]).toFixed(4));
+                    }
+                });
+                lastRatesFetchDate = new Date().toISOString().split('T')[0];
+                persistConversionRates();
+                return true;
+            } catch (fallbackError) {
+                console.error('Fallback fetch failed:', fallbackError);
+                showMessage('Error', 'Failed to fetch exchange rates. Please try again later.');
+                return false;
+            }
+        }
+    }
+    async function startSync() {
+        const unsyncedData = getLocalData(UNSYNCED_EXPENSES_KEY);
+        if (unsyncedData.length === 0) {
+            showMessage("Sync Info", "There is no new data to sync.");
+            return;
+        }
+        let newlySyncedItems = [];
+        let failedToSyncItems = [];
+        for (const item of unsyncedData) {
+            const formData = new FormData();
+            formData.append(APP_CONFIG.googleFormFields.name, `${appUser.userId}:${appUser.displayName}`);
+            formData.append(APP_CONFIG.googleFormFields.tripName, `${item.tripName}:${activeTrip.baseCurrency}`);
+            Object.keys(APP_CONFIG.googleFormFields).forEach(key => {
+                if (key !== 'name' && key !== 'tripName' && item[key]) {
+                    formData.append(APP_CONFIG.googleFormFields[key], item[key]);
+                }
+            });
+            try {
+                await fetch(APP_CONFIG.googleFormActionUrl, { method: 'POST', mode: 'no-cors', body: formData });
+                newlySyncedItems.push({ ...item, syncDate: new Date().toISOString() });
+            } catch (error) {
+                console.error(`Failed to sync item with ID ${item.id}:`, error);
+                failedToSyncItems.push(item);
+            }
+        }
+        if (newlySyncedItems.length > 0) {
+            const currentSynced = getLocalData(SYNCED_EXPENSES_KEY);
+            localStorage.setItem(SYNCED_EXPENSES_KEY, JSON.stringify([...currentSynced, ...newlySyncedItems]));
+        }
+        localStorage.setItem(UNSYNCED_EXPENSES_KEY, JSON.stringify(failedToSyncItems));
+        if (newlySyncedItems.length > 0) {
+            showMessage("Sync Complete", `${newlySyncedItems.length} expense(s) were successfully synced.`);
+            renderExpenses();
+        } else {
+            showMessage("Sync Failed", "Could not sync data. Please check your internet connection and try again.");
+        }
+    }
+   
+    function exportDataAsJson() {
+        const allData = {
+            user: appUser,
+            trips: getLocalData(TRIPS_KEY),
+            syncedExpenses: getLocalData(SYNCED_EXPENSES_KEY),
+            unsyncedExpenses: getLocalData(UNSYNCED_EXPENSES_KEY)
+        };
+        const jsonData = JSON.stringify(allData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trip_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    // --- Event Listeners ---
+    userCreationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const displayName = userDisplayNameInput.value.trim();
+        if (!displayName) {
+            showMessage("Error", "Please enter a username.");
+            return;
+        }
+        appUser = {
+            userId: `user-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            displayName
+        };
+        localStorage.setItem(APP_USER_KEY, JSON.stringify(appUser));
+        userGreeting.textContent = `Hi ${appUser.displayName}, `;
+        showView('trip-list');
+        renderTripList();
+    });
+    addTripBtn.addEventListener('click', () => addTripForm.classList.toggle('hidden'));
+    addTripForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const startDate = new Date(newTripStartInput.value);
+        const endDate = new Date(newTripEndInput.value);
+        if (endDate < startDate) {
+            tripDateMessageDiv.textContent = 'Trip end date cannot be before the start date.';
+            tripDateMessageDiv.classList.remove('hidden');
+            return;
+        }
+        const selectedCurrencies = Array.from(newTripCurrenciesSelect.selectedOptions, option => option.value);
+        const baseCurrency = newTripBaseCurrencySelect.value;
+        if (!selectedCurrencies.includes(baseCurrency)) {
+            tripDateMessageDiv.textContent = 'Base currency must be one of the selected trip currencies.';
+            tripDateMessageDiv.classList.remove('hidden');
+            return;
+        }
+        tripDateMessageDiv.classList.add('hidden');
+        const newTrip = {
+            id: Date.now(),
+            name: newTripNameInput.value,
+            currencies: selectedCurrencies,
+            baseCurrency: baseCurrency,
+            start: newTripStartInput.value,
+            end: newTripEndInput.value
+        };
+        const trips = getLocalData(TRIPS_KEY);
+        trips.push(newTrip);
+        localStorage.setItem(TRIPS_KEY, JSON.stringify(trips));
+        addTripForm.reset();
+        addTripForm.classList.add('hidden');
+        renderTripList();
+    });
+    newTripCurrenciesSelect.addEventListener('change', () => {
+        const selectedCurrencies = Array.from(newTripCurrenciesSelect.selectedOptions, option => option.value);
+        populateTripBaseCurrencySelect(selectedCurrencies);
+    });
+    pinModalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const enteredPinHash = CryptoJS.SHA256(pinModalInput.value).toString();
+        if (enteredPinHash === APP_CONFIG.pin) {
+            pinModal.classList.add('hidden');
+            pinModalMessage.textContent = '';
+            pinModalInput.value = '';
+            if (syncAttemptOrigin === 'manual') startSync();
+        } else {
+            pinModalMessage.textContent = 'Invalid PIN. Please try again.';
+        }
+    });
+    messageModalClose.addEventListener('click', closeMessageModal);
+    tripListUl.addEventListener('click', (e) => {
+        if (e.target.classList.contains('start-trip-btn')) {
+            const tripId = parseInt(e.target.dataset.tripId, 10);
+            const trips = getLocalData(TRIPS_KEY);
+            const selectedTrip = trips.find(t => t.id === tripId);
+            if (selectedTrip) updateActiveTrip(selectedTrip);
+        }
+    });
+    backToTripsBtn.addEventListener('click', () => updateActiveTrip(null));
+    resetBtn.addEventListener('click', resetExpenseForm);
+    expenseForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const expenseData = {
+            tripName: activeTrip.name,
+            expenseDate: expenseDateInput.value,
+            amount: amountInput.value,
+            currency: selectedCurrencyInput.value,
+            category: selectedCategoryInput.value,
+            place: placeInput.value,
+            notes: notesTextarea.value,
+            location: currentLocation ? `Lat: ${currentLocation.latitude}, Lon: ${currentLocation.longitude}` : 'N/A',
+            mode: selectedModeInput.value,
+            id: Date.now()
+        };
+        saveDataLocally(expenseData, UNSYNCED_EXPENSES_KEY);
+        resetExpenseForm();
+        renderExpenses();
+    });
+    manualSyncBtn.addEventListener('click', () => {
+        if (navigator.onLine) {
+            syncAttemptOrigin = 'manual';
+            pinModal.classList.remove('hidden');
+            pinModalInput.focus();
+            offlineMessageDiv.classList.add('hidden');
+        } else {
+            offlineMessageDiv.textContent = 'You are offline. Please connect to the internet to sync data.';
+            offlineMessageDiv.classList.remove('hidden');
+        }
+    });
+   
+    exportDataBtn.addEventListener('click', exportDataAsJson);
+    summaryTabLocal.addEventListener('click', () => {
+        if (summaryMode !== 'local') {
+            summaryMode = 'local';
+            updateSummaryTabs();
+            renderSummary();
+        }
+    });
+    summaryTabBase.addEventListener('click', () => {
+        if (summaryMode !== 'base') {
+            summaryMode = 'base';
+            updateSummaryTabs();
+            renderSummary();
+        }
+    });
+    fetchRatesBtn.addEventListener('click', async () => {
+        if (activeTrip && activeTrip.currencies && activeTrip.baseCurrency) {
+            const success = await fetchExchangeRates(activeTrip.baseCurrency, activeTrip.currencies);
+            if (success) {
+                renderConversionInputs();
+                renderSummary();
+            }
+        }
+    });
+    baseInputsDiv.addEventListener('input', (e) => {
+        const target = e.target;
+        if (target && target.matches('input[data-currency]')) {
+            const curr = target.getAttribute('data-currency');
+            const val = target.value.trim();
+            if (val === '') {
+                delete conversionRates[curr];
+            } else {
+                const num = parseFloat(val);
+                if (!isNaN(num) && num >= 0) conversionRates[curr] = num;
+            }
+            persistConversionRates();
+            if (summaryMode === 'base') renderSummary();
+        }
+    });
+    addLocationBtn.addEventListener('click', () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                currentLocation = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+                locationDisplay.textContent = `Location Captured: ${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`;
+                locationDisplay.classList.remove('hidden');
+            }, error => {
+                console.error("Geolocation error:", error);
+                locationDisplay.textContent = "Unable to get location.";
+                locationDisplay.classList.remove('hidden');
+            });
+        } else {
+            locationDisplay.textContent = "Geolocation is not supported by your browser.";
+            locationDisplay.classList.remove('hidden');
+        }
+    });
+   
+    quickCategoryButtonsContainer.addEventListener('click', (e) => handleQuickSelectClick(e, selectedCategoryInput));
+    quickCurrencyButtonsContainer.addEventListener('click', (e) => handleQuickSelectClick(e, selectedCurrencyInput));
+    quickModeButtonsContainer.addEventListener('click', (e) => handleQuickSelectClick(e, selectedModeInput));
+    function updateStatus() {
+        const statusIndicator = document.getElementById('status-indicator');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        if (navigator.onLine) {
+            statusText.textContent = 'Online';
+            statusIndicator.classList.remove('status-offline');
+            statusIndicator.classList.add('status-online');
+        } else {
+            statusText.textContent = 'Offline';
+            statusIndicator.classList.remove('status-online');
+            statusIndicator.classList.add('status-offline');
+        }
+    }
+    // --- Initialization ---
+    populateTripCurrenciesSelect();
+    renderFaqs();
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus();
+    expenseDateInput.valueAsDate = new Date();
+    updateSummaryTabs();
+    try {
+        appUser = JSON.parse(localStorage.getItem(APP_USER_KEY));
+        if (appUser && appUser.displayName) {
+            userGreeting.textContent = `Hi ${appUser.displayName}, `;
+            const savedActiveTrip = JSON.parse(localStorage.getItem(ACTIVE_TRIP_KEY));
+            if (savedActiveTrip && savedActiveTrip.name) {
+                updateActiveTrip(savedActiveTrip);
+            } else {
+                showView('trip-list');
+                renderTripList();
+            }
+        } else {
+            showView('user-creation');
+        }
+    } catch (e) {
+        showView('user-creation');
+    }
+</script>
+</body>
+</html>
