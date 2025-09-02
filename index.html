@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Effortlessly track trip expenses, manage currency conversions, and create summary reports, even offline. Your ultimate free PWA for travel budgeting.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
     <title>LipiKit Trip Tracker</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#9333ea">
@@ -511,7 +513,7 @@
                         &nbsp;
                     </span>
                     
-                    <p>If above Install button does not work, then, tap the **three dots menu** and select **"Add to Home Screen"** and/or **"Install app"**.</p>
+                    <p>If above Install button does not work then, tap the  <strong>three dots menu </strong> and select  <strong>"Add to Home Screen"</strong> and/or  <strong>"Install app"</strong>.</p>
                 </div>
             </div>
         </div>
@@ -550,13 +552,21 @@
             },
             modes: ["Cash", "Credit Card", "Prepaid Card"],
             pin: HASHED_PIN,
-            faqs: [
-                { question: "How do I reset my data?", answer: "To reset all data, go to your browser's settings, find the site data for LipiKit.com (usually under Privacy or Site Settings), and delete it. This will clear all local data, including trips and expenses." },
-                { question: "How can I change my username?", answer: "Usernames cannot be changed once set. To use a new username, delete the site data in your browser's settings and reload the app to create a new profile." },
-                { question: "How is my privacy protected?", answer: "All data is stored locally in your browser and never leaves your device unless you choose to sync. Syncing requires a secure PIN and sends data only to our secure servers." },
-                { question: "How do I sync my data?", answer: "Click 'Sync Now,' enter the secure PIN, and ensure you're online. Your expenses will be sent to our secure servers." },
-                { question: "How can I get an expense report across all trips?", answer: "This is exactly why you sync data. For a consolidated report across multiple trips, email connect@sparkyminis.com with your request, and we will assist with generating the report manually." }
-            ]
+            faqs:[
+            { "question": "How do I reset my data?", "answer": "To reset all data, go to your browser's settings, find the site data for LipiKit.com (usually under Privacy or Site Settings), and delete it. This will clear all local data, including trips and expenses." },
+            { "question": "How can I change my username?", "answer": "Usernames cannot be changed once set. To use a new username, delete the site data in your browser's settings and reload the app to create a new profile." },
+            { "question": "How is my privacy protected?", "answer": "All data is stored locally in your browser and never leaves your device unless you choose to sync. Syncing requires a secure PIN and sends data only to our secure servers." },
+            { "question": "How do I sync my data?", "answer": "Click 'Sync Now,' enter the secure PIN, and ensure you're online. Your expenses will be sent to our secure servers." },
+            { "question": "How can I get an expense report across all trips?", "answer": "For a consolidated report across multiple trips, email connect@sparkyminis.com with your request, and we will assist with generating the report manually." },
+            { "question": "Can I use this app offline?", "answer": "Yes! This app is a Progressive Web App (PWA) and is designed to work fully offline. You can add new expenses and view all your saved data without an internet connection. It will automatically sync your changes once you are back online." },
+            { "question": "How does the currency conversion feature work?", "answer": "The app fetches the latest currency exchange rates from the internet when you are online. Once downloaded, it stores them locally, allowing you to convert expenses even while offline." },
+            { "question": "What if the app doesn't show the 'Install' button?", "answer": "On most modern browsers, the 'Install' button appears automatically when the app is ready. If you don't see it, you can usually install the app from your browser's menu (e.g., the three-dot menu in Chrome) by selecting 'Install app'." },
+            { "question": "How do I add a new expense?", "answer": "To add a new expense, simply tap the '+' button, fill in the details like the amount and category, and tap 'Save.' The new expense will be instantly added to your current trip." },
+            { "question": "What will not work if I have no internet?", "answer": "Without an internet connection, data sync and fetching the latest currency exchange rates will not work. However, you can still enter exchange rates manually." },
+            { "question": "How do I add a new trip?", "answer": "You can add a new trip by navigating to the trip selection screen and using the 'Add New Trip' button. This will create a fresh entry for your new travel expenses." },
+            { "question": "How can I get my data sync PIN?", "answer": "Data sync PINs are provided on a restricted basis. For access, please contact connect@sparkyminis.com, providing your username and a brief description of your request." },
+            { "question": "What new features are planned for the future?", "answer": "We are continuously working on new features. Upcoming plans include the ability to share trips, set budgets, and generate detailed reports in PDF/CSV format. We welcome your feedback and suggestions via email at connect@sparkyminis.com." }
+]
         };
 
         // Storage Keys
@@ -1431,6 +1441,13 @@ function renderConversionInputs() {
                 }
             });
         }
+</script>
+    <footer>
+    <p>&copy; <span id="current-year"></span> SparkyMinis Media-Tech LLP All Rights Reserved.</p>
+</footer>
+
+<script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
