@@ -848,7 +848,7 @@
                 
                 let categoryHtml = `<h3 style="margin-top: 2rem;">Expenses by Category (${activeTrip.baseCurrency})</h3>`;
                 if (Object.keys(totalsByCategoryBase).length > 0) {
-                    categoryHtml += '<table class="summary-table"><thead><tr><th>Category</th><th>Total Spent (${activeTrip.baseCurrency})</th></tr></thead><tbody>';
+                    categoryHtml += '<table class="summary-table"><thead><tr><th>Category</th><th>Total Spent</th></tr></thead><tbody>';
                     for (const category in totalsByCategoryBase) {
                         categoryHtml += `<tr><td>${category}</td><td><span style="font-weight: 600;">${totalsByCategoryBase[category].toLocaleString(undefined, { maximumFractionDigits: 0 })} ${activeTrip.baseCurrency}</span></td></tr>`;
                     }
@@ -860,39 +860,41 @@
             }
         }
 
-        function renderConversionInputs() {
-            if (!activeTrip) return;
-            
-            elements.baseInputsDiv.innerHTML = '';
-            elements.ratesFetchNote.classList.add('hidden');
-            
-            if (lastRatesFetchDate) {
-                elements.ratesFetchNote.textContent = `Rates fetched from internet sources as of ${lastRatesFetchDate}`;
-                elements.ratesFetchNote.classList.remove('hidden');
-            }
-            
-            const currencies = (activeTrip.currencies || []).slice();
-            const includeBase = currencies.includes(activeTrip.baseCurrency);
-            
-            currencies.forEach(curr => {
-                if (curr === activeTrip.baseCurrency) {
-                    const wrap = document.createElement('div');
-                    wrap.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; background: #f9fafb; border-radius: 6px; padding: 0.5rem;';
-                    wrap.innerHTML = `<span style="font-size: 0.75rem; color: #6b7280;">${curr} (${APP_CONFIG.currencyNames[curr] || curr})</span><div style="flex: 1; text-align: right; font-weight: 500;">1</div>`;
-                    elements.baseInputsDiv.appendChild(wrap);
-                } else {
-                    const rateVal = conversionRates[curr] ?? '';
-                    const wrap = document.createElement('div');
-                    wrap.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; background: #f9fafb; border-radius: 6px; padding: 0.5rem;';
-                    wrap.innerHTML = `
-                        <label style="font-size: 0.75rem; color: #6b7280;" for="base-rate-${curr}">${curr} (${APP_CONFIG.currencyNames[curr] || curr})</label>
-                        <input id="base-rate-${curr}" data-currency="${curr}" type="number" step="any" min="0" placeholder="e.g., 80" value="${rateVal}"
-                               style="flex: 1; text-align: right; border-radius: 4px; border: 1px solid #d1d5db; padding: 0.25rem; font-size: 0.875rem;" />
-                    `;
-                    elements.baseInputsDiv.appendChild(wrap);
-                }
-            });
+function renderConversionInputs() {
+    if (!activeTrip) return;
+
+    elements.baseInputsDiv.innerHTML = '';
+    elements.ratesFetchNote.classList.add('hidden');
+
+    if (lastRatesFetchDate) {
+        elements.ratesFetchNote.textContent = `Rates fetched from internet sources as of ${lastRatesFetchDate}`;
+        elements.ratesFetchNote.classList.remove('hidden');
+    }
+
+    const currencies = (activeTrip.currencies || []).slice();
+    const includeBase = currencies.includes(activeTrip.baseCurrency);
+
+    currencies.forEach(curr => {
+        if (curr === activeTrip.baseCurrency) {
+            const wrap = document.createElement('div');
+            // Modified styles for vertical stacking on mobile
+            wrap.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; background: #f9fafb; border-radius: 6px; padding: 0.5rem;';
+            wrap.innerHTML = `<span style="font-size: 0.75rem; color: #6b7280;">${curr} (${APP_CONFIG.currencyNames[curr] || curr})</span><div style="flex: 1; text-align: right; font-weight: 500; width: 100%;">1</div>`;
+            elements.baseInputsDiv.appendChild(wrap);
+        } else {
+            const rateVal = conversionRates[curr] ?? '';
+            const wrap = document.createElement('div');
+            // Modified styles for vertical stacking on mobile
+            wrap.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; background: #f9fafb; border-radius: 6px; padding: 0.5rem;';
+            wrap.innerHTML = `
+                <label style="font-size: 0.75rem; color: #6b7280;" for="base-rate-${curr}">${curr} (${APP_CONFIG.currencyNames[curr] || curr})</label>
+                <input id="base-rate-${curr}" data-currency="${curr}" type="number" step="any" min="0" placeholder="e.g., 80" value="${rateVal}"
+                    style="flex: 1; width: 100%; text-align: right; border-radius: 4px; border: 1px solid #d1d5db; padding: 0.5rem; font-size: 0.875rem;" />
+            `;
+            elements.baseInputsDiv.appendChild(wrap);
         }
+    });
+}
 
         function persistConversionRates() {
             try {
