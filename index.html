@@ -1353,72 +1353,15 @@
             showView('user-creation');
         }
 
-        // Register Service Worker (inline to avoid MIME type issues)
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = 'trip-tracker-v1';
-                    const urlsToCache = [
-                        '/',
-                        '/index.html',
-                        '/manifest.json',
-                        'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js'
-                    ];
-
-                    self.addEventListener('install', (event) => {
-                        event.waitUntil(
-                            caches.open(CACHE_NAME)
-                                .then((cache) => {
-                                    console.log('Opened cache');
-                                    return cache.addAll(urlsToCache);
-                                })
-                        );
-                    });
-
-                    self.addEventListener('fetch', (event) => {
-                        event.respondWith(
-                            caches.match(event.request)
-                                .then((response) => {
-                                    if (response) {
-                                        return response;
-                                    }
-                                    
-                                    return fetch(event.request).catch(() => {
-                                        if (event.request.mode === 'navigate') {
-                                            return caches.match('/index.html');
-                                        }
-                                    });
-                                }
-                            )
-                        );
-                    });
-
-                    self.addEventListener('activate', (event) => {
-                        event.waitUntil(
-                            caches.keys().then((cacheNames) => {
-                                return Promise.all(
-                                    cacheNames.map((cacheName) => {
-                                        if (cacheName !== CACHE_NAME) {
-                                            return caches.delete(cacheName);
-                                        }
-                                    })
-                                );
-                            })
-                        );
-                    });
-                `;
-
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-
-                navigator.serviceWorker.register(swUrl)
+                navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
                         console.log('SW registered: ', registration);
-                        URL.revokeObjectURL(swUrl);
                     })
                     .catch((registrationError) => {
                         console.log('SW registration failed: ', registrationError);
-                        URL.revokeObjectURL(swUrl);
                     });
             });
         }
