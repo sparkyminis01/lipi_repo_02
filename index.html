@@ -503,9 +503,12 @@
             <div class="card text-center">
                 <h2>Trip Expense Tracker</h2>
                 <p>Effortlessly track your trip expenses, even offline! Totally Free!! This app saves your expenses locally and syncs them to our secure servers when you choose. Currency conversion and summary reports built-in.</p>
-            <div class="card">
-                <button id="install-btn" class="btn-install hidden">Install App</button>
-            </div>
+                <button id="install-btn" class="btn-install" disabled>
+                    Install App
+                </button>
+                <div id="fallback-install">
+                    <p>To install this app, tap the **three dots menu** and select **"Add to Home Screen"** and/or **"Install app"**.</p>
+                </div>
             </div>
         </div>
 
@@ -1391,28 +1394,39 @@ function renderConversionInputs() {
         }
     </script>
     <script>
-    let deferredPrompt; // A variable to hold the event
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('install-btn').style.display = 'block';
-    });
-
-    document.getElementById('install-btn').addEventListener('click', (e) => {
-        document.getElementById('install-btn').style.display = 'none';
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Enable the button when the prompt is available
+            if (installBtn) {
+                installBtn.disabled = false;
+            }
+        });
+        
+        if (installBtn) {
+            installBtn.addEventListener('click', (e) => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        deferredPrompt = null;
+                        
+                        // Hide or disable the button after a choice is made
+                        if (installBtn) {
+                            installBtn.disabled = true;
+                        }
+                    });
                 }
-                deferredPrompt = null;
             });
         }
-    });
 </script>
 </body>
 </html>
