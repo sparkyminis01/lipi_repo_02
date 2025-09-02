@@ -1,0 +1,13 @@
+# Service Worker headers
+/sw.js
+  Content-Type: application/javascript
+  Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+
+# Manifest headers  
+/manifest.json
+  Content-Type: application/json
+
+# General headers for PWA
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
