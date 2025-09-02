@@ -288,6 +288,25 @@
             .flex { flex-direction: column; }
             .card { padding: 1rem; }
         }
+
+    .btn-install {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        background: #9333ea; /* Your theme color */
+        color: white;
+        font-weight: 500;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    
+    .btn-install:hover {
+        background: #7c3aed;
+    }
     </style>
 </head>
 <body>
@@ -484,6 +503,9 @@
             <div class="card text-center">
                 <h2>Trip Expense Tracker</h2>
                 <p>Effortlessly track your trip expenses, even offline! Totally Free!! This app saves your expenses locally and syncs them to our secure servers when you choose. Currency conversion and summary reports built-in.</p>
+            <div class="card">
+                <button id="install-btn" class="btn-install hidden">Install App</button>
+            </div>
             </div>
         </div>
 
@@ -1368,5 +1390,29 @@ function renderConversionInputs() {
             });
         }
     </script>
+    <script>
+    let deferredPrompt; // A variable to hold the event
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('install-btn').style.display = 'block';
+    });
+
+    document.getElementById('install-btn').addEventListener('click', (e) => {
+        document.getElementById('install-btn').style.display = 'none';
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        }
+    });
+</script>
 </body>
 </html>
