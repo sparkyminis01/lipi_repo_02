@@ -1,0 +1,8 @@
+# Service Worker - serve as JavaScript
+/sw.js  /sw.js  200
+
+# Manifest - serve as JSON  
+/manifest.json  /manifest.json  200
+
+# SPA fallback - redirect all other routes to index.html
+/*  /index.html  200
