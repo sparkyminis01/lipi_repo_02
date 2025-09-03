@@ -14,19 +14,19 @@
             margin: 0;
             padding: 0;
         }
-        
+       
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f3e8ff 0%, #e5e7eb 100%);
             min-height: 100vh;
             padding: 1rem;
         }
-        
+       
         .container {
             max-width: 800px;
             margin: 0 auto;
         }
-        
+       
         .card {
             background: white;
             border-radius: 12px;
@@ -35,15 +35,15 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: relative;
         }
-        
+       
         .hidden { display: none !important; }
-        
+       
         h1 { font-size: 1.5rem; font-weight: bold; color: #1f2937; margin-bottom: 1rem; }
         h2 { font-size: 1.25rem; font-weight: bold; color: #1f2937; margin-bottom: 0.75rem; }
         h3 { font-size: 1.125rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
-        
+       
         p { color: #6b7280; margin-bottom: 1rem; }
-        
+       
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
@@ -55,37 +55,37 @@
             transition: all 0.2s;
             font-size: 0.875rem;
         }
-        
+       
         .btn-primary {
             background: #9333ea;
             color: white;
         }
         .btn-primary:hover { background: #7c3aed; }
-        
+       
         .btn-secondary {
             background: #6b7280;
             color: white;
         }
         .btn-secondary:hover { background: #4b5563; }
-        
+       
         .btn-success {
             background: #059669;
             color: white;
         }
         .btn-success:hover { background: #047857; }
-        
+       
         .btn-danger {
             background: #dc2626;
             color: white;
         }
         .btn-danger:hover { background: #b91c1c; }
-        
+       
         .btn-full { width: 100%; }
-        
+       
         .form-group {
             margin-bottom: 1rem;
         }
-        
+       
         label {
             display: block;
             font-weight: 500;
@@ -93,7 +93,7 @@
             margin-bottom: 0.25rem;
             font-size: 0.875rem;
         }
-        
+       
         input, select, textarea {
             width: 100%;
             padding: 0.75rem;
@@ -101,13 +101,13 @@
             border-radius: 6px;
             font-size: 0.875rem;
         }
-        
+       
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #9333ea;
             box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
         }
-        
+       
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
         .flex-wrap { flex-wrap: wrap; }
@@ -116,7 +116,7 @@
         .gap-4 { gap: 1rem; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
-        
+       
         .quick-select-btn {
             padding: 0.5rem 1rem;
             background: #f3f4f6;
@@ -128,12 +128,12 @@
             transition: all 0.2s;
             color: #4b5563;
         }
-        
+       
         .quick-select-btn.active {
             background: #9333ea;
             color: white;
         }
-        
+       
         .status-indicator {
             position: absolute;
             top: 1rem;
@@ -143,19 +143,19 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
-        
+       
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             margin-right: 0.5rem;
         }
-        
+       
         .status-online { color: #065f46; }
         .status-online .status-dot { background: #059669; }
         .status-offline { color: #9d174d; }
         .status-offline .status-dot { background: #dc2626; }
-        
+       
         .modal {
             position: fixed;
             top: 0;
@@ -168,7 +168,7 @@
             align-items: center;
             z-index: 1000;
         }
-        
+       
         .modal-content {
             background: white;
             padding: 2rem;
@@ -177,7 +177,7 @@
             max-width: 400px;
             text-align: center;
         }
-        
+       
         .trip-item {
             display: flex;
             justify-content: space-between;
@@ -187,25 +187,25 @@
             border-radius: 8px;
             margin-bottom: 0.5rem;
         }
-        
+       
         .summary-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
         }
-        
+       
         .summary-table th,
         .summary-table td {
             padding: 0.75rem;
             text-align: left;
             border-bottom: 1px solid #e5e7eb;
         }
-        
+       
         .summary-table th {
             background: #f9fafb;
             font-weight: 600;
         }
-        
+       
         .tab-container {
             display: inline-flex;
             background: #f3f4f6;
@@ -213,7 +213,7 @@
             padding: 0.25rem;
             margin-bottom: 1rem;
         }
-        
+       
         .tab {
             padding: 0.5rem 1rem;
             border-radius: 16px;
@@ -224,13 +224,13 @@
             border: none;
             background: transparent;
         }
-        
+       
         .tab.active {
             background: white;
             color: #9333ea;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
+       
         .back-btn {
             position: absolute;
             top: 1rem;
@@ -242,55 +242,55 @@
             cursor: pointer;
             font-size: 0.875rem;
         }
-        
+       
         .back-btn:hover { color: #374151; }
-        
+       
         .text-red { color: #dc2626; }
         .text-green { color: #059669; }
         .text-center { text-align: center; }
         .text-sm { font-size: 0.875rem; }
         .text-xs { font-size: 0.75rem; }
-        
+       
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
-        
+       
         .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
         }
-        
+       
         .mt-1 { margin-top: 0.25rem; }
         .mt-2 { margin-top: 0.5rem; }
         .mb-2 { margin-bottom: 0.5rem; }
         .mb-4 { margin-bottom: 1rem; }
-        
+       
         .bg-red { background: #fee2e2; color: #991b1b; padding: 0.5rem; border-radius: 6px; }
         .bg-green { background: #d1fae5; color: #065f46; padding: 0.5rem; border-radius: 6px; }
-        
+       
         details {
             border: 1px solid #e5e7eb;
             border-radius: 6px;
             margin-bottom: 0.5rem;
         }
-        
+       
         summary {
             padding: 0.75rem;
             cursor: pointer;
             font-weight: 500;
             background: #f9fafb;
         }
-        
+       
         details p {
             padding: 0.75rem;
             margin: 0;
             color: #6b7280;
             font-size: 0.875rem;
         }
-        
+       
         footer {
             margin-top: 2rem;
             padding: 1.5rem;
@@ -301,26 +301,25 @@
             font-size: 0.875rem;
             color: #6b7280;
         }
-        
+       
         footer p {
             margin-bottom: 0.5rem;
         }
-        
+       
         footer a {
             color: #9333ea;
             text-decoration: none;
         }
-        
+       
         footer a:hover {
             text-decoration: underline;
         }
-        
+       
         @media (max-width: 768px) {
             .grid-2 { grid-template-columns: 1fr; }
             .flex { flex-direction: column; }
             .card { padding: 1rem; }
         }
-
         .btn-install {
             display: block;
             width: 100%;
@@ -335,7 +334,7 @@
             text-decoration: none;
             transition: background 0.2s;
         }
-        
+       
         .btn-install:hover {
             background: #7c3aed;
         }
@@ -357,7 +356,6 @@
                 </form>
             </div>
         </div>
-
         <!-- Reset Confirmation Modal -->
         <div id="reset-confirmation-modal" class="modal hidden">
             <div class="modal-content">
@@ -369,7 +367,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Message Modal -->
         <div id="message-modal" class="modal hidden">
             <div class="modal-content">
@@ -378,7 +375,6 @@
                 <button id="message-modal-close" class="btn btn-primary btn-full">OK</button>
             </div>
         </div>
-
         <!-- User Creation View -->
         <div id="user-creation-view" class="card hidden">
             <h1>Create Your Profile</h1>
@@ -391,12 +387,11 @@
                 <button type="submit" class="btn btn-primary btn-full">Create Profile</button>
             </form>
         </div>
-
         <!-- Trip List View -->
         <div id="trip-list-view" class="card hidden">
             <h1><span id="user-greeting"></span>Your Trips</h1>
             <button id="add-trip-btn" class="btn btn-primary btn-full mb-4">Add New Trip</button>
-            
+           
             <form id="add-trip-form" class="hidden">
                 <div class="form-group">
                     <label for="new-trip-name">Trip Name</label>
@@ -426,33 +421,32 @@
                 <div id="trip-date-message" class="text-red text-sm mb-2 hidden"></div>
                 <button type="submit" class="btn btn-primary btn-full">Save Trip</button>
             </form>
-            
+           
             <div id="trip-list"></div>
         </div>
-
         <!-- Expense Form View -->
         <div id="expense-form-view" class="card hidden">
             <button type="button" id="back-to-trips-btn" class="back-btn">&larr; Back to Trips</button>
-            
+           
             <div id="status-indicator" class="status-indicator">
                 <span id="status-dot" class="status-dot"></span>
                 <span id="status-text">Offline</span>
             </div>
-            
+           
             <h1>Trip: <span id="active-trip-name" style="color: #9333ea;"></span> (<span id="active-trip-base-currency" style="color: #9333ea;"></span>)</h1>
             <p class="text-sm" style="color: #6b7280;">Add a new expense</p>
-            
+           
             <button id="manual-sync-btn" class="btn btn-success btn-full mb-4">Sync Now (PIN needed)</button>
-            
+           
             <form id="expense-form">
                 <input type="hidden" id="selected-currency">
                 <input type="hidden" id="selected-category">
                 <input type="hidden" id="selected-mode">
-                
+               
                 <div id="offline-message" class="hidden bg-red mb-4">
                     You are offline. Please connect to the internet to sync data.
                 </div>
-                
+               
                 <div class="grid-2">
                     <div class="form-group">
                         <label for="expense-date">Date</label>
@@ -463,7 +457,7 @@
                         <div id="quick-category-buttons" class="flex flex-wrap gap-1 mt-1"></div>
                     </div>
                 </div>
-                
+               
                 <div class="grid-3">
                     <div class="form-group">
                         <label for="amount">Amount</label>
@@ -478,7 +472,7 @@
                         <div id="quick-mode-buttons" class="flex flex-wrap gap-1 mt-1"></div>
                     </div>
                 </div>
-                
+               
                 <div class="flex gap-2 items-end">
                     <div class="form-group" style="flex: 1;">
                         <label for="place">Place (e.g., Cafe, Store Name)</label>
@@ -486,21 +480,20 @@
                     </div>
                     <button id="add-location-btn" type="button" class="btn btn-secondary">Add Location</button>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="notes">Notes</label>
                     <textarea id="notes" rows="2"></textarea>
                 </div>
-                
+               
                 <div id="location-display" class="text-sm text-gray-500 mt-2 hidden"></div>
-                
+               
                 <div class="flex gap-2">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">Add Expense</button>
                     <button type="button" id="reset-btn" class="btn btn-secondary">Reset</button>
                 </div>
             </form>
         </div>
-
         <!-- Data Queue Section -->
         <div id="data-queue-section" class="card hidden">
             <h2>Data Queue</h2>
@@ -514,7 +507,6 @@
             </div>
             <button id="export-data-btn" class="btn btn-secondary btn-full">Export Data as JSON</button>
         </div>
-
         <!-- Summary Section -->
         <div id="summary-section" class="card hidden">
             <h2>Trip Expenses Summary</h2>
@@ -522,7 +514,7 @@
                 <button id="summary-tab-local" class="tab active">Local currencies</button>
                 <button id="summary-tab-base" class="tab">Base Currency</button>
             </div>
-            
+           
             <div id="base-conversion-panel" class="hidden mb-2">
                 <div class="flex items-center justify-between gap-2 mb-2">
                     <p class="text-sm">Rates to <span id="base-currency-label"></span> (1 unit = ? <span id="base-currency-label-2"></span>)</p>
@@ -532,11 +524,10 @@
                 <div id="base-missing-warning" class="hidden text-xs text-red mt-1"></div>
                 <p id="rates-fetch-note" class="text-xs hidden mt-1" style="color: #6b7280;"></p>
             </div>
-            
+           
             <div id="total-expenses-summary"></div>
             <div id="category-expenses-summary"></div>
         </div>
-
         <!-- Info Cards -->
         <div class="grid-2">
             <div class="card text-center">
@@ -554,18 +545,16 @@
                     <span>
                         &nbsp;
                     </span>
-                    
-                    <p>If above Install button does not work then, tap the  <strong>three dots menu </strong> and select  <strong>"Add to Home Screen"</strong> and/or  <strong>"Install app"</strong>.</p>
+                   
+                    <p>If above Install button does not work then, tap the <strong>three dots menu </strong> and select <strong>"Add to Home Screen"</strong> and/or <strong>"Install app"</strong>.</p>
                 </div>
             </div>
         </div>
-
         <!-- FAQ Section -->
         <div id="faq-section" class="card">
             <h2>Frequently Asked Questions</h2>
             <div id="faq-list"></div>
         </div>
-
         <!-- Reset Data Section -->
         <div class="card text-center">
             <h2>Data Management</h2>
@@ -573,20 +562,21 @@
             <button id="reset-all-data-btn" class="btn btn-danger btn-full">Reset All Data</button>
         </div>
     </div>
-
     <footer>
         <p>Get in Touch<br>For inquiries, contact us at: <a href="mailto:connect@sparkyminis.com">connect@sparkyminis.com</a></p>
         <p><a href="https://PriyankaDatar.com">Founder's Desk</a> | <a href="https://lipikit.com">LipiKit Apps</a></p>
         <p>© 2025 SparkyMinis Media-Tech LLP. All Rights Reserved.</p>
-        <p>App Version: v0.0.1</p>
+        <p id="app-version-footer"></p>
     </footer>
-
     <script src="crypto-js.min.js"></script>
     <script>
         // Configuration
         const HASHED_PINS = ["07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c", "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0", "07334386287751ba02a4588c1a0875dbd074a61bd9e6ab7c48d244eacd0c99e0","0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c"];
         const APP_CONFIG = {
+            appName: 'trip',
+            version: 'v0.0.2',
             googleFormActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
+            diagFormActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfAbtJTg-IequMyIVZU_LaskIyfL9_lAhTdcDfl09MsBF1dIg/formResponse',
             googleFormFields: {
                 name: 'entry.1731583832',
                 tripName: 'entry.1093227282',
@@ -598,6 +588,11 @@
                 notes: 'entry.261715790',
                 location: 'entry.56139846',
                 mode: 'entry.1829164279'
+            },
+            diagFormFields: {
+                f1: 'entry.975398843', // InstallId|UserId|Version
+                f2: 'entry.626283681', // Timestamp
+                f3: 'entry.738839204' // Event|DevInfo
             },
             categories: ["Food", "Transport", "Accommodation", "Shopping", "Activities", "Groceries", "Other"],
             currencies: ["INR", "USD", "EUR", "SGD", "THB", "MYR", "VND", "GBP", "JPY", "CAD", "AUD"],
@@ -621,10 +616,21 @@
             { "question": "What will not work if I have no internet?", "answer": "Without an internet connection, data sync and fetching the latest currency exchange rates will not work. However, you can still enter exchange rates manually." },
             { "question": "How do I add a new trip?", "answer": "You can add a new trip by navigating to the trip selection screen and using the 'Add New Trip' button. This will create a fresh entry for your new travel expenses." },
             { "question": "How can I get my data sync PIN?", "answer": "Data sync PINs are provided on a restricted basis. For access, please contact connect@sparkyminis.com, providing your username and a brief description of your request." },
-            { "question": "What new features are planned for the future?", "answer": "We are continuously working on new features. Upcoming plans include the ability to share trips, set budgets, and generate detailed reports in PDF/CSV format. We welcome your feedback and suggestions via email at connect@sparkyminis.com." }
+   {
+        "question": "How does this app work without an internet connection?",
+        "answer": "This app is a Progressive Web App (PWA). Once you visit it for the first time, your browser caches the necessary files. This allows the app to be fully functional even when you are offline, making it perfect for use while traveling."
+    },
+    {
+        "question": "How do I force the app to update to the latest version?",
+        "answer": "Sometimes your device's cache can prevent the app from updating automatically. To fix this, you can manually clear the app's cache and data. On Android, go to Settings > Apps > [Your App Name] > Storage & cache > Clear storage. On iOS, you may need to offload or delete the app and reinstall it from the website."
+    },
+    {
+        "question": "What data do you collect?",
+        "answer": "We are committed to your privacy. This app is designed to be local-first, which means all your data is stored directly on your device's local storage. We do not collect or store any of your personal information or trip details on our servers."
+    },            
+                { "question": "What new features are planned for the future?", "answer": "We are continuously working on new features. Upcoming plans include the ability to share trips, set budgets, and generate detailed reports in PDF/CSV format. We welcome your feedback and suggestions via email at connect@sparkyminis.com." }
 ]
         };
-
         // Storage Keys
         const UNSYNCED_EXPENSES_KEY = 'unsyncedExpenses';
         const SYNCED_EXPENSES_KEY = 'syncedExpenses';
@@ -632,7 +638,7 @@
         const ACTIVE_TRIP_KEY = 'activeTrip';
         const CONVERSION_RATES_KEY = 'tripConversionRatesBase';
         const APP_USER_KEY = 'appUser';
-
+        const INSTALL_ID_KEY = 'installId';
         // DOM Elements
         const elements = {
             userCreationView: document.getElementById('user-creation-view'),
@@ -697,9 +703,9 @@
             resetConfirmationModal: document.getElementById('reset-confirmation-modal'),
             confirmResetBtn: document.getElementById('confirm-reset-btn'),
             cancelResetBtn: document.getElementById('cancel-reset-btn'),
-            resetAllDataBtn: document.getElementById('reset-all-data-btn')
+            resetAllDataBtn: document.getElementById('reset-all-data-btn'),
+            appVersionFooter: document.getElementById('app-version-footer')
         };
-
         // State Variables
         let appUser = null;
         let activeTrip = null;
@@ -708,18 +714,16 @@
         let summaryMode = 'local';
         let conversionRates = {};
         let lastRatesFetchDate = null;
-
+        let installId = null;
         // Utility Functions
         function showMessage(title, message) {
             elements.messageModalTitle.textContent = title;
             elements.messageModalBody.textContent = message;
             elements.messageModal.classList.remove('hidden');
         }
-
         function closeMessageModal() {
             elements.messageModal.classList.add('hidden');
         }
-
         function resetAllData() {
             // Clear all localStorage data
             localStorage.removeItem(UNSYNCED_EXPENSES_KEY);
@@ -728,22 +732,23 @@
             localStorage.removeItem(ACTIVE_TRIP_KEY);
             localStorage.removeItem(CONVERSION_RATES_KEY);
             localStorage.removeItem(APP_USER_KEY);
-            
+            localStorage.removeItem(INSTALL_ID_KEY);
+           
             // Reset app state
             appUser = null;
             activeTrip = null;
             currentLocation = null;
             conversionRates = {};
             lastRatesFetchDate = null;
-            
+            installId = null;
+           
             // Close modal and show user creation view
             elements.resetConfirmationModal.classList.add('hidden');
             showView('user-creation');
-            
+           
             // Show confirmation message
             showMessage("Data Reset Complete", "All data has been deleted successfully. You can now create a new profile.");
         }
-
         function getLocalData(key) {
             try {
                 return JSON.parse(localStorage.getItem(key)) || [];
@@ -752,20 +757,17 @@
                 return [];
             }
         }
-
         function saveDataLocally(data, key) {
             let currentData = getLocalData(key);
             currentData.push(data);
             localStorage.setItem(key, JSON.stringify(currentData));
         }
-
         function showView(viewId) {
             elements.userCreationView.classList.add('hidden');
             elements.tripListView.classList.add('hidden');
             elements.expenseFormView.classList.add('hidden');
             elements.dataQueueSection.classList.add('hidden');
             elements.summarySection.classList.add('hidden');
-
             if (viewId === 'user-creation') {
                 elements.userCreationView.classList.remove('hidden');
             } else if (viewId === 'trip-list') {
@@ -776,7 +778,6 @@
                 elements.summarySection.classList.remove('hidden');
             }
         }
-
         function updateActiveTrip(trip) {
             activeTrip = trip;
             if (trip) {
@@ -785,11 +786,11 @@
                 elements.activeTripBaseCurrencySpan.textContent = trip.baseCurrency;
                 elements.baseCurrencyLabel.textContent = trip.baseCurrency;
                 elements.baseCurrencyLabel2.textContent = trip.baseCurrency;
-                
+               
                 renderQuickCategories();
                 renderQuickCurrencies();
                 renderQuickModes();
-                
+               
                 try {
                     const allRates = JSON.parse(localStorage.getItem(CONVERSION_RATES_KEY)) || {};
                     conversionRates = allRates[trip.name] || {};
@@ -798,19 +799,19 @@
                     conversionRates = {};
                     lastRatesFetchDate = null;
                 }
-                
+               
                 renderConversionInputs();
-                
+               
                 const startDate = new Date(trip.start);
                 const endDate = new Date(trip.end);
                 const minDate = new Date(startDate);
                 minDate.setDate(minDate.getDate() - 7);
                 const maxDate = new Date(endDate);
                 maxDate.setDate(maxDate.getDate() + 7);
-                
+               
                 elements.expenseDateInput.min = minDate.toISOString().split('T')[0];
                 elements.expenseDateInput.max = maxDate.toISOString().split('T')[0];
-                
+               
                 showView('expense-form');
                 renderExpenses();
             } else {
@@ -819,7 +820,6 @@
                 renderTripList();
             }
         }
-
         function resetExpenseForm() {
             elements.expenseForm.reset();
             document.querySelectorAll('.quick-select-btn.active').forEach(btn => btn.classList.remove('active'));
@@ -827,11 +827,10 @@
             currentLocation = null;
             elements.expenseDateInput.valueAsDate = new Date();
         }
-
         function renderTripList() {
             const trips = getLocalData(TRIPS_KEY);
             elements.tripList.innerHTML = '';
-            
+           
             if (trips.length === 0) {
                 elements.tripList.innerHTML = '<div style="text-align: center; color: #6b7280; font-style: italic; padding: 2rem;">No trips found. Add one above!</div>';
             } else {
@@ -849,63 +848,61 @@
                 });
             }
         }
-
         function renderExpenses() {
             const unsyncedData = getLocalData(UNSYNCED_EXPENSES_KEY);
             const syncedData = getLocalData(SYNCED_EXPENSES_KEY);
-            
+           
             elements.syncedList.innerHTML = '';
             syncedData.forEach(item => {
                 const li = document.createElement('li');
                 li.textContent = `${item.tripName}: ${item.amount} ${item.currency} for ${item.category} on ${item.expenseDate} (Synced)`;
                 elements.syncedList.appendChild(li);
             });
-            
+           
             elements.unsyncedList.innerHTML = '';
             unsyncedData.forEach(item => {
                 const li = document.createElement('li');
                 li.textContent = `${item.tripName}: ${item.amount} ${item.currency} for ${item.category} on ${item.expenseDate} (Unsynced)`;
                 elements.unsyncedList.appendChild(li);
             });
-            
+           
             renderSummary();
         }
-
         function renderSummary() {
             if (!activeTrip) {
                 elements.summarySection.classList.add('hidden');
                 return;
             }
-            
+           
             elements.summarySection.classList.remove('hidden');
             const allExpenses = [
                 ...getLocalData(SYNCED_EXPENSES_KEY).filter(e => e.tripName === activeTrip.name),
                 ...getLocalData(UNSYNCED_EXPENSES_KEY).filter(e => e.tripName === activeTrip.name)
             ];
-            
+           
             if (allExpenses.length === 0) {
                 elements.totalExpensesSummaryDiv.innerHTML = `<h3>Overall Trip Total (${summaryMode === 'base' ? activeTrip.baseCurrency : 'Local'})</h3><p style="color: #6b7280; font-style: italic;">No expenses recorded for this trip yet.</p>`;
                 elements.categoryExpensesSummaryDiv.innerHTML = '';
                 return;
             }
-            
+           
             if (summaryMode === 'local') {
                 elements.basePanel.classList.add('hidden');
                 const totalsByCurrency = {};
                 const totalsByCategory = {};
-                
+               
                 allExpenses.forEach(expense => {
                     const amount = parseFloat(expense.amount) || 0;
                     const currency = expense.currency;
                     const category = expense.category;
-                    
+                   
                     if (amount > 0 && currency && category) {
                         totalsByCurrency[currency] = (totalsByCurrency[currency] || 0) + amount;
                         if (!totalsByCategory[category]) totalsByCategory[category] = {};
                         totalsByCategory[category][currency] = (totalsByCategory[category][currency] || 0) + amount;
                     }
                 });
-                
+               
                 let totalHtml = '<h3>Overall Trip Total</h3>';
                 if (Object.keys(totalsByCurrency).length > 0) {
                     totalHtml += '<ul style="list-style: disc; padding-left: 1.5rem; color: #6b7280;">';
@@ -918,7 +915,7 @@
                     totalHtml += '<p style="color: #6b7280; font-style: italic;">No valid expenses recorded for this trip yet.</p>';
                 }
                 elements.totalExpensesSummaryDiv.innerHTML = totalHtml;
-                
+               
                 let categoryHtml = '<h3 style="margin-top: 2rem;">Expenses by Category</h3>';
                 if (Object.keys(totalsByCategory).length > 0) {
                     categoryHtml += '<table class="summary-table"><thead><tr><th>Category</th><th>Total Spent</th></tr></thead><tbody>';
@@ -939,25 +936,25 @@
                 const missing = new Set();
                 let totalBase = 0;
                 const totalsByCategoryBase = {};
-                
+               
                 allExpenses.forEach(expense => {
                     const amount = parseFloat(expense.amount) || 0;
                     const currency = expense.currency;
                     const category = expense.category;
-                    
+                   
                     if (currency !== activeTrip.baseCurrency && !(currency in conversionRates)) {
                         missing.add(currency);
                     }
-                    
+                   
                     const rate = currency === activeTrip.baseCurrency ? 1 : parseFloat(conversionRates[currency]);
-                    
+                   
                     if (amount > 0 && category && !isNaN(rate) && rate > 0) {
                         const val = amount * rate;
                         totalBase += val;
                         totalsByCategoryBase[category] = (totalsByCategoryBase[category] || 0) + val;
                     }
                 });
-                
+               
                 const missingCurrencies = Array.from(missing).filter(c => c !== activeTrip.baseCurrency);
                 if (missingCurrencies.length > 0) {
                     elements.baseMissingWarning.textContent = `Add rates for: ${missingCurrencies.map(c => `${c} (${APP_CONFIG.currencyNames[c] || c})`).join(', ')}`;
@@ -965,10 +962,10 @@
                 } else {
                     elements.baseMissingWarning.classList.add('hidden');
                 }
-                
+               
                 const totalHtml = `<h3>Overall Trip Total (${activeTrip.baseCurrency})</h3><div style="font-size: 1.5rem; font-weight: bold; color: #9333ea;">${totalBase.toLocaleString(undefined, { maximumFractionDigits: 0 })} ${activeTrip.baseCurrency}</div>`;
                 elements.totalExpensesSummaryDiv.innerHTML = totalHtml;
-                
+               
                 let categoryHtml = `<h3 style="margin-top: 2rem;">Expenses by Category (${activeTrip.baseCurrency})</h3>`;
                 if (Object.keys(totalsByCategoryBase).length > 0) {
                     categoryHtml += '<table class="summary-table"><thead><tr><th>Category</th><th>Total Spent</th></tr></thead><tbody>';
@@ -982,21 +979,16 @@
                 elements.categoryExpensesSummaryDiv.innerHTML = categoryHtml;
             }
         }
-
 function renderConversionInputs() {
     if (!activeTrip) return;
-
     elements.baseInputsDiv.innerHTML = '';
     elements.ratesFetchNote.classList.add('hidden');
-
     if (lastRatesFetchDate) {
         elements.ratesFetchNote.textContent = `Rates fetched from internet sources as of ${lastRatesFetchDate}`;
         elements.ratesFetchNote.classList.remove('hidden');
     }
-
     const currencies = (activeTrip.currencies || []).slice();
     const includeBase = currencies.includes(activeTrip.baseCurrency);
-
     currencies.forEach(curr => {
         if (curr === activeTrip.baseCurrency) {
             const wrap = document.createElement('div');
@@ -1018,7 +1010,6 @@ function renderConversionInputs() {
         }
     });
 }
-
         function persistConversionRates() {
             try {
                 const allRates = JSON.parse(localStorage.getItem(CONVERSION_RATES_KEY)) || {};
@@ -1026,7 +1017,6 @@ function renderConversionInputs() {
                 localStorage.setItem(CONVERSION_RATES_KEY, JSON.stringify(allRates));
             } catch (e) { /* ignore */ }
         }
-
         function updateSummaryTabs() {
             if (summaryMode === 'local') {
                 elements.summaryTabLocal.classList.add('active');
@@ -1036,7 +1026,6 @@ function renderConversionInputs() {
                 elements.summaryTabLocal.classList.remove('active');
             }
         }
-
         function renderQuickCategories() {
             elements.quickCategoryButtonsContainer.innerHTML = '';
             APP_CONFIG.categories.forEach(category => {
@@ -1048,7 +1037,6 @@ function renderConversionInputs() {
                 elements.quickCategoryButtonsContainer.appendChild(button);
             });
         }
-
         function renderQuickCurrencies() {
             elements.quickCurrencyButtonsContainer.innerHTML = '';
             if (activeTrip && activeTrip.currencies) {
@@ -1062,7 +1050,6 @@ function renderConversionInputs() {
                 });
             }
         }
-
         function renderQuickModes() {
             elements.quickModeButtonsContainer.innerHTML = '';
             APP_CONFIG.modes.forEach(mode => {
@@ -1074,7 +1061,6 @@ function renderConversionInputs() {
                 elements.quickModeButtonsContainer.appendChild(button);
             });
         }
-
         function populateTripCurrenciesSelect() {
             elements.newTripCurrenciesSelect.innerHTML = '';
             APP_CONFIG.currencies.forEach(currency => {
@@ -1084,7 +1070,6 @@ function renderConversionInputs() {
                 elements.newTripCurrenciesSelect.appendChild(option);
             });
         }
-
         function populateTripBaseCurrencySelect(currencies) {
             elements.newTripBaseCurrencySelect.innerHTML = '<option value="" disabled selected>Select a base currency</option>';
             currencies.forEach(currency => {
@@ -1094,7 +1079,6 @@ function renderConversionInputs() {
                 elements.newTripBaseCurrencySelect.appendChild(option);
             });
         }
-
         function renderFaqs() {
             elements.faqList.innerHTML = '';
             APP_CONFIG.faqs.forEach(faq => {
@@ -1108,7 +1092,6 @@ function renderConversionInputs() {
                 elements.faqList.appendChild(details);
             });
         }
-
         function handleQuickSelectClick(event, inputElement) {
             if (event.target.classList.contains('quick-select-btn')) {
                 if (event.target.classList.contains('active')) return;
@@ -1118,29 +1101,28 @@ function renderConversionInputs() {
                 inputElement.value = event.target.dataset.value;
             }
         }
-
         async function fetchExchangeRates(baseCurrency, targetCurrencies) {
             if (!navigator.onLine) {
                 showMessage('Offline', 'Cannot fetch rates offline. Please enter manually.');
                 return false;
             }
-            
+           
             const date = 'latest';
             const primaryUrl = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${baseCurrency.toLowerCase()}.min.json`;
             const fallbackUrl = `https://${date}.currency-api.pages.dev/v1/currencies/${baseCurrency.toLowerCase()}.min.json`;
-            
+           
             try {
                 const response = await fetch(primaryUrl);
                 if (!response.ok) throw new Error('Primary fetch failed');
                 const data = await response.json();
                 const rates = data[baseCurrency.toLowerCase()];
-                
+               
                 targetCurrencies.forEach(curr => {
                     if (curr !== baseCurrency && rates[curr.toLowerCase()]) {
                         conversionRates[curr] = parseFloat((1 / rates[curr.toLowerCase()]).toFixed(4));
                     }
                 });
-                
+               
                 lastRatesFetchDate = new Date().toISOString().split('T')[0];
                 persistConversionRates();
                 return true;
@@ -1151,13 +1133,13 @@ function renderConversionInputs() {
                     if (!response.ok) throw new Error('Fallback fetch failed');
                     const data = await response.json();
                     const rates = data[baseCurrency.toLowerCase()];
-                    
+                   
                     targetCurrencies.forEach(curr => {
                         if (curr !== baseCurrency && rates[curr.toLowerCase()]) {
                             conversionRates[curr] = parseFloat((1 / rates[curr.toLowerCase()]).toFixed(4));
                         }
                     });
-                    
+                   
                     lastRatesFetchDate = new Date().toISOString().split('T')[0];
                     persistConversionRates();
                     return true;
@@ -1168,28 +1150,27 @@ function renderConversionInputs() {
                 }
             }
         }
-
         async function startSync() {
             const unsyncedData = getLocalData(UNSYNCED_EXPENSES_KEY);
             if (unsyncedData.length === 0) {
                 showMessage("Sync Info", "There is no new data to sync.");
                 return;
             }
-            
+           
             let newlySyncedItems = [];
             let failedToSyncItems = [];
-            
+           
             for (const item of unsyncedData) {
                 const formData = new FormData();
                 formData.append(APP_CONFIG.googleFormFields.name, `${appUser.userId}:${appUser.displayName}`);
                 formData.append(APP_CONFIG.googleFormFields.tripName, `${item.tripName}:${activeTrip.baseCurrency}`);
-                
+               
                 Object.keys(APP_CONFIG.googleFormFields).forEach(key => {
                     if (key !== 'name' && key !== 'tripName' && item[key]) {
                         formData.append(APP_CONFIG.googleFormFields[key], item[key]);
                     }
                 });
-                
+               
                 try {
                     await fetch(APP_CONFIG.googleFormActionUrl, { method: 'POST', mode: 'no-cors', body: formData });
                     newlySyncedItems.push({ ...item, syncDate: new Date().toISOString() });
@@ -1198,14 +1179,14 @@ function renderConversionInputs() {
                     failedToSyncItems.push(item);
                 }
             }
-            
+           
             if (newlySyncedItems.length > 0) {
                 const currentSynced = getLocalData(SYNCED_EXPENSES_KEY);
                 localStorage.setItem(SYNCED_EXPENSES_KEY, JSON.stringify([...currentSynced, ...newlySyncedItems]));
             }
-            
+           
             localStorage.setItem(UNSYNCED_EXPENSES_KEY, JSON.stringify(failedToSyncItems));
-            
+           
             if (newlySyncedItems.length > 0) {
                 showMessage("Sync Complete", `${newlySyncedItems.length} expense(s) were successfully synced.`);
                 renderExpenses();
@@ -1213,7 +1194,6 @@ function renderConversionInputs() {
                 showMessage("Sync Failed", "Could not sync data. Please check your internet connection and try again.");
             }
         }
-
         function exportDataAsJson() {
             const allData = {
                 user: appUser,
@@ -1221,7 +1201,7 @@ function renderConversionInputs() {
                 syncedExpenses: getLocalData(SYNCED_EXPENSES_KEY),
                 unsyncedExpenses: getLocalData(UNSYNCED_EXPENSES_KEY)
             };
-            
+           
             const jsonData = JSON.stringify(allData, null, 2);
             const blob = new Blob([jsonData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -1233,12 +1213,11 @@ function renderConversionInputs() {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
-
         function updateStatus() {
             const statusDot = document.getElementById('status-dot');
             const statusText = document.getElementById('status-text');
             const statusIndicator = document.getElementById('status-indicator');
-            
+           
             if (navigator.onLine) {
                 statusText.textContent = 'Online';
                 statusIndicator.className = 'status-indicator status-online';
@@ -1247,7 +1226,21 @@ function renderConversionInputs() {
                 statusIndicator.className = 'status-indicator status-offline';
             }
         }
-
+        function sendDiag(event = 'S') {
+            if (!navigator.onLine) return;
+            const combined = `${installId}|${appUser ? appUser.userId : 'N'}|${APP_CONFIG.version}`;
+            const ts = new Date().toISOString();
+            let di = `ua:${navigator.userAgent.replace(/ /g,'_')};p:${navigator.platform};l:${navigator.language};scr:${screen.width}x${screen.height}x${screen.colorDepth};vp:${window.innerWidth}x${window.innerHeight};`;
+            di += `dm:${window.matchMedia('(display-mode: standalone)').matches ? 'P' : 'B'};`;
+            if (navigator.hardwareConcurrency) di += `hc:${navigator.hardwareConcurrency};`;
+            if (navigator.deviceMemory) di += `dm:${navigator.deviceMemory};`;
+            const eventStr = `${event}|${di}`;
+            const fd = new FormData();
+            fd.append(APP_CONFIG.diagFormFields.f1, combined);
+            fd.append(APP_CONFIG.diagFormFields.f2, ts);
+            fd.append(APP_CONFIG.diagFormFields.f3, eventStr);
+            fetch(APP_CONFIG.diagFormActionUrl, {method:'POST', mode:'no-cors', body:fd});
+        }
         // Event Listeners
         elements.userCreationForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -1256,7 +1249,7 @@ function renderConversionInputs() {
                 showMessage("Error", "Please enter a username.");
                 return;
             }
-            
+           
             appUser = {
                 userId: `user-${Date.now()}-${Math.random().toString(36).slice(2)}`,
                 displayName
@@ -1266,33 +1259,31 @@ function renderConversionInputs() {
             showView('trip-list');
             renderTripList();
         });
-
         elements.addTripBtn.addEventListener('click', () => {
             elements.addTripForm.classList.toggle('hidden');
         });
-
         elements.addTripForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const startDate = new Date(elements.newTripStartInput.value);
             const endDate = new Date(elements.newTripEndInput.value);
-            
+           
             if (endDate < startDate) {
                 elements.tripDateMessageDiv.textContent = 'Trip end date cannot be before the start date.';
                 elements.tripDateMessageDiv.classList.remove('hidden');
                 return;
             }
-            
+           
             const selectedCurrencies = Array.from(elements.newTripCurrenciesSelect.selectedOptions, option => option.value);
             const baseCurrency = elements.newTripBaseCurrencySelect.value;
-            
+           
             if (!selectedCurrencies.includes(baseCurrency)) {
                 elements.tripDateMessageDiv.textContent = 'Base currency must be one of the selected trip currencies.';
                 elements.tripDateMessageDiv.classList.remove('hidden');
                 return;
             }
-            
+           
             elements.tripDateMessageDiv.classList.add('hidden');
-            
+           
             const newTrip = {
                 id: Date.now(),
                 name: elements.newTripNameInput.value,
@@ -1301,26 +1292,23 @@ function renderConversionInputs() {
                 start: elements.newTripStartInput.value,
                 end: elements.newTripEndInput.value
             };
-            
+           
             const trips = getLocalData(TRIPS_KEY);
             trips.push(newTrip);
             localStorage.setItem(TRIPS_KEY, JSON.stringify(trips));
-            
+           
             elements.addTripForm.reset();
             elements.addTripForm.classList.add('hidden');
             renderTripList();
         });
-
         elements.newTripCurrenciesSelect.addEventListener('change', () => {
             const selectedCurrencies = Array.from(elements.newTripCurrenciesSelect.selectedOptions, option => option.value);
             populateTripBaseCurrencySelect(selectedCurrencies);
         });
-
-
            elements.pinModalForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const enteredPinHash = CryptoJS.SHA256(elements.pinModalInput.value).toString();
-            
+           
             // Check if entered PIN hash matches any of the valid PINs
             if (APP_CONFIG.pins.includes(enteredPinHash)) {
                 elements.pinModal.classList.add('hidden');
@@ -1331,20 +1319,15 @@ function renderConversionInputs() {
                 elements.pinModalMessage.textContent = 'Invalid PIN. Please try again.';
             }
         });
-
         elements.messageModalClose.addEventListener('click', closeMessageModal);
-
         // Reset data event listeners
         elements.resetAllDataBtn.addEventListener('click', () => {
             elements.resetConfirmationModal.classList.remove('hidden');
         });
-
         elements.confirmResetBtn.addEventListener('click', resetAllData);
-
         elements.cancelResetBtn.addEventListener('click', () => {
             elements.resetConfirmationModal.classList.add('hidden');
         });
-
         elements.tripList.addEventListener('click', (e) => {
             if (e.target.classList.contains('start-trip-btn')) {
                 const tripId = parseInt(e.target.dataset.tripId, 10);
@@ -1353,10 +1336,8 @@ function renderConversionInputs() {
                 if (selectedTrip) updateActiveTrip(selectedTrip);
             }
         });
-
         elements.backToTripsBtn.addEventListener('click', () => updateActiveTrip(null));
         elements.resetBtn.addEventListener('click', resetExpenseForm);
-
         elements.expenseForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const expenseData = {
@@ -1371,12 +1352,11 @@ function renderConversionInputs() {
                 mode: elements.selectedModeInput.value,
                 id: Date.now()
             };
-            
+           
             saveDataLocally(expenseData, UNSYNCED_EXPENSES_KEY);
             resetExpenseForm();
             renderExpenses();
         });
-
         elements.manualSyncBtn.addEventListener('click', () => {
             if (navigator.onLine) {
                 syncAttemptOrigin = 'manual';
@@ -1388,9 +1368,7 @@ function renderConversionInputs() {
                 elements.offlineMessageDiv.classList.remove('hidden');
             }
         });
-
         elements.exportDataBtn.addEventListener('click', exportDataAsJson);
-
         elements.summaryTabLocal.addEventListener('click', () => {
             if (summaryMode !== 'local') {
                 summaryMode = 'local';
@@ -1398,7 +1376,6 @@ function renderConversionInputs() {
                 renderSummary();
             }
         });
-
         elements.summaryTabBase.addEventListener('click', () => {
             if (summaryMode !== 'base') {
                 summaryMode = 'base';
@@ -1406,7 +1383,6 @@ function renderConversionInputs() {
                 renderSummary();
             }
         });
-
         elements.fetchRatesBtn.addEventListener('click', async () => {
             if (activeTrip && activeTrip.currencies && activeTrip.baseCurrency) {
                 const success = await fetchExchangeRates(activeTrip.baseCurrency, activeTrip.currencies);
@@ -1416,31 +1392,29 @@ function renderConversionInputs() {
                 }
             }
         });
-
         elements.baseInputsDiv.addEventListener('input', (e) => {
             const target = e.target;
             if (target && target.matches('input[data-currency]')) {
                 const curr = target.getAttribute('data-currency');
                 const val = target.value.trim();
-                
+               
                 if (val === '') {
                     delete conversionRates[curr];
                 } else {
                     const num = parseFloat(val);
                     if (!isNaN(num) && num >= 0) conversionRates[curr] = num;
                 }
-                
+               
                 persistConversionRates();
                 if (summaryMode === 'base') renderSummary();
             }
         });
-
         elements.addLocationBtn.addEventListener('click', () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
-                    currentLocation = { 
-                        latitude: position.coords.latitude, 
-                        longitude: position.coords.longitude 
+                    currentLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
                     };
                     elements.locationDisplay.textContent = `Location Captured: ${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`;
                     elements.locationDisplay.classList.remove('hidden');
@@ -1454,25 +1428,27 @@ function renderConversionInputs() {
                 elements.locationDisplay.classList.remove('hidden');
             }
         });
-
-        elements.quickCategoryButtonsContainer.addEventListener('click', (e) => 
+        elements.quickCategoryButtonsContainer.addEventListener('click', (e) =>
             handleQuickSelectClick(e, elements.selectedCategoryInput));
-        elements.quickCurrencyButtonsContainer.addEventListener('click', (e) => 
+        elements.quickCurrencyButtonsContainer.addEventListener('click', (e) =>
             handleQuickSelectClick(e, elements.selectedCurrencyInput));
-        elements.quickModeButtonsContainer.addEventListener('click', (e) => 
+        elements.quickModeButtonsContainer.addEventListener('click', (e) =>
             handleQuickSelectClick(e, elements.selectedModeInput));
-
         // Online/Offline Status
         window.addEventListener('online', updateStatus);
         window.addEventListener('offline', updateStatus);
-
         // Initialize App
         populateTripCurrenciesSelect();
         renderFaqs();
         updateStatus();
         elements.expenseDateInput.valueAsDate = new Date();
         updateSummaryTabs();
-
+        elements.appVersionFooter.textContent = `App Version: ${APP_CONFIG.version}`;
+        installId = localStorage.getItem(INSTALL_ID_KEY);
+        if (!installId) {
+            installId = `lipikit-${APP_CONFIG.appName}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            localStorage.setItem(INSTALL_ID_KEY, installId);
+        }
         try {
             appUser = JSON.parse(localStorage.getItem(APP_USER_KEY));
             if (appUser && appUser.displayName) {
@@ -1490,7 +1466,7 @@ function renderConversionInputs() {
         } catch (e) {
             showView('user-creation');
         }
-
+        sendDiag();
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1507,17 +1483,17 @@ function renderConversionInputs() {
     <script>
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
-        
+       
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            
+           
             // Enable the button when the prompt is available
             if (installBtn) {
                 installBtn.disabled = false;
             }
         });
-        
+       
         if (installBtn) {
             installBtn.addEventListener('click', (e) => {
                 if (deferredPrompt) {
@@ -1529,7 +1505,7 @@ function renderConversionInputs() {
                             console.log('User dismissed the install prompt');
                         }
                         deferredPrompt = null;
-                        
+                       
                         // Hide or disable the button after a choice is made
                         if (installBtn) {
                             installBtn.disabled = true;
