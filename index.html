@@ -583,7 +583,7 @@
     <script src="crypto-js.min.js"></script>
     <script>
         // Configuration
-        const HASHED_PIN = "07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c";
+        const HASHED_PINS = ["07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c"];
         const APP_CONFIG = {
             googleFormActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
             googleFormFields: {
@@ -1315,11 +1315,13 @@ function renderConversionInputs() {
             populateTripBaseCurrencySelect(selectedCurrencies);
         });
 
-        elements.pinModalForm.addEventListener('submit', (e) => {
+
+           elements.pinModalForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const enteredPinHash = CryptoJS.SHA256(elements.pinModalInput.value).toString();
             
-            if (enteredPinHash === APP_CONFIG.pin) {
+            // Check if entered PIN hash matches any of the valid PINs
+            if (APP_CONFIG.pins.includes(enteredPinHash)) {
                 elements.pinModal.classList.add('hidden');
                 elements.pinModalMessage.textContent = '';
                 elements.pinModalInput.value = '';
