@@ -583,7 +583,7 @@
     <script src="crypto-js.min.js"></script>
     <script>
         // Configuration
-        const HASHED_PINS = ["07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c"];
+        const HASHED_PINS = ["07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c", "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0", "07334386287751ba02a4588c1a0875dbd074a61bd9e6ab7c48d244eacd0c99e0","0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c"];
         const APP_CONFIG = {
             googleFormActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
             googleFormFields: {
@@ -606,7 +606,7 @@
                 JPY: "Japanese Yen", CAD: "Canadian Dollar", AUD: "Australian Dollar"
             },
             modes: ["Cash", "Credit Card", "Prepaid Card"],
-            pin: HASHED_PIN,
+            pins: HASHED_PINS,
             faqs:[
             { "question": "How do I reset my data?", "answer": "To reset all data, go to your browser's settings, find the site data for LipiKit.com (usually under Privacy or Site Settings), and delete it. This will clear all local data, including trips and expenses." },
             { "question": "How can I change my username?", "answer": "Usernames cannot be changed once set. To use a new username, delete the site data in your browser's settings and reload the app to create a new profile." },
