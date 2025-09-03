@@ -74,6 +74,12 @@
         }
         .btn-success:hover { background: #047857; }
         
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        .btn-danger:hover { background: #b91c1c; }
+        
         .btn-full { width: 100%; }
         
         .form-group {
@@ -285,30 +291,54 @@
             font-size: 0.875rem;
         }
         
+        footer {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+        
+        footer a {
+            color: #9333ea;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
         @media (max-width: 768px) {
             .grid-2 { grid-template-columns: 1fr; }
             .flex { flex-direction: column; }
             .card { padding: 1rem; }
         }
 
-    .btn-install {
-        display: block;
-        width: 100%;
-        padding: 0.75rem 1.5rem;
-        background: #9333ea; /* Your theme color */
-        color: white;
-        font-weight: 500;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        text-align: center;
-        text-decoration: none;
-        transition: background 0.2s;
-    }
-    
-    .btn-install:hover {
-        background: #7c3aed;
-    }
+        .btn-install {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background: #9333ea;
+            color: white;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .btn-install:hover {
+            background: #7c3aed;
+        }
     </style>
 </head>
 <body>
@@ -325,6 +355,18 @@
                     <button type="submit" class="btn btn-primary btn-full">Submit</button>
                     <div id="pin-modal-message" class="text-red text-sm mt-2"></div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Reset Confirmation Modal -->
+        <div id="reset-confirmation-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Reset All Data</h2>
+                <p>Are you sure you want to delete all data? This will remove all trips, expenses, and user data permanently. This action cannot be undone.</p>
+                <div class="flex gap-2" style="margin-top: 1rem;">
+                    <button id="confirm-reset-btn" class="btn btn-danger" style="flex: 1;">Delete All Data</button>
+                    <button id="cancel-reset-btn" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+                </div>
             </div>
         </div>
 
@@ -523,7 +565,20 @@
             <h2>Frequently Asked Questions</h2>
             <div id="faq-list"></div>
         </div>
+
+        <!-- Reset Data Section -->
+        <div class="card text-center">
+            <h2>Data Management</h2>
+            <p>Need to start fresh? You can reset all your data including trips, expenses, and user profile.</p>
+            <button id="reset-all-data-btn" class="btn btn-danger btn-full">Reset All Data</button>
+        </div>
     </div>
+
+    <footer>
+        <p>Get in Touch<br>For inquiries, contact us at: <a href="mailto:connect@sparkyminis.com">connect@sparkyminis.com</a></p>
+        <p><a href="https://PriyankaDatar.com">Founder's Desk</a> | <a href="https://lipikit.com">LipiKit Apps</a></p>
+        <p>© 2025 SparkyMinis Media-Tech LLP. All Rights Reserved.</p>
+    </footer>
 
     <script src="crypto-js.min.js"></script>
     <script>
@@ -637,7 +692,11 @@
             messageModal: document.getElementById('message-modal'),
             messageModalTitle: document.getElementById('message-modal-title'),
             messageModalBody: document.getElementById('message-modal-body'),
-            messageModalClose: document.getElementById('message-modal-close')
+            messageModalClose: document.getElementById('message-modal-close'),
+            resetConfirmationModal: document.getElementById('reset-confirmation-modal'),
+            confirmResetBtn: document.getElementById('confirm-reset-btn'),
+            cancelResetBtn: document.getElementById('cancel-reset-btn'),
+            resetAllDataBtn: document.getElementById('reset-all-data-btn')
         };
 
         // State Variables
@@ -658,6 +717,30 @@
 
         function closeMessageModal() {
             elements.messageModal.classList.add('hidden');
+        }
+
+        function resetAllData() {
+            // Clear all localStorage data
+            localStorage.removeItem(UNSYNCED_EXPENSES_KEY);
+            localStorage.removeItem(SYNCED_EXPENSES_KEY);
+            localStorage.removeItem(TRIPS_KEY);
+            localStorage.removeItem(ACTIVE_TRIP_KEY);
+            localStorage.removeItem(CONVERSION_RATES_KEY);
+            localStorage.removeItem(APP_USER_KEY);
+            
+            // Reset app state
+            appUser = null;
+            activeTrip = null;
+            currentLocation = null;
+            conversionRates = {};
+            lastRatesFetchDate = null;
+            
+            // Close modal and show user creation view
+            elements.resetConfirmationModal.classList.add('hidden');
+            showView('user-creation');
+            
+            // Show confirmation message
+            showMessage("Data Reset Complete", "All data has been deleted successfully. You can now create a new profile.");
         }
 
         function getLocalData(key) {
@@ -1248,6 +1331,17 @@ function renderConversionInputs() {
 
         elements.messageModalClose.addEventListener('click', closeMessageModal);
 
+        // Reset data event listeners
+        elements.resetAllDataBtn.addEventListener('click', () => {
+            elements.resetConfirmationModal.classList.remove('hidden');
+        });
+
+        elements.confirmResetBtn.addEventListener('click', resetAllData);
+
+        elements.cancelResetBtn.addEventListener('click', () => {
+            elements.resetConfirmationModal.classList.add('hidden');
+        });
+
         elements.tripList.addEventListener('click', (e) => {
             if (e.target.classList.contains('start-trip-btn')) {
                 const tripId = parseInt(e.target.dataset.tripId, 10);
@@ -1441,13 +1535,6 @@ function renderConversionInputs() {
                 }
             });
         }
-</script>
-    <footer>
-    <p>&copy; <span id="current-year"></span> SparkyMinis Media-Tech LLP All Rights Reserved.</p>
-</footer>
-
-<script>
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-</script>
+    </script>
 </body>
 </html>
