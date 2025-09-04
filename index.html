@@ -603,33 +603,23 @@
             },
             modes: ["Cash", "Credit Card", "Prepaid Card"],
             pins: HASHED_PINS,
-            faqs:[
-            { "question": "How do I reset my data?", "answer": "To reset all data, go to your browser's settings, find the site data for LipiKit.com (usually under Privacy or Site Settings), and delete it. This will clear all local data, including trips and expenses." },
-            { "question": "How can I change my username?", "answer": "Usernames cannot be changed once set. To use a new username, delete the site data in your browser's settings and reload the app to create a new profile." },
-            { "question": "How is my privacy protected?", "answer": "All data is stored locally in your browser and never leaves your device unless you choose to sync. Syncing requires a secure PIN and sends data only to our secure servers." },
-            { "question": "How do I sync my data?", "answer": "Click 'Sync Now,' enter the secure PIN, and ensure you're online. Your expenses will be sent to our secure servers." },
-            { "question": "How can I get an expense report across all trips?", "answer": "For a consolidated report across multiple trips, email connect@sparkyminis.com with your request, and we will assist with generating the report manually." },
-            { "question": "Can I use this app offline?", "answer": "Yes! This app is a Progressive Web App (PWA) and is designed to work fully offline. You can add new expenses and view all your saved data without an internet connection. It will automatically sync your changes once you are back online." },
-            { "question": "How does the currency conversion feature work?", "answer": "The app fetches the latest currency exchange rates from the internet when you are online. Once downloaded, it stores them locally, allowing you to convert expenses even while offline." },
-            { "question": "What if the app doesn't show the 'Install' button?", "answer": "On most modern browsers, the 'Install' button appears automatically when the app is ready. If you don't see it, you can usually install the app from your browser's menu (e.g., the three-dot menu in Chrome) by selecting 'Install app'." },
-            { "question": "How do I add a new expense?", "answer": "To add a new expense, simply tap the '+' button, fill in the details like the amount and category, and tap 'Save.' The new expense will be instantly added to your current trip." },
-            { "question": "What will not work if I have no internet?", "answer": "Without an internet connection, data sync and fetching the latest currency exchange rates will not work. However, you can still enter exchange rates manually." },
-            { "question": "How do I add a new trip?", "answer": "You can add a new trip by navigating to the trip selection screen and using the 'Add New Trip' button. This will create a fresh entry for your new travel expenses." },
-            { "question": "How can I get my data sync PIN?", "answer": "Data sync PINs are provided on a restricted basis. For access, please contact connect@sparkyminis.com, providing your username and a brief description of your request." },
-   {
-        "question": "How does this app work without an internet connection?",
-        "answer": "This app is a Progressive Web App (PWA). Once you visit it for the first time, your browser caches the necessary files. This allows the app to be fully functional even when you are offline, making it perfect for use while traveling."
-    },
-    {
-        "question": "How do I force the app to update to the latest version?",
-        "answer": "Sometimes your device's cache can prevent the app from updating automatically. To fix this, you can manually clear the app's cache and data. On Android, go to Settings > Apps > [Your App Name] > Storage & cache > Clear storage. On iOS, you may need to offload or delete the app and reinstall it from the website."
-    },
-    {
-        "question": "What data do you collect?",
-        "answer": "We are committed to your privacy. This app is designed to be local-first, which means all your data is stored directly on your device's local storage. We do not collect or store any of your personal information or trip details on our servers."
-    },            
-                { "question": "What new features are planned for the future?", "answer": "We are continuously working on new features. Upcoming plans include the ability to share trips, set budgets, and generate detailed reports in PDF/CSV format. We welcome your feedback and suggestions via email at connect@sparkyminis.com." }
-]
+            getIP: true, // Controls whether IP address is fetched in sendDiag
+    faqs: [
+        {"question":"How do I reset my data?","answer":"Use 'Reset All Data' in Data Management or clear LipiKit.com site data in browser settings (Privacy/Site Settings)."},
+        {"question":"How can I change my username?","answer":"Usernames are fixed. Reset all data via 'Reset All Data' or browser settings, then reload to create a new profile."},
+        {"question":"How is my privacy protected?","answer":"Data (trips, expenses, profile) is stored locally and only synced with a PIN. Anonymous diagnostics (install ID, user ID, username, version, browser/device info, time zone, IP) are sent on app start when online. Reset data in Data Management."},
+        {"question":"How do I sync my data?","answer":"Click 'Sync Now,' enter your PIN, and ensure you're online to send expenses to secure servers."},
+        {"question":"How can I get a multi-trip expense report?","answer":"Email connect@sparkyminis.com for a consolidated report across trips."},
+        {"question":"Can I use this app offline?","answer":"Yes, as a PWA, it works offline after first visit. Add/view trips and expenses without internet; syncs when online with PIN."},
+        {"question":"How does currency conversion work?","answer":"Fetches exchange rates online, stores them locally for offline use. Enter rates manually if offline."},
+        {"question":"Why is the 'Install' button missing?","answer":"Use browser menu (e.g., Chrome’s three-dot menu) to select 'Add to Home Screen' or 'Install app'."},
+        {"question":"How do I add a new expense?","answer":"Select a trip, click '+', enter amount/category/currency, and click 'Save'."},
+        {"question":"What doesn’t work offline?","answer":"Data sync and fetching exchange rates require internet. Manual rate entry works offline."},
+        {"question":"How do I add a new trip?","answer":"From trip selection, click 'Add New Trip,' enter details, and save."},
+        {"question":"How do I get a sync PIN?","answer":"Email connect@sparkyminis.com with your username and request for a PIN."},
+        {"question":"How do I update the app?","answer":"App updates automatically when online. To force update, clear LipiKit.com site data in browser settings or reinstall via 'Add to Home Screen'."},
+        {"question":"What new features are planned?","answer":"Trip sharing, budgets, PDF/CSV reports. Send feedback to connect@sparkyminis.com."}
+    ]
         };
         // Storage Keys
         const UNSYNCED_EXPENSES_KEY = 'unsyncedExpenses';
@@ -1226,14 +1216,52 @@ function renderConversionInputs() {
                 statusIndicator.className = 'status-indicator status-offline';
             }
         }
-        function sendDiag(event = 'S') {
+        async function sendDiag(event = 'S') {
+            /*
+            Sends diagnostic data to Google Form when online. Fields:
+            - f1: installId|userId|displayName|version
+              Example: lipikit-trip-1697051234567-abc123|user-1697051234567-xyz789|JohnDoe|v0.0.1
+              (userId/displayName = 'N' if no user)
+            - f2: Timestamp (ISO)
+              Example: 2025-09-04T13:56:00.000Z
+            - f3: event|device_info
+              Event: S (start) or others if added (e.g., U for user creation)
+              Device info: ua:<user_agent>;p:<platform>;l:<language>;scr:<screen>;vp:<viewport>;dm:<P|B>;hc:<cores>;dmem:<memory>;tz:<timezone>;ip:<ip>
+              Example: S|ua:Mozilla/5.0_(Windows_NT_10.0;_Win64;_x64)_Chrome/120.0.0.0;p:Win32;l:en-US;scr:1920x1080x24;vp:1280x720;dm:P;hc:8;dmem:4;tz:Asia/Kolkata;ip:203.0.113.1
+              Keys:
+              - ua: User agent (browser, spaces as underscores)
+              - p: Platform (e.g., Win32, MacIntel)
+              - l: Language (e.g., en-US, hi-IN)
+              - scr: Screen resolution/color depth (e.g., 1920x1080x24)
+              - vp: Viewport size (e.g., 1280x720)
+              - dm: Display mode (P = PWA, B = browser)
+              - hc: CPU cores (e.g., 8)
+              - dmem: Device memory in GB (e.g., 4)
+              - tz: Time zone (e.g., Asia/Kolkata)
+              - ip: IP address (or N/A if fetch fails or getIP=false)
+            */
             if (!navigator.onLine) return;
-            const combined = `${installId}|${appUser ? appUser.userId : 'N'}|${APP_CONFIG.version}`;
+            const combined = `${installId}|${appUser ? appUser.userId : 'N'}|${appUser ? appUser.displayName : 'N'}|${APP_CONFIG.version}`;
             const ts = new Date().toISOString();
             let di = `ua:${navigator.userAgent.replace(/ /g,'_')};p:${navigator.platform};l:${navigator.language};scr:${screen.width}x${screen.height}x${screen.colorDepth};vp:${window.innerWidth}x${window.innerHeight};`;
             di += `dm:${window.matchMedia('(display-mode: standalone)').matches ? 'P' : 'B'};`;
             if (navigator.hardwareConcurrency) di += `hc:${navigator.hardwareConcurrency};`;
-            if (navigator.deviceMemory) di += `dm:${navigator.deviceMemory};`;
+            if (navigator.deviceMemory) di += `dmem:${navigator.deviceMemory};`;
+            di += `tz:${Intl.DateTimeFormat().resolvedOptions().timeZone};`;
+            if (APP_CONFIG.getIP) {
+                let ip = 'N/A';
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    const response = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    const data = await response.json();
+                    ip = data.ip;
+                } catch (error) {
+                    console.error('Failed to fetch IP:', error);
+                }
+                di += `ip:${ip};`;
+            }
             const eventStr = `${event}|${di}`;
             const fd = new FormData();
             fd.append(APP_CONFIG.diagFormFields.f1, combined);
@@ -1241,6 +1269,7 @@ function renderConversionInputs() {
             fd.append(APP_CONFIG.diagFormFields.f3, eventStr);
             fetch(APP_CONFIG.diagFormActionUrl, {method:'POST', mode:'no-cors', body:fd});
         }
+        
         // Event Listeners
         elements.userCreationForm.addEventListener('submit', (e) => {
             e.preventDefault();
