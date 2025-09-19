@@ -1640,3 +1640,85 @@
   background: var(--bg-light);
 }
 
+/* Add these styles to appstyle.css for the new table layout */
+
+/* Summary Table Styles */
+.summary-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+.summary-table thead {
+    background: var(--bg-light);
+}
+
+.summary-table th {
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-table td {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-table tr:last-child td {
+    border-bottom: none;
+}
+
+.summary-table tr:hover {
+    background: var(--bg-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .summary-table {
+        border-spacing: 0 0.5rem;
+    }
+    
+    .summary-table thead {
+        display: none;
+    }
+    
+    .summary-table tr {
+        display: block;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-sm);
+        padding: var(--space-sm);
+    }
+    
+    .summary-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        padding: var(--space-xs) 0;
+    }
+    
+    .summary-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: var(--space-sm);
+    }
+    
+    .summary-table td:first-child:before {
+        content: "Category:";
+    }
+    
+    .summary-table td:last-child:before {
+        content: "Total:";
+    }
+}
+

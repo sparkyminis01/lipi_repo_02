@@ -3,7 +3,7 @@ const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v0.0.6',
+        appVersion: 'v0.0.7',
         appDescription: 'All-in-one offline travel manager for expenses, checklists, itineraries, and attractions — secure and friendly.',
         companyName: 'LipiKit',
         

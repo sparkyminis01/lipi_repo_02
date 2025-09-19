@@ -780,14 +780,19 @@ renderTripList: function() {
 },
 
     
-    renderTotalsSummary: function() {
+        renderTotalsSummary: function() {
         if (!this.activeTrip) return '';
         
         const allExpenses = this.getAllExpenses();
         
         if (allExpenses.length === 0) {
-            return `<h3>Overall Trip Total</h3><p class="currency-name" style="font-style: italic;">No expenses recorded for this trip yet.</p>`;
+            return `
+                <h3>Overall Trip Total</h3>
+                <p class="currency-name" style="font-style: italic;">No expenses recorded for this trip yet.</p>
+            `;
         }
+        
+        let html = '<h3>Overall Trip Total</h3>';
         
         if (this.summaryMode === 'local') {
             const totalsByCurrency = {};
@@ -801,17 +806,32 @@ renderTripList: function() {
                 }
             });
             
-            let html = '<h3>Overall Trip Total</h3>';
             if (Object.keys(totalsByCurrency).length > 0) {
-                html += '<ul class="list-disc pl-1.5rem currency-name">';
+                html += `
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Currency</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
                 for (const currency in totalsByCurrency) {
                     const name = AppConfig.config.currencyNames[currency] || currency;
-                    html += `<li><span style="font-weight: 600; color: #1f2937;">${totalsByCurrency[currency].toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> ${currency} (${name})</li>`;
+                    const formattedAmount = totalsByCurrency[currency].toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    html += `
+                        <tr>
+                            <td>${currency} (${name})</td>
+                            <td style="font-weight: 600; color: #1f2937;">${formattedAmount}</td>
+                        </tr>
+                    `;
                 }
-                html += '</ul>';
+                html += '</tbody></table>';
             }
-            
-            return html;
         } else {
             // Base currency mode
             let totalBase = 0;
@@ -826,18 +846,26 @@ renderTripList: function() {
                 } else if (this.conversionRates[currency]) {
                     totalBase += amount / this.conversionRates[currency];
                 } else {
-                     missing.add(currency);
+                    missing.add(currency);
                 }
             });
             
-            let html = `<h3>Overall Trip Total (${this.activeTrip.baseCurrency})</h3>`;
+            const formattedTotal = totalBase.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
             if (missing.size > 0) {
                 html += `<p class="text-red">Missing conversion rates for: ${[...missing].join(', ')}</p>`;
             }
-            html += `<p style="font-weight: 600; color: #1f2937; font-size: 1.25rem;">${totalBase.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${this.activeTrip.baseCurrency}</p>`;
-            
-            return html;
+            html += `
+                <div style="font-weight: 600; color: #1f2937; font-size: 1.25rem; text-align: center; padding: 1rem 0;">
+                    ${formattedTotal} ${this.activeTrip.baseCurrency}
+                </div>
+            `;
         }
+        
+        return html;
     },
     
     renderCategorySummary: function() {
@@ -846,7 +874,10 @@ renderTripList: function() {
         const allExpenses = this.getAllExpenses();
         
         if (allExpenses.length === 0) {
-            return `<h3>Category Breakdown</h3><p class="currency-name" style="font-style: italic;">No expenses recorded for this trip yet.</p>`;
+            return `
+                <h3>Category Breakdown</h3>
+                <p class="currency-name" style="font-style: italic;">No expenses recorded for this trip yet.</p>
+            `;
         }
         
         const totalsByCategory = {};
@@ -873,21 +904,42 @@ renderTripList: function() {
             }
         });
         
-        let html = `<h3>Category Breakdown (${this.summaryMode === 'local' ? 'Local' : this.activeTrip.baseCurrency})</h3>`;
-        html += '<ul style="list-style: none; padding-left: 0;">';
+        let html = `<h3>Category Breakdown (${this.summaryMode === 'local' ? 'Local Currencies' : this.activeTrip.baseCurrency})</h3>`;
+        
+        html += `
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
         
         for (const category in totalsByCategory) {
-            html += `<li style="margin-bottom: 0.5rem;"><strong>${category}</strong>`;
             const totals = totalsByCategory[category];
-            html += '<ul class="list-disc pl-1.5rem currency-name text-sm">';
+            let totalHtml = '';
+            
             for (const currency in totals) {
                 const name = AppConfig.config.currencyNames[currency] || currency;
-                html += `<li><span style="font-weight: 600; color: #1f2937;">${totals[currency].toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> ${currency} (${name})</li>`;
+                const formattedAmount = totals[currency].toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                totalHtml += `<div style="white-space: nowrap; margin-bottom: 0.25rem;">${formattedAmount} ${currency} (${name})</div>`;
             }
-            html += '</ul></li>';
+            
+            html += `
+                <tr>
+                    <td style="font-weight: 600;">${category}</td>
+                    <td class="currency-name text-sm" style="color: #1f2937;">${totalHtml}</td>
+                </tr>
+            `;
         }
         
-        html += '</ul>';
+        html += '</tbody></table>';
+        
         return html;
     },
 
