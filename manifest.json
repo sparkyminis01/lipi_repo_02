@@ -2,9 +2,11 @@
   "name": "LipiKit Trips",
   "short_name": "TRIPS",
   "description": "Effortlessly manage your trip expenses, checklists, and itineraries, even offline! Totally Free!!",
+  "id": "/",
+  "prefer_related_applications": false,
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B2861",
+  "background_color": "#FFFFFF",
   "theme_color": "#016D6D",
   "orientation": "portrait-primary",
   "icons": [
