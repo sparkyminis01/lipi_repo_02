@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataset Manager Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; }
+    button { margin: 5px; padding: 8px 16px; }
+    select { margin: 5px; padding: 5px; }
+    #output { margin-top: 20px; }
+    .error { color: red; }
+    .info { color: blue; }
+    .section { margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <h1>Dataset Manager Test</h1>
+
+  <div class="section">
+    <h3>Initialization</h3>
+    <button onclick="checkDatasetManager()">Check DatasetManager</button>
+    <button onclick="testInitialize()">Initialize From Local</button>
+    <div id="datasetSelectContainer" style="display: none;">
+      <label for="datasetSelect">Select Dataset:</label>
+      <select id="datasetSelect"></select>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Load Datasets</h3>
+    <button onclick="testLoadDataset('questions')">Load Questions (Default)</button>
+    <button onclick="testLoadDataset('checklist', { force: true })">Load Checklist (Force Remote)</button>
+    <button onclick="testLoadDataset('ads', { skipRemote: true })">Load Ads (Local Only)</button>
+    <button onclick="testLoadDataset('attractions')">Load Attractions (Default)</button>
+    <button onclick="testLoadDataset('itinerary', { force: true })">Load Itinerary (Force Remote)</button>
+    <button onclick="testLoadDataset('keymap', { skipRemote: true })">Load Keymap (Local Only)</button>
+    <button onclick="testLoadDataset('fieldOptions')">Load Field Options (Default)</button>
+  </div>
+
+  <div class="section">
+    <h3>Inspect Datasets</h3>
+    <button onclick="testGetDataset('questions')">Get Questions</button>
+    <button onclick="testGetDataset('checklist')">Get Checklist</button>
+    <button onclick="testGetDataset('ads')">Get Ads</button>
+    <button onclick="testGetDataset('attractions')">Get Attractions</button>
+    <button onclick="testGetDataset('itinerary')">Get Itinerary</button>
+    <button onclick="testGetDataset('keymap')">Get Keymap</button>
+    <button onclick="testGetDataset('fieldOptions')">Get Field Options</button>
+  </div>
+
+  <div class="section">
+    <h3>Clear Datasets</h3>
+    <button onclick="testClearDataset('questions')">Clear Questions</button>
+    <button onclick="testClearDataset('checklist')">Clear Checklist</button>
+    <button onclick="testClearDataset('ads')">Clear Ads</button>
+    <button onclick="testClearDataset('attractions')">Clear Attractions</button>
+    <button onclick="testClearDataset('itinerary')">Clear Itinerary</button>
+    <button onclick="testClearDataset('keymap')">Clear Keymap</button>
+    <button onclick="testClearDataset('fieldOptions')">Clear Field Options</button>
+  </div>
+
+  <div class="section">
+    <h3>Global Actions</h3>
+    <button onclick="testGetAvailableDatasets()">Get Available Datasets</button>
+    <button onclick="testClearAllDatasets()">Clear All Datasets</button>
+    <button onclick="testClearAllDatasets({ resetVersion: true })">Clear All & Reset Version</button>
+  </div>
+
+  <div class="section">
+  <h3>Load Single Dataset</h3>
+  <label for="datasetSelect">Choose dataset:</label>
+  <select id="datasetSelect"></select>
+  <br><br>
+  <button onclick="loadSingleDatasetDefault()">Load (Default)</button>
+  <button onclick="loadSingleDatasetLocal()">Load (Local Only)</button>
+  <button onclick="loadSingleDatasetForce()">Load (Force Remote)</button>
+</div>
+
+<div class="section">
+  <h3>Load All Datasets</h3>
+  <button onclick="loadAllDatasetsDefault()">Load All (Default)</button>
+  <button onclick="loadAllDatasetsLocal()">Load All (Local Only)</button>
+  <button onclick="loadAllDatasetsForce()">Load All (Force Remote)</button>
+</div>
+
+  <div id="output"></div>
+
+  <!-- Load dataset-manager.js with event listeners -->
+  <script src="dataset-manager.js" id="datasetScript"></script>
+
+  <script>
+    console.log('[Test] Test script block loading...');
+
+    // Define handlers early
+    function handleScriptLoad() {
+      console.info('[Test] dataset-manager.js loaded successfully.');
+      displayResult('Script Load', { 
+        ok: true, 
+        message: 'dataset-manager.js loaded successfully.', 
+        datasetManagerDefined: !!window.DatasetManager 
+      });
+    }
+
+    function handleScriptError() {
+      console.error('[Test] Failed to load dataset-manager.js.');
+      displayError('Script Load', new Error('Failed to load dataset-manager.js. Ensure the file exists at http://localhost:1112/dataset-manager.js and is accessible in the canvas environment.'));
+    }
+
+    // Attach event listeners after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('[Test] DOM fully loaded, attaching event listeners.');
+      const script = document.getElementById('datasetScript');
+      script.addEventListener('load', handleScriptLoad);
+      script.addEventListener('error', handleScriptError);
+    });
+
+    console.log('[Test] Test script block loaded.');
+
+    // All test logic in one block
+    let availableDatasets = [];
+
+    // Mock AppConfig and AppSettings
+    window.AppConfig = {
+      config: {
+        data: {
+          dataUrl: "https://data.lipikit.com/",
+          remoteDataFolder: "trips/",
+          localDataFolder: "/data/",
+          versionFileName: "version",
+          datasetPrefix: "lipikit_data_",
+          versionStorageKey: "version_json"
+        }
+      }
+    };
+
+    window.AppSettings = {
+      datasets: {
+        questions: "questions_master",
+        checklist: "checklist_master",
+        ads: "ads_master",
+        attractions: "attractions_master",
+        itinerary: "itinerary_master",
+        keymap: "keymap",
+        fieldOptions: "field_options"
+      }
+    };
+
+    // Test functions
+    function checkDatasetManager() {
+      try {
+        if (!window.DatasetManager) {
+          throw new Error('DatasetManager is not defined. Ensure dataset-manager.js is loaded and executed correctly. Check the Console for errors in dataset-manager.js.');
+        }
+        displayResult('checkDatasetManager', { ok: true, message: 'DatasetManager is defined and ready.' });
+      } catch (err) {
+        displayError('checkDatasetManager', err);
+      }
+    }
+
+    async function testInitialize() {
+      try {
+        if (!window.DatasetManager) throw new Error('DatasetManager is not defined. Ensure dataset-manager.js is loaded.');
+        const result = await DatasetManager.initializeFromLocal({ force: true });
+        displayResult('initializeFromLocal', result);
+
+        // Wait for LocalStorage to be updated with increased attempts
+        // get the actual runtime version key used by DatasetManager (includes prefix)
+        const storageKey = (window.DatasetManager && window.DatasetManager._internal && window.DatasetManager._internal.getVersionStorageKey)
+        ? window.DatasetManager._internal.getVersionStorageKey()
+        : (window.AppConfig.config.data.datasetPrefix || '') + (window.AppConfig.config.data.versionStorageKey || 'version_json');
+
+        let versionJsonStr = localStorage.getItem(storageKey);
+
+        let attempts = 0, maxAttempts = 10;
+        console.log('[Test] Initial LocalStorage check:', versionJsonStr);
+        while (!versionJsonStr && attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+          versionJsonStr = localStorage.getItem(storageKey);
+          console.log('[Test] Retry attempt', attempts + 1, 'LocalStorage:', versionJsonStr);
+          attempts++;
+        }
+
+        if (versionJsonStr) {
+          console.log('[Test] Retrieved versionJsonStr:', versionJsonStr);
+          const versionJson = JSON.parse(versionJsonStr);
+            availableDatasets = Object.keys(versionJson.datasets).map(key => ({
+            name: key, // e.g., "questions_master"
+            display: Object.keys(AppSettings.datasets).find(k => AppSettings.datasets[k] === key) || key,
+            appKey: Object.keys(AppSettings.datasets).find(k => AppSettings.datasets[k] === key) // e.g., "questions"
+            }));
+
+          setTimeout(updateDatasetSelector, 0);
+        } else {
+          throw new Error('No version.json found in LocalStorage after initialization despite successful load.');
+        }
+      } catch (err) {
+        displayError('initializeFromLocal', err);
+      }
+    }
+
+    function updateDatasetSelector() {
+      console.log('[Test] Updating dataset selector with:', availableDatasets);
+      const select = document.getElementById('datasetSelect');
+      const container = document.getElementById('datasetSelectContainer');
+      select.innerHTML = '<option value="">Select a dataset</option>';
+      availableDatasets.forEach(dataset => {
+        const option = document.createElement('option');
+        option.value = dataset.appKey || dataset.name;
+        option.textContent = dataset.display;
+        select.appendChild(option);
+      });
+      container.style.display = availableDatasets.length ? 'block' : 'none';
+    }
+
+    async function testLoadDataset(datasetKey, options = {}) {
+      try {
+        if (!window.DatasetManager) throw new Error('DatasetManager is not defined.');
+        const result = await DatasetManager.load_dataset_with_check(datasetKey, options);
+        displayResult(`load_dataset_with_check(${datasetKey}, ${JSON.stringify(options)})`, result);
+      } catch (err) {
+        displayError(`load_dataset_with_check(${datasetKey}, ${JSON.stringify(options)})`, err);
+      }
+    }
+
+    async function testGetDataset(datasetKey) {
+      try {
+        if (!window.DatasetManager) throw new Error('DatasetManager is not defined.');
+        const result = await DatasetManager.getDataset(datasetKey);
+        displayResult(`getDataset(${datasetKey})`, result);
+      } catch (err) {
+        displayError(`getDataset(${datasetKey})`, err);
+      }
+    }
+
+    async function testGetAvailableDatasets() {
+      try {
+        if (!window.DatasetManager) throw new Error('DatasetManager is not defined.');
+        const result = await DatasetManager.getAvailableDatasets();
+        displayResult('getAvailableDatasets', result);
+      } catch (err) {
+        displayError('getAvailableDatasets', err);
+      }
+    }
+
+    async function testClearDataset(datasetKey) {
+      try {
+        if (!window.DatasetManager) throw new Error('DatasetManager is not defined.');
+        const result = await DatasetManager.clearDataset(datasetKey);
+        displayResult(`clearDataset(${datasetKey})`, result);
+      } catch (err) {
+        displayError(`clearDataset(${datasetKey})`, err);
+      }
+    }
+
+    async function testClearAllDatasets(options = {}) {
+      try {
+        if (!window.DatasetManager) throw new Error('DatasetManager is not defined.');
+        const result = await DatasetManager.clearAllDatasets(options);
+        displayResult(`clearAllDatasets(${JSON.stringify(options)})`, result);
+      } catch (err) {
+        displayError(`clearAllDatasets(${JSON.stringify(options)})`, err);
+      }
+    }
+
+    function displayResult(method, result) {
+      const output = document.getElementById('output');
+      const pre = document.createElement('pre');
+      pre.className = 'info';
+      pre.textContent = `${method}:\n${JSON.stringify(result, null, 2)}`;
+      output.appendChild(pre);
+    }
+
+    function displayError(method, err) {
+      const output = document.getElementById('output');
+      const pre = document.createElement('pre');
+      pre.className = 'error';
+      pre.textContent = `${method} failed:\n${err.message || String(err)}`;
+      output.appendChild(pre);
+    }
+  </script>
+  <script>
+  
+
+// ---- Single dataset loaders ----
+async function loadSingleDatasetDefault() {
+  const key = document.getElementById('datasetSelect').value;
+  try {
+    const result = await DatasetManager.load_dataset_with_check(key);
+    displayResult(`load_dataset_with_check(${key}, default)`, result);
+  } catch (err) {
+    displayError(`load_dataset_with_check(${key}, default)`, err);
+  }
+}
+
+async function loadSingleDatasetLocal() {
+  const key = document.getElementById('datasetSelect').value;
+  try {
+    const result = await DatasetManager.load_dataset_with_check(key, { skipRemote: true });
+    displayResult(`load_dataset_with_check(${key}, local only)`, result);
+  } catch (err) {
+    displayError(`load_dataset_with_check(${key}, local only)`, err);
+  }
+}
+
+async function loadSingleDatasetForce() {
+  const key = document.getElementById('datasetSelect').value;
+  try {
+    const result = await DatasetManager.load_dataset_with_check(key, { force: true });
+    displayResult(`load_dataset_with_check(${key}, force remote)`, result);
+  } catch (err) {
+    displayError(`load_dataset_with_check(${key}, force remote)`, err);
+  }
+}
+
+// ---- All dataset loaders ----
+async function loadAllDatasetsDefault() {
+  for (const key of Object.keys(AppSettings.datasets)) {
+    try {
+      const result = await DatasetManager.load_dataset_with_check(key);
+      displayResult(`load_dataset_with_check(${key}, default)`, result);
+    } catch (err) {
+      displayError(`load_dataset_with_check(${key}, default)`, err);
+    }
+  }
+}
+
+async function loadAllDatasetsLocal() {
+  for (const key of Object.keys(AppSettings.datasets)) {
+    try {
+      const result = await DatasetManager.load_dataset_with_check(key, { skipRemote: true });
+      displayResult(`load_dataset_with_check(${key}, local only)`, result);
+    } catch (err) {
+      displayError(`load_dataset_with_check(${key}, local only)`, err);
+    }
+  }
+}
+
+async function loadAllDatasetsForce() {
+  for (const key of Object.keys(AppSettings.datasets)) {
+    try {
+      const result = await DatasetManager.load_dataset_with_check(key, { force: true });
+      displayResult(`load_dataset_with_check(${key}, force remote)`, result);
+    } catch (err) {
+      displayError(`load_dataset_with_check(${key}, force remote)`, err);
+    }
+  }
+}
+</script>
+</body>
+</html>

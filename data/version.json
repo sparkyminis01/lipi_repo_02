@@ -1,0 +1,33 @@
+{
+  "last_updated": "2025-09-12T05:45:00Z",
+  "datasets": {
+    "checklist_master": {
+      "version": "0.0.9",
+      "url": "/data/checklist_master.min.json"
+    },
+    "ads_master": {
+      "version": "0.0.9", 
+      "url": "/data/ads_master.min.json"
+    },
+    "field_options": {
+      "version": "0.0.9",
+      "url": "/data/field_options.min.json"
+    },
+    "keymap": {
+      "version": "0.0.9",
+      "url": "/data/keymap.min.json"
+    },
+    "questions_master": {
+      "version": "0.0.9",
+      "url": "/data/questions_master.min.json"
+    },
+    "itinerary_master": {
+      "version": "0.0.9",
+      "url": "/data/itinerary_master.min.json"
+    },
+    "attractions_master": {
+      "version": "0.0.9",
+      "url": "/data/attractions_master.min.json"
+    }
+  }
+}

@@ -1,11 +1,25 @@
 // Service Worker for Trip Tracker PWA
-const CACHE_NAME = 'cache-trip-tracker-v0.0.3';
+const CACHE_NAME = 'cache-trip-tracker-v0.0.4';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/logo-trip-expense-tracker.png',
-  '/crypto-js.min.js'
+  '/app.js',
+  '/appsettings.js',
+  '/config.js',
+  '/crypto-js.min.js',
+  '/dataset-manager.js',
+  '/faq.js',
+  '/profile.js',
+  '/settings.js',
+  '/style.css',
+  '/appstyle.css',
+  '/data/checklist_master.min.json',
+  '/data/field_options.min.json',
+  '/data/keymap.min.json',
+  '/data/questions_master.min.json',
+  '/data/version.json'
 ];
 
 // Install event
