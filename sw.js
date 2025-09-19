@@ -1,26 +1,35 @@
 // Service Worker for Trip Tracker PWA
-const CACHE_NAME = 'cache-trip-tracker-v0.0.4';
+const CACHE_NAME = 'cache-trip-tracker-v0.0.5';
+
+  '
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/logo-trip-expense-tracker.png',
-  '/app.js',
-  '/appsettings.js',
-  '/config.js',
-  '/crypto-js.min.js',
-  '/dataset-manager.js',
-  '/faq.js',
-  '/profile.js',
-  '/settings.js',
-  '/style.css',
-  '/appstyle.css',
-  '/data/checklist_master.min.json',
-  '/data/field_options.min.json',
-  '/data/keymap.min.json',
-  '/data/questions_master.min.json',
-  '/data/version.json'
+  "/",
+  "/index.html",
+  "/logo-trip-expense-tracker.png",
+  "/manifest.json",
+  "/robots.txt",
+  "/app.js",
+  "/appsettings.js",
+  "/appstyle.css",
+  "/config.js",
+  "/crypto-js.min.js",
+  "/dataset-manager-test.html",
+  "/dataset-manager.js",
+  "/faq.js",
+  "/profile.js",
+  "/settings.js",
+  "/style.css",
+  "/sw.js",
+  "/data/ads_master.min.json",
+  "/data/attractions_master.min.json",
+  "/data/checklist_master.min.json",
+  "/data/field_options.min.json",
+  "/data/itinerary_master.min.json",
+  "/data/keymap.min.json",
+  "/data/questions_master.min.json",
+  "/data/version.json"
 ];
+
 
 // Install event
 self.addEventListener('install', (event) => {

@@ -3,8 +3,8 @@ const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v0.0.4',
-        appDescription: 'Effortlessly track trip expenses, manage currency conversions, and create summary reports, even offline. Your ultimate free PWA for travel budgeting.',
+        appVersion: 'v0.0.5',
+        appDescription: 'All-in-one offline travel manager for expenses, checklists, itineraries, and attractions — secure and friendly.',
         companyName: 'LipiKit',
         
 /*        // Trip Tracker Color Theme (Purple theme)
@@ -188,10 +188,9 @@ colors: {
         if (appInfoBlock) {
             appInfoBlock.innerHTML = `
                 <h2>${this.config.companyName} ${this.config.appName}</h2>
-                <h3>Travel Expense Management</h3>
-                <p>${this.config.appDescription}</p>
-                <p>Track expenses in multiple currencies, get automatic exchange rates, and generate comprehensive reports - all working offline!</p>
-                <button class="btn btn-primary" onclick="this.scrollIntoView({behavior: 'smooth', block: 'start'})">Start Tracking Expenses</button>
+<p>${this.config.appDescription}</p>
+<p>Track multi-currency expenses, manage smart checklists, plan detailed itineraries, discover attractions, and keep data secured in your own device — with support for multiple profiles for your personal and business separations.</p>
+<button class="btn btn-primary" onclick="this.scrollIntoView({behavior: 'smooth', block: 'start'})">Plan Your Trip</button>
             `;
         }
     },

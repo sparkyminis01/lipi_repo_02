@@ -1,11 +1,11 @@
 {
-  "name": "LipiKit Trip Tracker",
-  "short_name": "Trip Tracker",
-  "description": "Effortlessly track your trip expenses, even offline! Totally Free!!",
+  "name": "LipiKit Trips",
+  "short_name": "TRIPS",
+  "description": "Effortlessly manage your trip expenses, checklists, and itineraries, even offline! Totally Free!!",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f3e8ff",
-  "theme_color": "#9333ea",
+  "background_color": "#0B2861",
+  "theme_color": "#016D6D",
   "orientation": "portrait-primary",
   "icons": [
     {
