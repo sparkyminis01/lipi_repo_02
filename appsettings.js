@@ -50,7 +50,7 @@ adtag: `
      data-full-width-responsive="true">
      <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
                  color:#666; font-size:14px; text-align:center;">
-         [ Placeholder ]
+            [ Coming soon: Ad space ]
      </div>
 </ins>`
         };

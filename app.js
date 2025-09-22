@@ -2701,8 +2701,8 @@ showMessage: function(title, message, isConfirmation = false, isHtml = false) {
                                 color:#666; font-weight:bold; font-size:14px; 
                                 border-radius:8px; position:relative;">
                         <div style="background:white; padding:8px 16px; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-                            [ Placeholder ${index + 1}]
-                            <br><small style="font-weight:normal; color:#888;">Script not loaded or invalid config</small>
+                            [ # ${index + 1}]
+                            <br><small style="font-weight:normal; color:#888;">[ Coming soon: Ad space ]</small>
                         </div>
                     </div>
                 `;

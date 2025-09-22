@@ -4,7 +4,7 @@ const AppConfig = {
     config: {
         appName: 'Trips',
         appVersion: 'v0.0.7',
-        appDescription: 'All-in-one offline travel manager for expenses, checklists, itineraries, and attractions — secure and friendly.',
+        appDescription: 'All-in-one offline travel manager for expenses, checklists, itineraries, documents, and attractions — secure and friendly.',
         companyName: 'LipiKit',
         
 /*        // Trip Tracker Color Theme (Purple theme)
