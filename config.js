@@ -3,9 +3,9 @@ const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v0.0.8a',
+        appVersion: 'v0.0.8b',
         appDescription: 'All-in-one travel manager for expenses, checklists, itineraries, documents, and attractions – secure and friendly.',
-        companyName: 'SparkyMinis',
+        companyName: 'LipiKit',
         
         // Trip Tracker Color Theme (SOOTHING VIBRANT theme)
         colors: {
@@ -299,4 +299,5 @@ const AppConfig = {
     isOnline: function() {
         return navigator.onLine;
     }
+
 };
