@@ -38,10 +38,10 @@ const SettingsManager = {
                 
                 <div class="form-group">
                     <button id="clear-all-data-btn" class="btn btn-danger" style="width: 100%;">
-                        Clear All App Data
+                        Sign Out & Clear All Data
                     </button>
                     <small style="color: #6b7280; display: block; margin-top: 0.5rem;">
-                        This will permanently delete all your app data, including user profile, settings, and application data. This action cannot be undone.
+                        This will sign you out and permanently delete all your app data, including settings and application data. This action cannot be undone.
                     </small>
                 </div>
             </div>
@@ -68,6 +68,31 @@ const SettingsManager = {
                     <div style="background: #f9fafb; padding: 0.75rem; border-radius: 6px; font-family: monospace;">
                         ${appVersion}
                     </div>
+                </div>
+            </div>
+        `;
+    },
+
+       
+    renderSecuritySection: function() { 
+        const currentTimeout = localStorage.getItem('lipikit_autoLogoutDays') || '30';
+        
+        return `
+            <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Security</h3>
+                
+                <div class="form-group">
+                    <label for="auto-logout-timeout">Auto Logout After Inactivity</label>
+                    <select id="auto-logout-timeout" class="form-control">
+                        <option value="1" ${currentTimeout === '1' ? 'selected' : ''}>1 day</option>
+                        <option value="7" ${currentTimeout === '7' ? 'selected' : ''}>7 days</option>
+                        <option value="30" ${currentTimeout === '30' ? 'selected' : ''}>30 days</option>
+                        <option value="90" ${currentTimeout === '90' ? 'selected' : ''}>90 days</option>
+                        <option value="never" ${currentTimeout === 'never' ? 'selected' : ''}>Never</option>
+                    </select>
+                    <small style="color: #6b7280; display: block; margin-top: 0.5rem;">
+                        You'll be automatically signed out after this period of inactivity.
+                    </small>
                 </div>
             </div>
         `;
@@ -122,10 +147,22 @@ const SettingsManager = {
     
     clearAllAppData: async function() {
         try {
+            // 🆕 STEP 1: Sign out from Firebase first
+            if (typeof ProfileManager !== 'undefined' && ProfileManager.firebaseAuth) {
+                try {
+                    await ProfileManager.firebaseAuth.signOut();
+                    console.log('User signed out from Firebase');
+                } catch (signOutError) {
+                    console.error('Error signing out:', signOutError);
+                }
+            }
+            
+            // STEP 2: Clear localStorage
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key && (key.startsWith('lipikit_') || key.startsWith('lipikit-'))) {
+                if (key && (key.startsWith('lipikit_') || key.startsWith('lipikit-') || 
+                           key.startsWith('firebase:') || key.includes('firebase'))) {
                     keysToRemove.push(key);
                 }
             }
@@ -134,18 +171,38 @@ const SettingsManager = {
                 localStorage.removeItem(key);
             });
             
+            // STEP 3: Clear sessionStorage
             sessionStorage.clear();
             
+            // STEP 4: Clear IndexedDB (both app and Firebase databases)
             if (indexedDB && indexedDB.databases) {
                 const dbs = await indexedDB.databases();
                 for (const db of dbs) {
-                    if (db.name && (db.name.startsWith('lipikit_') || db.name.startsWith('lipikit-'))) {
+                    if (db.name && (db.name.startsWith('lipikit_') || 
+                                   db.name.startsWith('lipikit-') ||
+                                   db.name.includes('firebase'))) {
+                        console.log('Deleting database:', db.name);
                         indexedDB.deleteDatabase(db.name);
                     }
                 }
             } else {
-                indexedDB.deleteDatabase('lipikit_user_trips');
-                indexedDB.deleteDatabase('lipikit_responses');
+                // Fallback for browsers that don't support databases()
+                const dbsToDelete = [
+                    'lipikit_user_trips',
+                    'lipikit_responses',
+                    'firebaseLocalStorageDb' // Firebase's default DB
+                ];
+                dbsToDelete.forEach(dbName => {
+                    indexedDB.deleteDatabase(dbName);
+                });
+            }
+            
+            // STEP 5: Clear service worker cache (if exists)
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
             }
             
             alert('All app data has been cleared successfully. The page will now reload.');
@@ -156,7 +213,8 @@ const SettingsManager = {
             alert('An error occurred while clearing app data. Please try again or contact support.');
         }
     },
-    
+
+
     handleContactSupport: function() {
         const supportEmail = (typeof AppConfig !== 'undefined') ? 
                            AppConfig.config.links.support : 'mailto:connect@sparkyminis.com';

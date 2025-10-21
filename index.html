@@ -10,20 +10,27 @@
   <meta name="theme-color" content="#9333ea">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="appstyle.css">
+  
+  <!-- CryptoJS for PIN validation -->
   <script src="crypto-js.min.js"></script>
   
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6822234477749633"
-     crossorigin="anonymous"></script>
-    </head>
+  <!-- Firebase SDK (v9 compat mode) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6822234477749633" crossorigin="anonymous"></script>
+</head>
 <body>
   <div class="container">
-<!-- Header -->
+    <!-- Header -->
     <header class="header">
       <div class="logo" onclick="location.reload()" style="cursor: pointer; user-select: none;">
         <span class="company-name" id="company-name">LipiKit</span>
         <span class="app-name" id="app-name">App</span>
       </div>
-      <!-- profile dropdown will be injected by profile.js -->
+      <!-- Profile dropdown will be injected by profile-auth.js -->
     </header>
 
     <!-- Settings Modal -->
@@ -47,7 +54,7 @@
       </div>
     </div>
 
-    <!-- Legacy profile region (hidden) -->
+    <!-- Profile section (for sign-in UI) -->
     <div id="profile-section"></div>
 
     <!-- Main App -->
@@ -64,7 +71,7 @@
         <h2>LipiKit</h2>
         <h3>Productivity Apps for Everyone</h3>
         <p>Discover our suite of powerful apps designed for business, personal, and travel productivity.</p>
-        <p>All LipiKit apps work offline-first as Progressive Web Apps (PWAs).</p>
+        <p>A curated collection of powerful, offline-first applications designed to enhance your productivity and simplify complex workflows.</p>
         <a href="https://lipikit.com" class="btn btn-primary" target="_blank">Explore All Apps</a>
       </div>
       <div class="info-block">
@@ -72,7 +79,7 @@
         <h3>Support & Partnership</h3>
         <p>Need help with your app? Want to suggest a new feature? Looking for business partnerships?</p>
         <a href="mailto:connect@sparkyminis.com" class="btn btn-success">Email Support</a>
-        <a href="https://PriyankaDatar.com" class="btn btn-secondary" target="_blank">Founder's Desk</a>
+        <a href="https://MadeByPriyanka.com" class="btn btn-secondary" target="_blank">Founder's Desk</a>
       </div>
       <div class="info-block" id="app-info-block"></div>
     </div>
@@ -95,9 +102,9 @@
     <p id="app-version"></p>
   </footer>
 
-  <!-- Scripts -->
+  <!-- App Scripts -->
   <script src="config.js"></script>
-  <script src="profile.js"></script>
+  <script src="profile-auth.js"></script>
   <script src="settings.js"></script>
   <script src="appsettings.js"></script>
   <script src="dataset-manager.js"></script>
@@ -106,41 +113,64 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function(){
-      if(typeof AppConfig!=='undefined')AppConfig.init();
-      if(typeof ProfileManager!=='undefined')ProfileManager.init();
-      if(typeof SettingsManager!=='undefined')SettingsManager.init();
-      if(typeof AppSettingsManager!=='undefined')AppSettingsManager.init();
-      if(typeof FAQManager!=='undefined'){FAQManager.init();FAQManager.addSearchBox();}
-      if(typeof AppManager!=='undefined')AppManager.init();
-
-      // Ensure legacy profile region is cleared and hidden
-
+      // Initialize core services
+      if(typeof AppConfig!=='undefined') AppConfig.init();
+      if(typeof ProfileManager!=='undefined') ProfileManager.init();
+      if(typeof SettingsManager!=='undefined') SettingsManager.init();
+      if(typeof AppSettingsManager!=='undefined') AppSettingsManager.init();
+      if(typeof FAQManager!=='undefined'){
+        FAQManager.init();
+        FAQManager.addSearchBox();
+      }
+      if(typeof AppManager!=='undefined') AppManager.init();
     });
 
-    function showModal(id){document.getElementById(id).classList.remove('hidden');}
-    function hideModal(id){document.getElementById(id).classList.add('hidden');}
-    function showConfirmation(title,msg,onConfirm,onCancel=null){
-      document.getElementById('confirmation-title').textContent=title;
-      document.getElementById('confirmation-message').textContent=msg;
-      const yesBtn=document.getElementById('confirm-yes');
-      const noBtn=document.getElementById('confirm-no');
-      yesBtn.replaceWith(yesBtn.cloneNode(true)); noBtn.replaceWith(noBtn.cloneNode(true));
-      document.getElementById('confirm-yes').addEventListener('click',()=>{hideModal('confirmation-modal');if(onConfirm)onConfirm();});
-      document.getElementById('confirm-no').addEventListener('click',()=>{hideModal('confirmation-modal');if(onCancel)onCancel();});
+    // Helper functions for modals
+    function showModal(id){
+      document.getElementById(id).classList.remove('hidden');
+    }
+    
+    function hideModal(id){
+      document.getElementById(id).classList.add('hidden');
+    }
+    
+    function showConfirmation(title, msg, onConfirm, onCancel=null){
+      document.getElementById('confirmation-title').textContent = title;
+      document.getElementById('confirmation-message').textContent = msg;
+      const yesBtn = document.getElementById('confirm-yes');
+      const noBtn = document.getElementById('confirm-no');
+      yesBtn.replaceWith(yesBtn.cloneNode(true));
+      noBtn.replaceWith(noBtn.cloneNode(true));
+      document.getElementById('confirm-yes').addEventListener('click', () => {
+        hideModal('confirmation-modal');
+        if(onConfirm) onConfirm();
+      });
+      document.getElementById('confirm-no').addEventListener('click', () => {
+        hideModal('confirmation-modal');
+        if(onCancel) onCancel();
+      });
       showModal('confirmation-modal');
     }
-    document.addEventListener('click',function(e){ if(e.target.classList.contains('modal')){hideModal(e.target.id);} });
-  </script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }).catch(error => {
-        console.log('Service Worker registration failed:', error);
-      });
+    
+    // Close modals when clicking outside
+    document.addEventListener('click', function(e){
+      if(e.target.classList.contains('modal')){
+        hideModal(e.target.id);
+      }
     });
-  }
-</script>
+  </script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

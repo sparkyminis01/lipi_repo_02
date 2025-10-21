@@ -1,43 +1,52 @@
-// config.js - Trip Tracker Configuration
+// config.js - Trip Tracker Configuration with Firebase
 const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v0.0.7',
-        appDescription: 'All-in-one offline travel manager for expenses, checklists, itineraries, documents, and attractions — secure and friendly.',
-        companyName: 'LipiKit',
+        appVersion: 'v0.0.8a',
+        appDescription: 'All-in-one travel manager for expenses, checklists, itineraries, documents, and attractions – secure and friendly.',
+        companyName: 'SparkyMinis',
         
-/*        // Trip Tracker Color Theme (Purple theme)
+        // Trip Tracker Color Theme (SOOTHING VIBRANT theme)
         colors: {
-            primary: '#9333ea',
-            primaryHover: '#7c3aed',
-            secondary: '#6b7280',
-            secondaryHover: '#4b5563',
-            success: '#059669',
-            successHover: '#047857',
-            danger: '#dc2626',
-            dangerHover: '#b91c1c',
-            backgroundGradient: 'linear-gradient(135deg, #f3e8ff 0%, #e5e7eb 100%)',
-            headerGradient: 'linear-gradient(to right, #F78E69, #F1BB87)'   
-
+            primary: '#14B8A6',
+            primaryHover: '#0D9488',
+            secondary: '#334155',
+            secondaryHover: '#1E293B',
+            success: '#22C55E',
+            successHover: '#15803D',
+            danger: '#E11D48',
+            dangerHover: '#9F1239',
+            backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+            headerGradient: 'linear-gradient(to right, #14B8A6, #334155)'
         },
-*/
-       // Trip Tracker Color Theme (SOOTHING VIBRANT theme)
-colors: {
-    primary: '#14B8A6',         // teal
-    primaryHover: '#0D9488',
-    secondary: '#334155',       // slate gray
-    secondaryHover: '#1E293B',
-    success: '#22C55E',         // emerald
-    successHover: '#15803D',
-    danger: '#E11D48',          // crimson
-    dangerHover: '#9F1239',
-    backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
-    headerGradient: 'linear-gradient(to right, #14B8A6, #334155)'  // teal → slate
-}
-
-
-,
+        
+        // Firebase Configuration
+        firebase: {
+            // TODO: Replace with your Firebase project credentials
+            apiKey: "AIzaSyA9nMEt2Q_FLPP6KQDPoKri6C5-f6dq50c",
+            authDomain: "sparkyminis-auth.firebaseapp.com",
+            projectId: "sparkyminis-auth",
+            storageBucket: "sparkyminis-auth.firebasestorage.app",
+            messagingSenderId: "207061052479",
+            appId: "1:207061052479:web:0ede9db20747be25815c8a",
+            measurementId: "G-7801T8LQ8L",
+            
+            collections: {
+                users: 'users'
+            }
+        },
+        
+        // Geo/IP Configuration
+        geoIp: {
+            enabled: true,
+            services: [
+                { url: 'https://ipapi.co/json/', name: 'ipapi', timeout: 5000 },
+                { url: 'http://ip-api.com/json/', name: 'ip-api', timeout: 5000 }
+            ],
+            cacheKey: 'lipikit_geo_cache',
+            gracefulFallback: true
+        },
         
         // Trip-specific configurations
         categories: ["Food", "Transport", "Accommodation", "Shopping", "Activities", "Groceries", "Other"],
@@ -51,11 +60,10 @@ colors: {
         
         // Google Forms Configuration for Analytics & Data Sync
         googleForm: {
-            // Main expense data form
             expenseActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
             expenseFields: {
-                name: 'entry.1731583832',           // userId:displayName
-                tripName: 'entry.1093227282',       // tripName:baseCurrency
+                name: 'entry.1731583832',
+                tripName: 'entry.1093227282',
                 expenseDate: 'entry.505163115',
                 amount: 'entry.1623455754',
                 currency: 'entry.1004211902',
@@ -65,13 +73,11 @@ colors: {
                 location: 'entry.56139846',
                 mode: 'entry.1829164279'
             },
-            
-            // Diagnostics form
             diagActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfAbtJTg-IequMyIVZU_LaskIyfL9_lAhTdcDfl09MsBF1dIg/formResponse',
             diagFields: {
-                installUserInfo: 'entry.975398843',  // InstallId|UserId|DisplayName|Version
-                timestamp: 'entry.626283681',        // Timestamp
-                eventData: 'entry.738839204'         // Event|DeviceInfo
+                installUserInfo: 'entry.975398843',
+                timestamp: 'entry.626283681',
+                eventData: 'entry.738839204'
             }
         },
         
@@ -85,9 +91,9 @@ colors: {
         
         // Local Storage Keys
         storageKeys: {
-            installId: 'lipikit_installId', // Updated to match profile.js
-            userId: 'lipikit_currentUser',
-            userProfile: 'lipikit_userProfile',
+            installId: 'lipikit_installId',
+            cachedUsers: 'lipikit_cached_firebase_users',
+            activeUser: 'lipikit_currentUser',
             appData: 'lipikit_trip_data',
             trips: 'tripList',
             activeTrip: 'activeTrip',
@@ -122,14 +128,13 @@ colors: {
         },
 
         data: {
-            dataUrl: "https://data.lipikit.com/",   // base remote data domain
-            remoteDataFolder: "trips/",             // remote dataset folder
-            localDataFolder: "/data/",             // bundled local dataset folder
-            versionFileName: "version",        // version file name
-            datasetPrefix: "lipikit_data_",               // prefix for localStorage/DB keys
-            versionStorageKey: "version_json"       // logical key name for version.json in storage
-    },
-
+            dataUrl: "https://data.lipikit.com/",
+            remoteDataFolder: "trips/",
+            localDataFolder: "/data/",
+            versionFileName: "version",
+            datasetPrefix: "lipikit_data_",
+            versionStorageKey: "version_json"
+        },
     },
     
     init: function() {
@@ -139,30 +144,21 @@ colors: {
     },
     
     applyConfiguration: function() {
-        // Update page title and meta
         document.title = `${this.config.companyName} ${this.config.appName}`;
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = document.title;
         
-        // Update header if elements exist
         const companyName = document.getElementById('company-name');
         const appName = document.getElementById('app-name');
         if (companyName) companyName.textContent = this.config.companyName;
         if (appName) appName.textContent = this.config.appName;
         
-        // Update meta description
         const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-            metaDesc.content = this.config.appDescription;
-        }
+        if (metaDesc) metaDesc.content = this.config.appDescription;
         
-        // Update theme color
         const themeColor = document.querySelector('meta[name="theme-color"]');
-        if (themeColor) {
-            themeColor.content = this.config.colors.primary;
-        }
+        if (themeColor) themeColor.content = this.config.colors.primary;
         
-        // Update app version in footer
         const appVersion = document.getElementById('app-version');
         const appVersionFooter = document.getElementById('app-version-footer');
         if (appVersion) appVersion.textContent = this.config.appVersion;
@@ -177,20 +173,17 @@ colors: {
         if (this.config.colors.headerGradient) {
             root.style.setProperty('--header-gradient', this.config.colors.headerGradient);
         }
-
-        // Apply to body background if needed
         document.body.style.background = this.config.colors.backgroundGradient;
     },
-
     
     updateAppInfo: function() {
         const appInfoBlock = document.getElementById('app-info-block');
         if (appInfoBlock) {
             appInfoBlock.innerHTML = `
                 <h2>${this.config.companyName} ${this.config.appName}</h2>
-<p>${this.config.appDescription}</p>
-<p>Track multi-currency expenses, manage smart checklists, plan detailed itineraries, discover attractions, and keep data secured in your own device — with support for multiple profiles for your personal and business separations.</p>
-<button class="btn btn-primary" onclick="this.scrollIntoView({behavior: 'smooth', block: 'start'})">Plan Your Trip</button>
+                <p>${this.config.appDescription}</p>
+                <p>Track multi-currency expenses, manage smart checklists, locally store all your documents at one place in secured environment, plan detailed itineraries, discover attractions, and keep data secured in your own device – with support for multiple profiles for your personal and business separations.</p>
+                <button class="btn btn-primary" onclick="this.scrollIntoView({behavior: 'smooth', block: 'start'})">Plan Your Trip</button>
             `;
         }
     },
@@ -200,22 +193,15 @@ colors: {
         if (!navigator.onLine || !this.config.features.getIP) return;
         
         try {
-            // Use ProfileManager.lipikit_installId if available, otherwise fallback to local storage
             const lipikitInstallId = installId || ProfileManager?.lipikit_installId || localStorage.getItem(this.config.storageKeys.installId);
             const userId = userInfo ? userInfo.userId : 'N';
             const displayName = userInfo ? userInfo.displayName : 'N';
             
-            // Format: InstallId|UserId|DisplayName|Version
             const installUserInfo = `${lipikitInstallId}|${userId}|${displayName}|${this.config.appVersion}`;
-            
-            // Current timestamp
             const timestamp = new Date().toISOString();
-            
-            // Device info
             const deviceInfo = await this.getDeviceInfo();
             const eventData = `${event}|${deviceInfo}`;
             
-            // Send to Google Form
             const formData = new FormData();
             formData.append(this.config.googleForm.diagFields.installUserInfo, installUserInfo);
             formData.append(this.config.googleForm.diagFields.timestamp, timestamp);
@@ -250,23 +236,16 @@ colors: {
         deviceInfo += `vp:${window.innerWidth}x${window.innerHeight};`;
         deviceInfo += `dm:${window.matchMedia('(display-mode: standalone)').matches ? 'P' : 'B'};`;
         
-        if (navigator.hardwareConcurrency) {
-            deviceInfo += `hc:${navigator.hardwareConcurrency};`;
-        }
-        if (navigator.deviceMemory) {
-            deviceInfo += `dmem:${navigator.deviceMemory};`;
-        }
+        if (navigator.hardwareConcurrency) deviceInfo += `hc:${navigator.hardwareConcurrency};`;
+        if (navigator.deviceMemory) deviceInfo += `dmem:${navigator.deviceMemory};`;
         
         deviceInfo += `tz:${Intl.DateTimeFormat().resolvedOptions().timeZone};`;
         
-        // Try to get IP address
         if (this.config.features.getIP) {
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
-                const response = await fetch('https://api.ipify.org?format=json', { 
-                    signal: controller.signal 
-                });
+                const response = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const data = await response.json();
                 deviceInfo += `ip:${data.ip};`;
@@ -278,7 +257,6 @@ colors: {
         return deviceInfo;
     },
     
-    // Trip-specific utility functions
     validatePIN: function(enteredPIN) {
         if (!window.CryptoJS) {
             console.error('CryptoJS library not loaded');
@@ -298,7 +276,6 @@ colors: {
         return `${numAmount.toLocaleString()} ${currencyCode}`;
     },
     
-    // Utility functions
     generateUUID: function() {
         return 'uuid-' + Date.now() + '-' + Math.random().toString(36).slice(2);
     },

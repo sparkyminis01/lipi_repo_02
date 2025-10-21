@@ -1,5 +1,5 @@
 // Service Worker for Trip Tracker PWA
-const CACHE_NAME = 'cache-trip-tracker-v0.0.7a';
+const CACHE_NAME = 'cache-trip-tracker-v0.0.8a';
 
 const urlsToCache = [
   "/",

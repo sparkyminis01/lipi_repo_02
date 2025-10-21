@@ -208,7 +208,7 @@ faqs: [
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Begin your travel planning journey with these steps:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
-                    <li>Open the app and <strong>create a user profile</strong> by entering a unique username on the initial login screen.</li>
+                    <li>Open the app and <strong>create a user profile</strong> by logging in using either Google or Microsoft id.</li>
                     <li>From the <strong>main Trips screen</strong>, click <strong style="color: var(--primary-color);">'Add New Trip'</strong> to create your first trip.</li>
                     <li>Complete the trip creation form with details like trip name, currencies, countries, and dates.</li>
                     <li>Start managing your trip:
@@ -335,20 +335,6 @@ faqs: [
                     </li>
                 </ul>
                 <p>Return to the main Trips screen to continue using the updated app.</p>
-            </div>
-        `
-    },
-    {
-        question: "Can I change my username?",
-        answer: `
-            <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
-                <p>Usernames cannot be changed to maintain data consistency:</p>
-                <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
-                    <li>To use a different username, go to the <strong>main Trips screen</strong>, open <strong>Settings</strong> via the menu icon, and select <strong>Data Management</strong>.</li>
-                    <li>Choose <strong>Reset All App Data</strong> to clear existing data.</li>
-                    <li>Create a <strong>new profile</strong> with a new username on the initial login screen.</li>
-                </ul>
-                <p>Export your data first from Settings to avoid losing trips, then return to the main screen to set up the new profile.</p>
             </div>
         `
     },

@@ -361,15 +361,6 @@ renderQuestionItem: function(question, questionIndex) {
                         </div>
                     </div>
 
-                    <!-- Itinerary -->
-                    <div class="action-card">
-                        <h3>🗓️ Manage Itinerary</h3>
-                        <p>Plan your daily activities and view your upcoming schedule. Coming soon with enhanced features.</p>
-                        <div class="action-buttons">
-                            <button class="btn btn-disabled" disabled>Coming Soon</button>
-                        </div>
-                    </div>
-
                     <!-- Checklist -->
                     <div class="action-card">
                         <h3>📋 Manage Checklist</h3>
@@ -379,6 +370,23 @@ renderQuestionItem: function(question, questionIndex) {
                             <button id="customize-checklist-btn" class="btn btn-primary">Customize</button>
                         </div>
                     </div>
+                    <!-- Travel Document -->
+                    <div class="action-card">
+                        <h3>🗓️ Manage Travel Document</h3>
+                        <p>Upload your tickets, load your Ids, passport, visa, etc. Manage and store securely on your device. Coming soon with enhanced features.</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                    <!-- Itinerary -->
+                    <div class="action-card">
+                        <h3>🗓️ Manage Itinerary</h3>
+                        <p>Plan your daily activities and view your upcoming schedule. Coming soon with enhanced features.</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+
                     
                     <!-- Promos -->
                     <div class="promo-container">
