@@ -74,7 +74,7 @@ const SettingsManager = {
     },
 
        
-    renderSecuritySection: function() { 
+renderSecuritySection: function() {
         const currentTimeout = localStorage.getItem('lipikit_autoLogoutDays') || '30';
         
         return `
@@ -83,15 +83,15 @@ const SettingsManager = {
                 
                 <div class="form-group">
                     <label for="auto-logout-timeout">Auto Logout After Inactivity</label>
-                    <select id="auto-logout-timeout" class="form-control">
+                    <select id="auto-logout-timeout" class="form-control" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem;">
                         <option value="1" ${currentTimeout === '1' ? 'selected' : ''}>1 day</option>
                         <option value="7" ${currentTimeout === '7' ? 'selected' : ''}>7 days</option>
-                        <option value="30" ${currentTimeout === '30' ? 'selected' : ''}>30 days</option>
+                        <option value="30" ${currentTimeout === '30' ? 'selected' : ''}>30 days (Recommended)</option>
                         <option value="90" ${currentTimeout === '90' ? 'selected' : ''}>90 days</option>
                         <option value="never" ${currentTimeout === 'never' ? 'selected' : ''}>Never</option>
                     </select>
                     <small style="color: #6b7280; display: block; margin-top: 0.5rem;">
-                        You'll be automatically signed out after this period of inactivity.
+                        You'll be automatically signed out after this period of inactivity. Changes take effect on next login.
                     </small>
                 </div>
             </div>

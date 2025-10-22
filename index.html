@@ -10,6 +10,41 @@
   <meta name="theme-color" content="#9333ea">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="appstyle.css">
+  <style>
+    /* Loading Spinner */
+    #app-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease-out;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #9333ea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-text {
+      color: #4a4a4a;
+      font-size: 1.1em;
+      margin-top: 10px;
+    }
+  </style>
   
   <!-- CryptoJS for PIN validation -->
   <script src="crypto-js.min.js"></script>
@@ -20,15 +55,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   
   <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6822234477749633" crossorigin="anonymous"></script>
+  <!--script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6822234477749633" crossorigin="anonymous"></script>-->
 </head>
 <body>
+  <!-- Loading Spinner -->
+  <div id="app-loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading TRIPS...</div>
+  </div>
+
   <div class="container">
     <!-- Header -->
     <header class="header">
-      <div class="logo" onclick="location.reload()" style="cursor: pointer; user-select: none;">
-        <span class="company-name" id="company-name">LipiKit</span>
-        <span class="app-name" id="app-name">App</span>
+      <div class="logo" onclick="location.reload()" style="cursor: pointer; user-select: none; display: flex; align-items: center; gap: 12px;">
+        
+        <div>
+          <span class="company-name" id="company-name">LipiKit</span>
+          <span class="app-name" id="app-name">Trips</span>
+        </div>
       </div>
       <!-- Profile dropdown will be injected by profile-auth.js -->
     </header>
@@ -67,21 +111,29 @@
 
     <!-- Info Blocks -->
     <div class="info-grid">
+      <div class="info-block" id="app-info-block"></div>
       <div class="info-block">
         <h2>LipiKit</h2>
         <h3>Productivity Apps for Everyone</h3>
         <p>Discover our suite of powerful apps designed for business, personal, and travel productivity.</p>
         <p>A curated collection of powerful, offline-first applications designed to enhance your productivity and simplify complex workflows.</p>
+        <p>Built with modern web technologies and a focus on user experience, our apps deliver professional-grade functionality with consumer-friendly interfaces.</p>
         <a href="https://lipikit.com" class="btn btn-primary" target="_blank">Explore All Apps</a>
       </div>
       <div class="info-block">
-        <h2>Connect With Us</h2>
-        <h3>Support & Partnership</h3>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <a href="https://sparkyminis.com" target="_blank" style="text-decoration: none;">
+            <img src="logo.png" alt="SparkyMinis" style="height: 150px; width: auto; margin: 0 auto 1rem; display: block;">
+            <h2 style="margin: 0; color: var(--primary-color);">SparkyMinis Media-Tech</h2>
+          </a>
+        </div>
+        <p>We are SparkyMinis - Ethical AI Media-Tech for Nourished Lives</p>
         <p>Need help with your app? Want to suggest a new feature? Looking for business partnerships?</p>
+        <p>Ready to ignite your project? Whether it's a custom AI workshop, media partnership. We're here to co-create intentional impact.</p>
         <a href="mailto:connect@sparkyminis.com" class="btn btn-success">Email Support</a>
         <a href="https://MadeByPriyanka.com" class="btn btn-secondary" target="_blank">Founder's Desk</a>
       </div>
-      <div class="info-block" id="app-info-block"></div>
+      
     </div>
 
     <!-- FAQ -->
@@ -102,7 +154,20 @@
     <p id="app-version"></p>
   </footer>
 
-  <!-- App Scripts -->
+  <!-- Load app scripts -->
+  <script>
+    // Hide loading spinner when all scripts are loaded
+    window.addEventListener('load', function() {
+      // Small delay to ensure everything is properly initialized
+      setTimeout(function() {
+        const loading = document.getElementById('app-loading');
+        if (loading) {
+          loading.style.opacity = '0';
+          setTimeout(() => loading.remove(), 300); // Match the transition duration
+        }
+      }, 500);
+    });
+  </script>
   <script src="config.js"></script>
   <script src="profile-auth.js"></script>
   <script src="settings.js"></script>

@@ -387,6 +387,24 @@ renderQuestionItem: function(question, questionIndex) {
                         </div>
                     </div>
 
+                    <!-- Map Integration -->
+                    <div class="action-card">
+                        <h3>🗺️ Map & Locations</h3>
+                        <p>Visualize your trip on a map, save favorite spots, and get directions to your destinations.</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <!-- Travel Journal -->
+                    <div class="action-card">
+                        <h3>📔 Travel Journal</h3>
+                        <p>Document your journey with photos, notes, and memories. Create a beautiful travel diary.</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+
                     
                     <!-- Promos -->
                     <div class="promo-container">
@@ -2671,64 +2689,50 @@ showMessage: function(title, message, isConfirmation = false, isHtml = false) {
      * This is crucial for single-page apps where content is added dynamically.
      */
     initializeAds: function() {
-    console.log('initializeAds called');
-    const adContainers = document.querySelectorAll('.adsense-container[data-ad-initialized="false"]');
-    console.log('Found ad containers:', adContainers.length);
+        console.log('initializeAds called');
+        const adContainers = document.querySelectorAll('.adsense-container[data-ad-initialized="false"]');
+        console.log('Found ad containers:', adContainers.length);
 
-    adContainers.forEach((container, index) => {
-        console.log(`Processing ad container ${index + 1}:`, container);
-        
-        try {
-            // Check if adsbygoogle script is loaded and available
-            if (typeof window.adsbygoogle !== 'undefined' && window.adsbygoogle) {
-                console.log('AdSense script found, initializing ad...');
-                
-                // Find the actual ad element inside the container
-                const adElement = container.querySelector('ins.adsbygoogle');
-                if (adElement) {
-                    console.log('Found ad element, pushing to adsbygoogle queue');
-                    (window.adsbygoogle = window.adsbygoogle || []).push({});
-                    container.dataset.adInitialized = 'true';
-                    console.log('Ad initialized successfully');
+        adContainers.forEach((container, index) => {
+            console.log(`Processing ad container ${index + 1}:`, container);
+            
+            try {
+                // Check if adsbygoogle script is loaded and available
+                if (typeof window.adsbygoogle !== 'undefined' && window.adsbygoogle) {
+                    console.log('AdSense script found, initializing ad...');
+                    
+                    // Find the actual ad element inside the container
+                    const adElement = container.querySelector('ins.adsbygoogle');
+                    if (adElement) {
+                        console.log('Found ad element, pushing to adsbygoogle queue');
+                        (window.adsbygoogle = window.adsbygoogle || []).push({});
+                        container.dataset.adInitialized = 'true';
+                        console.log('Ad initialized successfully');
+                    } else {
+                        console.warn('No ins.adsbygoogle element found in container');
+                    }
                 } else {
-                    console.warn('No ins.adsbygoogle element found in container');
-                }
-            } else {
-                console.warn('script not available, showing placeholder');
-                
-                // Enhanced placeholder for development/testing
-                container.innerHTML = `
-                    <div style="min-height:90px; background:linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
-                                linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
-                                linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
-                                linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
-                                background-size: 20px 20px;
-                                background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-                                border:2px dashed #aaa; 
-                                display:flex; align-items:center; justify-content:center; 
-                                color:#666; font-weight:bold; font-size:14px; 
-                                border-radius:8px; position:relative;">
-                        <div style="background:white; padding:8px 16px; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-                            [ # ${index + 1}]
-                            <br><small style="font-weight:normal; color:#888;">[ Coming soon: Ad space ]</small>
+                    console.warn('AdSense script not available, using minimal container');
+                    container.innerHTML = `
+                        <div style="height:1px; width:1px; overflow:hidden; position:absolute; opacity:0;">
+                            <ins class="adsbygoogle" style="display:inline-block; width:1px; height:1px;"></ins>
                         </div>
+                    `;
+                    container.dataset.adInitialized = 'true';
+                }
+            } catch (error) {
+                console.error('Error initializing AdSense ad:', error);
+                container.innerHTML = `
+                    <div style="min-height:90px; background:#ffebee; border:2px dashed #f44336; 
+                                display:flex; align-items:center; justify-content:center; 
+                                color:#d32f2f; font-size:14px; border-radius:8px;">
+                        [AdSense Error: ${error.message}]
                     </div>
                 `;
                 container.dataset.adInitialized = 'true';
             }
-        } catch (error) {
-            console.error('Error initializing AdSense ad:', error);
-            container.innerHTML = `
-                <div style="min-height:90px; background:#ffebee; border:2px dashed #f44336; 
-                            display:flex; align-items:center; justify-content:center; 
-                            color:#d32f2f; font-size:14px; border-radius:8px;">
-                    [AdSense Error: ${error.message}]
-                </div>
-            `;
-            container.dataset.adInitialized = 'true';
-        }
-    });
-},
+        });
+    },
 
     // ... next function (Checklist Management Methods etc.) ...
 

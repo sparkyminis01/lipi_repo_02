@@ -1,7 +1,7 @@
 {
   "name": "LipiKit Trips",
   "short_name": "TRIPS",
-  "description": "Effortlessly manage your trip expenses, checklists, and itineraries, documents even offline! Totally Free!!",
+  "description": "Effortlessly manage your trip expenses, checklists, documents and itineraries, documents even offline! Totally Free!!",
   "id": "/",
   "prefer_related_applications": false,
   "start_url": "/",

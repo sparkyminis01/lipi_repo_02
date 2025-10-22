@@ -3,8 +3,8 @@ const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v0.0.8b',
-        appDescription: 'All-in-one travel manager for expenses, checklists, itineraries, documents, and attractions – secure and friendly.',
+        appVersion: 'v0.0.9',
+        appDescription: 'All-in-one travel manager for expenses, checklists, itineraries, documents, and attractions – secure and friendly. by SparkyMinis.com via LipiKit ',
         companyName: 'LipiKit',
         
         // Trip Tracker Color Theme (SOOTHING VIBRANT theme)
@@ -106,7 +106,7 @@ const AppConfig = {
         // External Links
         links: {
             lipikit: 'https://lipikit.com',
-            founder: 'https://PriyankaDatar.com',
+            founder: 'https://MadeByPriyanka.com',
             support: 'mailto:connect@sparkyminis.com',
             privacy: 'https://lipikit.com/privacy',
             terms: 'https://lipikit.com/terms'
@@ -180,10 +180,20 @@ const AppConfig = {
         const appInfoBlock = document.getElementById('app-info-block');
         if (appInfoBlock) {
             appInfoBlock.innerHTML = `
-                <h2>${this.config.companyName} ${this.config.appName}</h2>
-                <p>${this.config.appDescription}</p>
-                <p>Track multi-currency expenses, manage smart checklists, locally store all your documents at one place in secured environment, plan detailed itineraries, discover attractions, and keep data secured in your own device – with support for multiple profiles for your personal and business separations.</p>
-                <button class="btn btn-primary" onclick="this.scrollIntoView({behavior: 'smooth', block: 'start'})">Plan Your Trip</button>
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <img src="logo-trip-expense-tracker.png" alt="${this.config.companyName} ${this.config.appName}" 
+                         style="max-width: 200px; height: auto; margin: 0 auto 1rem; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h2 style="margin: 0.5rem 0 0; color: var(--primary-color);">${this.config.companyName} ${this.config.appName}</h2>
+                </div>
+                <p style="font-size: 1.1em; line-height: 1.6; color: #4a4a4a;">${this.config.appDescription}</p>
+                <p style="line-height: 1.6; color: #555;">Track multi-currency expenses, manage smart checklists, and store all your travel documents securely in one place. Plan detailed itineraries, discover attractions, and keep your data safe on your own device – with support for multiple profiles to separate your personal and business trips.</p>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-primary" 
+                            onclick="document.getElementById('app-area').scrollIntoView({behavior: 'smooth', block: 'start'})"
+                            style="padding: 0.75rem 2rem; font-size: 1.1em; border-radius: 30px; font-weight: 600;">
+                        Start Planning Your Trip
+                    </button>
+                </div>
             `;
         }
     },
@@ -299,5 +309,4 @@ const AppConfig = {
     isOnline: function() {
         return navigator.onLine;
     }
-
 };

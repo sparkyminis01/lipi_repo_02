@@ -43,15 +43,11 @@ const AppSettingsManager = {
             // In appsettings.js, replace the adtag property in getDefaultSettings():
 adtag: `
 <ins class="adsbygoogle"
-     style="display:block; min-height:90px; background:#f0f0f0; border:2px dashed #ccc; position:relative;"
+     style="display:none; height:1px; width:1px; overflow:hidden; position:absolute;"
      data-ad-client="ca-pub-6822234477749633"
      data-ad-slot="9821322455"
      data-ad-format="auto"
      data-full-width-responsive="true">
-     <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
-                 color:#666; font-size:14px; text-align:center;">
-            [ Coming soon: Ad space ]
-     </div>
 </ins>`
         };
     },
@@ -63,6 +59,7 @@ adtag: `
         // Render the combined settings page with the new order
         appSettingsDiv.innerHTML = `
             ${this.renderTravelPreferencesSection()}
+            ${SettingsManager.renderSecuritySection()}
             ${SettingsManager.renderPrivacyDataSection()}
             ${SettingsManager.renderDataManagementSection()}
             ${SettingsManager.renderSupportInfoSection()}
