@@ -1,3 +1,158 @@
+// ============================================================================
+// ADD THIS ENTIRE SECTION TO app.js - BEFORE const AppManager = {
+// ============================================================================
+
+/**
+ * Trip Credit Manager - Handles free plan credit logic
+ * Works with Firebase ProfileManager
+ * Free users: 3 credits per trip creation
+ * Premium users: unlimited
+ */
+const TripCreditManager = {
+  FREE_CREDITS: 3,
+  
+  /**
+   * Check if user can create new trip
+   * @param {Object} user - Current user object from Firebase
+   * @returns {Object} - { canCreate: boolean, creditsRemaining: number, message: string }
+   */
+  checkCreationAllowed(user) {
+    if (!user) {
+      return { canCreate: false, creditsRemaining: 0, message: 'No user logged in' };
+    }
+
+    // Premium users always allowed
+    if (user.plan === 'pro') {
+      return { canCreate: true, creditsRemaining: null, message: 'Unlimited trips' };
+    }
+
+    // Free users - check credits
+    const creditsUsed = user.tripCreditsUsed || 0;
+    const creditsRemaining = Math.max(0, this.FREE_CREDITS - creditsUsed);
+    const canCreate = creditsRemaining > 0;
+
+    return {
+      canCreate,
+      creditsRemaining,
+      creditsUsed,
+      message: canCreate 
+        ? `${creditsRemaining} trip${creditsRemaining !== 1 ? 's' : ''} remaining`
+        : 'All free trips used'
+    };
+  },
+
+  /**
+   * Consume a credit when trip is created
+   * Updates Firebase Firestore & local user object
+   * @param {Object} user - Current user from Firebase
+   * @returns {Promise<boolean>} - Success
+   */
+  async consumeCredit(user) {
+    try {
+      if (!user || user.plan === 'pro') return true;
+
+      // Update local user object
+      user.tripCreditsUsed = (user.tripCreditsUsed || 0) + 1;
+      
+      // Update Firebase if available
+      if (ProfileManager.firestore && user.userId) {
+        const userRef = ProfileManager.firestore.collection('users').doc(user.userId);
+        await userRef.set({ tripCreditsUsed: user.tripCreditsUsed }, { merge: true });
+        console.log(`Credit consumed. Credits used: ${user.tripCreditsUsed}`);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to consume credit:', error);
+      return false;
+    }
+  },
+
+  /**
+   * Get credits display info for header
+   * @param {Object} user - Current user
+   * @returns {Object} - { display: string, creditsRemaining: number, isPremium: boolean }
+   */
+  getHeaderInfo(user) {
+    if (!user) {
+      return { display: '', creditsRemaining: 0, isPremium: false };
+    }
+
+    const isPremium = user.plan === 'pro';
+    if (isPremium) {
+      return { 
+        display: '∞ Unlimited',
+        creditsRemaining: null,
+        isPremium: true 
+      };
+    }
+
+    const creditsUsed = user.tripCreditsUsed || 0;
+    const creditsRemaining = Math.max(0, this.FREE_CREDITS - creditsUsed);
+    
+    return {
+      display: `${creditsRemaining}/${this.FREE_CREDITS} trips`,
+      creditsRemaining,
+      isPremium: false
+    };
+  },
+
+  /**
+   * Show upgrade modal when credits exhausted
+   */
+  showUpgradePrompt() {
+    const upgradeModal = document.createElement('div');
+    upgradeModal.className = 'modal app-modal';
+    upgradeModal.id = 'upgrade-prompt-modal';
+    upgradeModal.innerHTML = `
+      <div class="modal-content" style="max-width: 500px; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">✈️</div>
+        
+        <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">
+          You've used all 3 free trip credits
+        </h2>
+        
+        <p style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.95rem;">
+          Ready for unlimited travel planning? Upgrade to Pro and create as many trips as you want!
+        </p>
+
+        <div style="background: #f0fdf4; border-left: 4px solid var(--success-color); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; text-align: left;">
+          <strong style="color: #15803d;">Pro Plan Benefits:</strong>
+          <ul style="margin: 0.5rem 0 0 1rem; color: #047857; font-size: 0.9rem;">
+            <li>∞ Unlimited trips</li>
+            <li>Advanced analytics</li>
+            <li>Cloud sync (coming soon)</li>
+            <li>Priority support</li>
+          </ul>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <a href="https://rzp.io/rzp/NiFP60q" target="_blank" class="btn btn-primary" style="text-decoration: none; padding: 1rem;">
+            <strong>Upgrade Now</strong>
+          </a>
+          <button id="upgrade-cancel-btn" class="btn btn-secondary" style="padding: 1rem;">
+            Maybe Later
+          </button>
+        </div>
+
+        <p style="font-size: 0.8rem; color: var(--text-light);">
+          Questions? <a href="mailto:connect@sparkyminis.com" style="color: var(--primary-color); text-decoration: none;">Contact support</a>
+        </p>
+      </div>
+    `;
+
+    document.body.appendChild(upgradeModal);
+
+    upgradeModal.querySelector('#upgrade-cancel-btn').addEventListener('click', () => {
+      upgradeModal.remove();
+    });
+
+    upgradeModal.addEventListener('click', (e) => {
+      if (e.target === upgradeModal) upgradeModal.remove();
+    });
+  }
+};
+
 const AppManager = {
     isInitialized: false,
     activeTrip: null,
@@ -16,6 +171,22 @@ const AppManager = {
     currentQuestionPage: 0,
     questionsPerPage: 3,
     userResponses: {},
+        documentTypes: [
+        'ID Proof',
+        'Passport',
+        'Visa',
+        'Flight Ticket',
+        'Hotel Booking',
+        'Train Ticket',
+        'Insurance',
+        'Vaccination Certificate',
+        'Receipt',
+        'Itinerary',
+        'Other'
+    ],
+    
+    currentDocumentFilter: 'all',
+    currentDocumentSearch: '',
     
     init: function() {
         // Only initialize if user is logged in
@@ -84,33 +255,74 @@ const AppManager = {
     },
     
     renderTripSelectionView: function() {
-    const appArea = document.getElementById('app-area');
-    const user = ProfileManager ? ProfileManager.getCurrentUser() : null;
-    const userName = user ? user.displayName : 'User';
-    
-    appArea.innerHTML = `
-        <div class="card">
-            <h1><span style="color: var(--primary-color);">Hi ${userName}!</span> Your Trips</h1>
-            <p class="currency-name" style="margin-bottom: 1.5rem;">Manage your travel adventures and track expenses across multiple trips.</p>
-            
-            <button id="add-trip-btn" class="btn btn-primary btn-full">+ Add New Trip</button>
-            
-            <div id="trip-creation-container" class="hidden">
-                ${this.renderTripCreationForm()}
-            </div>
-            
-            <div id="trip-list" style="margin-top: 2rem;">
-                ${this.renderTripList()}
-            </div>
-             ${this.renderAdsenseBlock()}
+  const appArea = document.getElementById('app-area');
+  const user = ProfileManager ? ProfileManager.getCurrentUser() : null;
+  const userName = user ? user.displayName.split(' ')[0] : 'User';
+  
+  // Get credit info
+  const creditInfo = TripCreditManager.getHeaderInfo(user);
+  const creditDisplay = creditInfo.isPremium 
+    ? '<span style="color: #10b981; font-weight: 700;">∞ Unlimited Trips</span>'
+    : `<span style="color: var(--primary-color); font-weight: 700;">${creditInfo.creditsRemaining}/${TripCreditManager.FREE_CREDITS} trips</span>`;
+  
+  appArea.innerHTML = `
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+        <div>
+          <h1><span style="color: var(--primary-color);">Hi ${userName}!</span> Your Trips</h1>
+          <p class="currency-name" style="margin: 0.5rem 0 0;">Manage your travel adventures and track expenses across multiple trips.</p>
+          <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+            ${creditDisplay}
+            <button id="credit-info-btn" class="btn-help-icon" title="Learn about trip credits" 
+                    style="background: none; border: none; cursor: help; font-size: 1.2rem; padding: 0; color: var(--primary-color);">
+              ⓘ
+            </button>
+          </div>
         </div>
-    `;
-    
-    // Initialize multi-select widgets in the basic form (if present)
-    this.initTripBasicFormWidgets();
-            // Initialize any ads that were just rendered
-        this.initializeAds();
+        <div id="plan-badge" style="text-align: right;">
+          ${user && user.plan === 'pro' 
+            ? '<span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">✓ PRO</span>'
+            : '<span style="background: #94a3b8; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">FREE</span>'}
+        </div>
+      </div>
+      
+      <button id="add-trip-btn" class="btn btn-primary btn-full">+ Add New Trip</button>
+      
+      <div id="trip-creation-container" class="hidden">
+        ${this.renderTripCreationForm()}
+      </div>
+      
+      <div id="trip-list" style="margin-top: 2rem;">
+        ${this.renderTripList()}
+      </div>
+      ${this.renderAdsenseBlock()}
+    </div>
+  `;
+  
+  // Credit info popup
+  const creditInfoBtn = document.getElementById('credit-info-btn');
+  if (creditInfoBtn) {
+    creditInfoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.showMessage(
+        'Trip Credits',
+        `<div style="text-align: left;">
+          <p><strong>Free Plan:</strong> Create up to 3 trips</p>
+          <p style="color: var(--text-light); font-size: 0.9rem;">Each trip creation uses 1 credit. Deleting trips doesn't refund credits.</p>
+          <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border-color);">
+          <p><strong>Pro Plan:</strong> Unlimited trips</p>
+          <p style="color: var(--text-light); font-size: 0.9rem;">Upgrade anytime to unlock unlimited trip creation and more features.</p>
+        </div>`,
+        false,
+        true
+      );
+    });
+  }
+
+  this.initTripBasicFormWidgets();
+  this.initializeAds();
 },
+
 
 renderTripCreationForm: function() {
     if (this.tripCreationStep === 1) {
@@ -323,7 +535,7 @@ renderQuestionItem: function(question, questionIndex) {
         appArea.innerHTML = `
             <div class="card">
                 <div class="trip-header-bar">
-                    <button type="button" id="back-to-trips-btn" class="btn btn-secondary">&larr; Back to Trips</button>
+                    <button type="button" id="back-to-trips-btn" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Trips</button>
                 </div>
                 
                 <h1 class="trip-view-title">
@@ -333,7 +545,7 @@ renderQuestionItem: function(question, questionIndex) {
                             ${statusHtml}
                         </div>
                         <div style="font-size: 0.75rem; font-weight: 400; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.025em;">
-                            Base: ${this.activeTrip.baseCurrency} • ${this.formatTripDates()}
+                            Base: ${this.activeTrip.baseCurrency} - ${this.formatTripDates()}
                         </div>
                     </div>
                 </h1>
@@ -353,77 +565,77 @@ renderQuestionItem: function(question, questionIndex) {
                 <div class="action-grid">
                     <!-- Expenses -->
                     <div class="action-card">
-                        <h3>💰 Manage Expenses</h3>
-                        <p>Track your spending and manage your budget. ${totalExpenses} expense${totalExpenses !== 1 ? 's' : ''} logged so far.</p>
+                        <h3><i class="fas fa-wallet"></i> Manage Expenses</h3>
+                        <p>Track your spending and manage your budget. <strong>${totalExpenses}</strong> expense${totalExpenses !== 1 ? 's' : ''} logged so far.</p>
                         <div class="action-buttons">
-                            <button id="add-expense-btn" class="btn btn-primary">+ Add Expense</button>
-                            <button id="expense-summary-btn" class="btn btn-secondary">View Summary</button>
+                            <button id="add-expense-btn" class="btn btn-success btn-full">+ Add Expense</button>
+                            <button id="expense-summary-btn" class="btn btn-primary btn-full"><i class="fas fa-chart-line"></i> Summary</button>
+                        </div>
+                    </div>
+
+                    <!-- Itinerary -->
+                    <div class="action-card">
+                        <h3><i class="fas fa-calendar"></i> Manage Itinerary</h3>
+                        <p>Plan your daily activities and track completion. <strong>${this.getItineraryActivities().length}</strong> activit${this.getItineraryActivities().length !== 1 ? 'ies' : 'y'} planned.</p>
+                        <div class="action-buttons">
+                            <button id="track-itinerary-btn" class="btn btn-success btn-full"><i class="fas fa-check"></i> Track</button>
+                            <button id="plan-itinerary-btn" class="btn btn-primary btn-full"><i class="fas fa-calendar-alt"></i> Plan</button>
                         </div>
                     </div>
 
                     <!-- Checklist -->
                     <div class="action-card">
-                        <h3>📋 Manage Checklist</h3>
+                        <h3><i class="fas fa-clipboard"></i> Manage Checklist</h3>
                         <p>Keep track of your travel preparation and packing items.</p>
                         <div class="action-buttons">
-                            <button id="view-checklist-btn" class="btn btn-success">View</button>
-                            <button id="customize-checklist-btn" class="btn btn-primary">Customize</button>
-                        </div>
-                    </div>
-                    <!-- Travel Document -->
-                    <div class="action-card">
-                        <h3>🗓️ Manage Travel Document</h3>
-                        <p>Upload your tickets, load your Ids, passport, visa, etc. Manage and store securely on your device. Coming soon with enhanced features.</p>
-                        <div class="action-buttons">
-                            <button class="btn btn-disabled" disabled>Coming Soon</button>
-                        </div>
-                    </div>
-                    <!-- Itinerary -->
-                    <div class="action-card">
-                        <h3>🗓️ Manage Itinerary</h3>
-                        <p>Plan your daily activities and view your upcoming schedule. Coming soon with enhanced features.</p>
-                        <div class="action-buttons">
-                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                            <button id="view-checklist-btn" class="btn btn-success btn-full"><i class="fas fa-check"></i> View</button>
+                            <button id="customize-checklist-btn" class="btn btn-primary btn-full"><i class="fas fa-pen"></i> Customize</button>
                         </div>
                     </div>
 
-                    <!-- Map Integration -->
+                    <!-- Travel Documents -->
                     <div class="action-card">
-                        <h3>🗺️ Map & Locations</h3>
-                        <p>Visualize your trip on a map, save favorite spots, and get directions to your destinations.</p>
+                        <h3><i class="fas fa-folder"></i> Manage Travel Documents</h3>
+                        <p>Upload tickets, IDs, passports, visas. Store securely on your device.</p>
                         <div class="action-buttons">
-                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                            <button id="open-document-manager-btn" class="btn btn-success btn-full"><i class="fas fa-file"></i> Open Manager</button>
                         </div>
                     </div>
 
-                    <!-- Travel Journal -->
+                    <!-- Map Integration (Disabled) -->
                     <div class="action-card">
-                        <h3>📔 Travel Journal</h3>
-                        <p>Document your journey with photos, notes, and memories. Create a beautiful travel diary.</p>
+                        <h3><i class="fas fa-map"></i> Map & Locations</h3>
+                        <p>Visualize your trip, save spots, get directions. Store your maps and routes.</p>
                         <div class="action-buttons">
-                            <button class="btn btn-disabled" disabled>Coming Soon</button>
+                            <button class="btn btn-disabled btn-full" disabled>Coming Soon</button>
                         </div>
                     </div>
 
-                    
-                    <!-- Promos -->
-                    <div class="promo-container">
-                        <div class="action-card promo-card">
-                            <h3>🛡️ Get Travel Insurance!</h3>
-                            <p>Stay protected on your adventures. Get a personalized quote in minutes.</p>
-                            <button id="promo-btn" class="btn btn-special">Get Quote</button>
+                    <!-- Travel Journal (Disabled) -->
+                    <div class="action-card">
+                        <h3><i class="fas fa-book"></i> Travel Journal</h3>
+                        <p>Document your journey with photos, notes, and memories. Access beautiful custom made Travel report.</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-disabled btn-full" disabled>Coming Soon</button>
                         </div>
-                        <div class="action-card promo-card">
-                            <h3>💻 Travel Tech Deals</h3>
-                            <p>Save on portable monitors, travel-friendly laptops, and tech accessories.</p>
-                            <button id="promo-tech-btn" class="btn btn-special">View Deals</button>
-                        </div>
-                    </div>
-
-                    <div class="text-center" style="grid-column: 1 / -1; margin-top: 0.5rem;">
-                        <small style="color: #9ca3af; font-size: 0.7rem;">(Affiliate partnerships help support this free app)</small>
                     </div>
                 </div>
+
+                <!-- Promo Section -->
+                <div class="promo-container">
+                    <div class="action-card promo-card">
+                        <h3><i class="fas fa-shield"></i> Get Travel Insurance!</h3>
+                        <p>Stay protected on your adventures. Personalized quote in minutes.</p>
+                        <button id="promo-btn" class="btn btn-special btn-full">Get Quote</button>
+                    </div>
+                    
+                    <div class="action-card promo-card">
+                        <h3><i class="fas fa-laptop"></i> Travel Tech Deals</h3>
+                        <p>Save on portable monitors, laptops, and tech accessories.</p>
+                        <button id="promo-tech-btn" class="btn btn-special btn-full">View Deals</button>
+                    </div>
+                </div>
+
                 ${this.renderAdsenseBlock()}
             </div>
         `;
@@ -432,7 +644,11 @@ renderQuestionItem: function(question, questionIndex) {
         document.getElementById('add-expense-btn').addEventListener('click', () => this.openExpenseViewTab('add-expense'));
         document.getElementById('expense-summary-btn').addEventListener('click', () => this.openExpenseViewTab('expense-summary'));
         document.getElementById('back-to-trips-btn').addEventListener('click', () => this.renderTripsListView());
-
+        document.getElementById('plan-itinerary-btn').addEventListener('click', () => this.renderItineraryView('plan'));
+        document.getElementById('track-itinerary-btn').addEventListener('click', () => this.renderItineraryView('track'));
+        document.getElementById('open-document-manager-btn').addEventListener('click', () => {
+    this.renderDocumentManagerView();
+});
         // Promo event handlers
         if (document.getElementById('promo-btn')) {
             document.getElementById('promo-btn').addEventListener('click', () => this.handlePromoClick());
@@ -458,7 +674,7 @@ renderExpenseView: function(defaultTab = 'add-expense') {
     appArea.innerHTML = `
         <div class="card expense-view">
             <div class="trip-header-bar">
-                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary">&larr; Back to Dashboard</button>
+                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
             </div>
             <h1 class="trip-view-title">
                 Trip: <span style="color: var(--primary-color);">${this.activeTrip.name}</span>
@@ -529,7 +745,7 @@ renderExpenseView: function(defaultTab = 'add-expense') {
                                 <button id="add-location-btn" type="button" 
                                         class="btn location-btn" 
                                         title="Add location from map">
-                                    🌐
+                                    ðŸŒ
                                 </button>
                                 <span class="location-btn-label">Add location</span>
                             </div>
@@ -580,19 +796,19 @@ renderExpenseView: function(defaultTab = 'add-expense') {
                     <h2>Data Queue</h2>
                     <div class="collapsible-section mb-1rem">
                         <h3 id="synced-header" class="collapsible-header text-success" aria-expanded="true">
-                            Synced Data <span class="toggle-icon">▼</span>
+                            Synced Data <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                         </h3>
                         <ul id="synced-list" class="collapsible-content list-disc pl-1.5rem text-secondary"></ul>
                     </div>
                     <div class="collapsible-section mb-1rem">
                         <h3 id="unsynced-header" class="collapsible-header text-red" aria-expanded="true">
-                            Unsynced Data <span class="toggle-icon">▼</span>
+                            Unsynced Data <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                         </h3>
                         <ul id="unsynced-list" class="collapsible-content list-disc pl-1.5rem text-secondary"></ul>
                     </div>
                     <div class="data-queue-controls">
-                        <button id="export-data-btn" class="btn btn-secondary">📤 Export JSON</button>
-                        <button id="manual-sync-btn" class="btn btn-success">🔄 Sync Now (PIN)</button>
+                        <button id="export-data-btn" class="btn btn-secondary"><i class="fas fa-download"></i> Export JSON</button>
+                        <button id="manual-sync-btn" class="btn btn-success"><i class="fas fa-sync"></i> Sync Now (PIN)</button>
                     </div>
                 </div>
             </div>
@@ -638,11 +854,11 @@ renderExpenseView: function(defaultTab = 'add-expense') {
             if (isExpanded) {
                 content.style.display = 'none';
                 header.setAttribute('aria-expanded', 'false');
-                icon.textContent = '▶';
+                icon.innerHTML = '<i class="fas fa-chevron-down"></i>';
             } else {
                 content.style.display = 'block';
                 header.setAttribute('aria-expanded', 'true');
-                icon.textContent = '▼';
+                icon.innerHTML = '<i class="fas fa-chevron-right"></i>';
             }
         });
     });
@@ -753,11 +969,14 @@ renderTripCard: function(trip) {
                         ${statusHtml}
                     </div>
                     <div class="trip-card-dates">
-                        ${startDate} → ${endDate} (${duration})
+                        ${startDate} <i class="fa-solid fa-arrow-right-long"></i> ${endDate} (${duration})
                     </div>
                     <div class="currency-name" style="font-size: 0.75rem; margin-top: 0.25rem;">
-                        ${expenseCount} expense${expenseCount !== 1 ? 's' : ''} • ${trip.currencies ? trip.currencies.length : 0} currenc${(trip.currencies ? trip.currencies.length : 0) !== 1 ? 'ies' : 'y'}
+                    ${expenseCount} expense${expenseCount !== 1 ? 's' : ''}
+                    <i class="fa-solid fa-circle" style="font-size: 0.4rem; margin: 0 0.35rem;"></i>
+                    ${trip.currencies ? trip.currencies.length : 0} currenc${(trip.currencies ? trip.currencies.length : 0) !== 1 ? 'ies' : 'y'}
                     </div>
+
                 </div>
                 <div class="trip-card-actions">
                     <button class="btn btn-primary start-trip-btn" data-trip-id="${trip.id}" title="Select and start managing this trip">
@@ -781,7 +1000,7 @@ renderTripList: function() {
     if (!trips || trips.length === 0) {
         return `
             <div class="text-center" style="padding: 3rem 1rem; background: var(--bg-light); border-radius: var(--border-radius); border: 2px dashed var(--border-color);">
-                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">✈️</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"><i class="fas fa-plane"></i></div>
                 <h3 style="color: var(--text-medium); margin-bottom: 0.5rem; font-weight: 600;">No trips yet</h3>
                 <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">
                     Start planning your next adventure by creating your first trip above.
@@ -1488,39 +1707,57 @@ initTripBasicFormWidgets: function() {
 
 // === Trip Creation Form Handlers ===
 showTripCreationForm: async function() {
-    this.tripCreationStep = 1;
-    this.currentTripData = null;
-    this.questionsData = null;
-    this.currentQuestionPage = 0;
-    this.userResponses = {};
+  const user = ProfileManager.getCurrentUser();
+  const creditCheck = TripCreditManager.checkCreationAllowed(user);
 
-    // Ensure container and buttons exist safely
-    const container = document.getElementById('trip-creation-container');
-    const addBtn = document.getElementById('add-trip-btn');
-    const tripList = document.getElementById('trip-list');
+  // Check if user can create trip
+  if (!creditCheck.canCreate) {
+    this.showMessage(
+      'Trip Limit Reached',
+      `<div style="text-align: center;">
+        <p style="color: var(--text-light); margin-bottom: 1rem;">You've used all 3 free trip credits.</p>
+        <p style="color: var(--text-dark); font-weight: 600; margin-bottom: 1.5rem;">Upgrade to unlock unlimited trips.</p>
+        <a href="https://rzp.io/rzp/NiFP60q" target="_blank" class="btn btn-primary" style="text-decoration: none;">
+          Upgrade to Pro
+        </a>
+      </div>`,
+      false,
+      true
+    );
+    return;
+  }
 
-    if (container) container.classList.remove('hidden');
-    if (addBtn) addBtn.classList.add('hidden');
-    if (tripList) tripList.classList.add('hidden');
+  // Original logic - show creation form
+  this.tripCreationStep = 1;
+  this.currentTripData = null;
+  this.questionsData = null;
+  this.currentQuestionPage = 0;
+  this.userResponses = {};
 
-    // Load questions dataset via helper (handles AppSettings + unwrap)
-    const ok = await this.loadQuestionsDataset();
+  const container = document.getElementById('trip-creation-container');
+  const addBtn = document.getElementById('add-trip-btn');
+  const tripList = document.getElementById('trip-list');
 
-    // loadQuestionsDataset returns true/false; fail gracefully but still initialize widgets so form is usable
-    if (!ok) {
-        console.error('Failed to load questions dataset');
-        alert('Could not load trip questions. The form will still be shown with default values.');
-        // render the form anyway (fall back to AppConfig) so widgets exist
-        if (container) container.innerHTML = this.renderTripCreationForm();
-        this.initTripBasicFormWidgets();
-        return;
-    }
+  if (container) container.classList.remove('hidden');
+  if (addBtn) addBtn.classList.add('hidden');
+  if (tripList) tripList.classList.add('hidden');
 
-    // After questions are loaded, re-render the form so the dataset-driven fields appear,
-    // then initialize the widgets
+  const ok = await this.loadQuestionsDataset();
+
+  if (!ok) {
+    console.error('Failed to load questions dataset');
+    alert('Could not load trip questions. The form will still be shown with default values.');
     if (container) container.innerHTML = this.renderTripCreationForm();
     this.initTripBasicFormWidgets();
+    return;
+  }
+
+  if (container) container.innerHTML = this.renderTripCreationForm();
+  this.initTripBasicFormWidgets();
 },
+
+
+
 
     cancelTripCreation: function() {
         this.tripCreationStep = 1;
@@ -1720,26 +1957,415 @@ getCurrentPageQuestions: function() {
         return this.currentQuestionPage * this.questionsPerPage;
     },
 
+// ============================================================================
+// TRIP ONBOARDING SYSTEM - Add to app.js
+// ============================================================================
+
+// Add these methods to your AppManager object
+
+// ============================================================================
+// 1. TRIGGER ONBOARDING AFTER TRIP CREATION
+// ============================================================================
+// UPDATE your existing completeTripCreation() function to call onboarding:
+
 completeTripCreation: async function() {
-    try {
-        // Save question responses to IndexedDB
-        await this.saveQuestionResponses();
+  try {
+    // Save question responses to IndexedDB
+    await this.saveQuestionResponses();
 
-        // Reset state
-        this.tripCreationStep = 1;
-        this.currentTripData = null;
-        this.currentQuestionPage = 0;
-        this.userResponses = {};
+    // Reset state
+    this.tripCreationStep = 1;
+    const newTripData = this.currentTripData;
+    this.currentTripData = null;
+    this.currentQuestionPage = 0;
+    this.userResponses = {};
 
-        // Update UI
-        document.getElementById('trip-creation-container').classList.add('hidden');
-        document.getElementById('trip-list').classList.remove('hidden');
-        this.renderApp();
-        this.showSuccess('Trip created successfully with your preferences!');
-    } catch (error) {
-        this.showError('Failed to complete trip creation: ' + error.message);
-        console.error('Error in completeTripCreation:', error);
+    // Hide creation form
+    document.getElementById('trip-creation-container').classList.add('hidden');
+    document.getElementById('trip-list').classList.remove('hidden');
+    
+    // CONSUME CREDIT - Add this for Firebase users
+    const user = ProfileManager.getCurrentUser();
+    if (user && user.plan !== 'pro') {
+      const creditConsumed = await TripCreditManager.consumeCredit(user);
+      if (!creditConsumed) {
+        console.warn('Failed to record credit consumption (offline or Firebase error)');
+      }
     }
+
+    // Run onboarding
+    await this.runTripOnboarding(newTripData.id);
+    
+    this.renderApp();
+    this.showSuccess('Trip created with starter itinerary and checklist!');
+  } catch (error) {
+    this.showError('Failed to complete trip creation: ' + error.message);
+    console.error('Error in completeTripCreation:', error);
+  }
+},
+
+
+// ============================================================================
+// 2. MAIN ONBOARDING ORCHESTRATOR
+// ============================================================================
+runTripOnboarding: async function(tripId) {
+    console.log('ðŸš€ Running trip onboarding for:', tripId);
+    
+    try {
+        // Load trip data and responses
+        const trips = this.getLocalData('trips');
+        const trip = trips.find(t => t.id === tripId);
+        if (!trip) {
+            console.error('Trip not found for onboarding');
+            return;
+        }
+        
+        // Load user responses from IndexedDB
+        const responses = await this.loadQuestionResponses(tripId);
+        
+        // 1. Generate basic itinerary
+        await this.generateBasicItinerary(trip);
+        
+        // 2. Generate smart checklist
+        await this.generateSmartChecklist(trip, responses);
+        
+        console.log('Trip onboarding completed');
+        return true;
+    } catch (error) {
+        console.error('Trip onboarding failed:', error);
+        return false;
+    }
+},
+
+// ============================================================================
+// 3. GENERATE BASIC ITINERARY
+// ============================================================================
+generateBasicItinerary: async function(trip) {
+    const tripDays = this.calculateTripDaysForTrip(trip);
+    const baseCurrency = trip.baseCurrency;
+    const countries = trip.countries || [];
+    const mainCountry = countries[0] || 'destination';
+    
+    const activities = [];
+    
+    // Day 0 (Arrival): Travel activities
+    activities.push({
+        id: `act-onboard-${Date.now()}-1`,
+        day: 0,
+        name: `Arrive at ${mainCountry}`,
+        type: '<i class="fas fa-car"></i> Transport',
+        plannedCost: 0,
+        plannedCurrency: baseCurrency,
+        url: '',
+        notes: 'Check-in to accommodation, freshen up',
+        status: 'planned',
+        createdAt: new Date().toISOString()
+    });
+    
+    activities.push({
+        id: `act-onboard-${Date.now()}-2`,
+        day: 0,
+        name: 'Welcome dinner',
+        type: '<i class="fas fa-utensils"></i> Food',
+        plannedCost: 0,
+        plannedCurrency: baseCurrency,
+        url: '',
+        notes: 'Try local cuisine',
+        status: 'planned',
+        createdAt: new Date().toISOString()
+    });
+    
+    // Middle days: 2 activities per day
+    const activityTemplates = [
+        { name: 'Morning sightseeing', type: '<i class="fas fa-landmark"></i> Sightseeing', notes: 'Visit popular attractions' },
+        { name: 'Lunch at local restaurant', type: '<i class="fas fa-utensils"></i> Food', notes: 'Try recommended dishes' },
+        { name: 'Afternoon exploration', type: '<i class="fas fa-landmark"></i> Sightseeing', notes: 'Explore neighborhoods' },
+        { name: 'Shopping for souvenirs', type: '<i class="fas fa-shopping-bag"></i> Shopping', notes: 'Visit local markets' },
+        { name: 'Evening entertainment', type: '<i class="fas fa-landmark"></i> Sightseeing', notes: 'Cultural activities' },
+        { name: 'Dinner experience', type: '<i class="fas fa-utensils"></i> Food', notes: 'Special dining' }
+    ];
+    
+    for (let day = 1; day < tripDays.length - 1; day++) {
+        // 2 activities per day
+        const template1 = activityTemplates[(day * 2) % activityTemplates.length];
+        const template2 = activityTemplates[(day * 2 + 1) % activityTemplates.length];
+        
+        activities.push({
+            id: `act-onboard-${Date.now()}-${activities.length + 1}`,
+            day: day,
+            name: template1.name,
+            type: template1.type,
+            plannedCost: 0,
+            plannedCurrency: baseCurrency,
+            url: '',
+            notes: template1.notes,
+            status: 'planned',
+            createdAt: new Date().toISOString()
+        });
+        
+        activities.push({
+            id: `act-onboard-${Date.now()}-${activities.length + 1}`,
+            day: day,
+            name: template2.name,
+            type: template2.type,
+            plannedCost: 0,
+            plannedCurrency: baseCurrency,
+            url: '',
+            notes: template2.notes,
+            status: 'planned',
+            createdAt: new Date().toISOString()
+        });
+    }
+    
+    // Last day (Departure): Travel activities
+    if (tripDays.length > 1) {
+        const lastDay = tripDays.length - 1;
+        
+        activities.push({
+            id: `act-onboard-${Date.now()}-${activities.length + 1}`,
+            day: lastDay,
+            name: 'Check-out and departure',
+            type: '<i class="fas fa-car"></i> Transport',
+            plannedCost: 0,
+            plannedCurrency: baseCurrency,
+            url: '',
+            notes: 'Head to airport/station',
+            status: 'planned',
+            createdAt: new Date().toISOString()
+        });
+        
+        activities.push({
+            id: `act-onboard-${Date.now()}-${activities.length + 1}`,
+            day: lastDay,
+            name: 'Last meal',
+            type: '<i class="fas fa-utensils"></i> Food',
+            plannedCost: 0,
+            plannedCurrency: baseCurrency,
+            url: '',
+            notes: 'Final local food experience',
+            status: 'planned',
+            createdAt: new Date().toISOString()
+        });
+    }
+    
+    // Save all activities
+    const storageKey = `lipikit_itinerary_${trip.id}`;
+    localStorage.setItem(storageKey, JSON.stringify(activities));
+    
+    console.log(`Generated ${activities.length} activities for ${tripDays.length} days`);
+    return activities;
+},
+
+calculateTripDaysForTrip: function(trip) {
+    const start = new Date(trip.start || trip.startDate);
+    const end = new Date(trip.end || trip.endDate);
+    const days = [];
+    
+    let current = new Date(start);
+    let dayNum = 0;
+    
+    while (current <= end) {
+        days.push({
+            number: dayNum,
+            date: new Date(current),
+            label: `Day ${dayNum}`
+        });
+        current.setDate(current.getDate() + 1);
+        dayNum++;
+    }
+    
+    return days;
+},
+
+// ============================================================================
+// 4. GENERATE SMART CHECKLIST
+// ============================================================================
+generateSmartChecklist: async function(trip, responses) {
+    if (!this.checklistMasterData || this.checklistMasterData.length === 0) {
+        console.warn('Checklist master data not loaded, skipping smart checklist');
+        return;
+    }
+    
+    const selectedItems = [];
+    
+    // Filter checklist items based on trip data and responses
+    this.checklistMasterData.forEach(item => {
+        let shouldInclude = false;
+        
+        // Rule 1: Check trip type
+        if (item.tripType) {
+            const tripTypes = Array.isArray(item.tripType) ? item.tripType : [item.tripType];
+            
+            // Determine trip type from responses or trip data
+            const isInternational = trip.countries && trip.countries.length > 0;
+            const isMultiCountry = trip.countries && trip.countries.length > 1;
+            
+            if (tripTypes.includes('international') && isInternational) shouldInclude = true;
+            if (tripTypes.includes('multi_country') && isMultiCountry) shouldInclude = true;
+        }
+        
+        // Rule 2: Check if visa needed (from responses or trip countries)
+        if (item.needsVisa) {
+            const needsVisa = this.checkIfVisaNeeded(trip, responses);
+            if (needsVisa) shouldInclude = true;
+        }
+        
+        // Rule 3: Check arrival mode
+        if (item.arrivalMode) {
+            const arrivalModes = Array.isArray(item.arrivalMode) ? item.arrivalMode : [item.arrivalMode];
+            const userArrivalMode = this.getResponseValue(responses, 'arrivalMode') || 'flight';
+            
+            if (arrivalModes.includes(userArrivalMode)) shouldInclude = true;
+        }
+        
+        // Rule 4: Check duration
+        if (item.duration) {
+            const durations = Array.isArray(item.duration) ? item.duration : [item.duration];
+            const tripDuration = this.getTripDuration(trip);
+            
+            if (durations.includes(tripDuration)) shouldInclude = true;
+        }
+        
+        // Rule 5: Check season
+        if (item.season) {
+            const seasons = Array.isArray(item.season) ? item.season : [item.season];
+            const tripSeason = this.getTripSeason(trip);
+            
+            if (seasons.includes(tripSeason)) shouldInclude = true;
+        }
+        
+        // Rule 6: Check destination type
+        if (item.destType) {
+            const destTypes = Array.isArray(item.destType) ? item.destType : [item.destType];
+            const userDestType = this.getResponseValue(responses, 'destType') || 
+                                 this.getResponseValue(responses, 'destinationType');
+            
+            if (userDestType && destTypes.includes(userDestType)) shouldInclude = true;
+        }
+        
+        // Rule 7: Check activities
+        if (item.activities) {
+            const itemActivities = Array.isArray(item.activities) ? item.activities : [item.activities];
+            const userActivities = this.getResponseValue(responses, 'activities') || [];
+            const userActivitiesArray = Array.isArray(userActivities) ? userActivities : [userActivities];
+            
+            const hasMatch = itemActivities.some(act => 
+                userActivitiesArray.some(userAct => 
+                    userAct.toLowerCase().includes(act.toLowerCase())
+                )
+            );
+            
+            if (hasMatch) shouldInclude = true;
+        }
+        
+        // Rule 8: Check trip style
+        if (item.tripStyle) {
+            const tripStyles = Array.isArray(item.tripStyle) ? item.tripStyle : [item.tripStyle];
+            const userTripStyle = this.getResponseValue(responses, 'tripStyle');
+            
+            if (userTripStyle && tripStyles.includes(userTripStyle)) shouldInclude = true;
+        }
+        
+        // Rule 9: Check travel companions
+        if (item.travelWith) {
+            const travelWithOptions = Array.isArray(item.travelWith) ? item.travelWith : [item.travelWith];
+            const userTravelWith = this.getResponseValue(responses, 'travelWith') || 
+                                   this.getResponseValue(responses, 'companions');
+            
+            if (userTravelWith && travelWithOptions.includes(userTravelWith)) shouldInclude = true;
+        }
+        
+        // Rule 10: Essential items (always include if tagged)
+        if (item.tags && item.tags.includes('essential')) {
+            shouldInclude = true;
+        }
+        
+        // Add item if any rule matched
+        if (shouldInclude) {
+            selectedItems.push({
+                checklistId: item.id,
+                status: 'Not Done',
+                addedAt: new Date().toISOString()
+            });
+        }
+    });
+    
+    // Save to IndexedDB
+    if (selectedItems.length > 0) {
+        const db = await this.getChecklistDB(trip.id);
+        const transaction = db.transaction(['checklist'], 'readwrite');
+        const store = transaction.objectStore('checklist');
+        
+        for (const item of selectedItems) {
+            await store.put(item);
+        }
+        
+        console.log(`Added ${selectedItems.length} checklist items`);
+    } else {
+        console.log('No checklist items matched criteria');
+    }
+    
+    return selectedItems;
+},
+
+// ============================================================================
+// 5. HELPER FUNCTIONS
+// ============================================================================
+checkIfVisaNeeded: function(trip, responses) {
+    // Check if any trip country typically needs visa
+    // This is simplified - in reality you'd check against user's nationality
+    const visaLikelyCountries = ['USA', 'UK', 'China', 'India', 'Australia', 'Japan'];
+    
+    if (trip.countries) {
+        return trip.countries.some(country => 
+            visaLikelyCountries.some(vc => country.includes(vc))
+        );
+    }
+    
+    return false;
+},
+
+getTripDuration: function(trip) {
+    const start = new Date(trip.start || trip.startDate);
+    const end = new Date(trip.end || trip.endDate);
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    
+    if (days <= 3) return 'short';
+    if (days <= 7) return 'medium';
+    return 'long';
+},
+
+getTripSeason: function(trip) {
+    const start = new Date(trip.start || trip.startDate);
+    const month = start.getMonth(); // 0-11
+    
+    // Northern hemisphere seasons
+    if (month >= 2 && month <= 4) return 'spring';
+    if (month >= 5 && month <= 7) return 'summer';
+    if (month >= 8 && month <= 10) return 'fall';
+    return 'winter';
+},
+
+getResponseValue: function(responses, key) {
+    // Try exact key match first
+    if (responses[key]) return responses[key];
+    
+    // Try case-insensitive match
+    const lowerKey = key.toLowerCase();
+    for (const [respKey, value] of Object.entries(responses)) {
+        if (respKey.toLowerCase() === lowerKey) {
+            return value;
+        }
+    }
+    
+    // Try partial match
+    for (const [respKey, value] of Object.entries(responses)) {
+        if (respKey.toLowerCase().includes(lowerKey) || lowerKey.includes(respKey.toLowerCase())) {
+            return value;
+        }
+    }
+    
+    return null;
 },
 
 saveQuestionResponses: async function() {
@@ -1914,17 +2540,27 @@ getUserTripDatabase: async function(tripId) {
     },
     
     startTrip: function(tripId) {
-        const trips = this.getLocalData('trips');
-        const selectedTrip = trips.find(trip => trip.id === tripId);
-        
-        if (selectedTrip) {
-            this.activeTrip = selectedTrip;
-            localStorage.setItem(this.getStorageKey('activeTrip'), JSON.stringify(selectedTrip));
-            this.loadConversionRates();
-            this.currentTripView = 'dashboard'; // Start at dashboard
-            this.renderApp();
-        }
-    },
+  // Just navigate to the trip - credit was already consumed on creation
+  const trips = this.getLocalData('trips');
+  const selectedTrip = trips.find(trip => trip.id === tripId);
+  
+  if (selectedTrip) {
+    this.activeTrip = selectedTrip;
+    localStorage.setItem(this.getStorageKey('activeTrip'), JSON.stringify(selectedTrip));
+    this.loadConversionRates();
+    this.currentTripView = 'dashboard';
+    this.renderApp();
+  }
+},
+
+
+    // ADD THIS HELPER - Get current credit status
+getCreditsStatus: function() {
+  const user = ProfileManager.getCurrentUser();
+  if (!user) return null;
+  return TripCreditManager.checkCreationAllowed(user);
+},
+
     
     backToTrips: function() {
         this.activeTrip = null;
@@ -2583,15 +3219,16 @@ showMessage: function(title, message, isConfirmation = false, isHtml = false) {
         }
         
         if (countries.length === 1) {
-            return `<span class="currency-name">📍 ${countries[0]}</span>`;
+            return `<span class="currency-name"><i class="fas fa-globe"></i> ${countries[0]}</span>`;
         }
         
         if (countries.length <= 3) {
-            return `<span class="currency-name">📍 ${countries.join(', ')}</span>`;
+            return `<span class="currency-name"><i class="fas fa-globe"></i> ${countries.join(', ')}</span>`;
         }
         
-        return `<span class="currency-name">📍 ${countries.slice(0, 2).join(', ')} +${countries.length - 2} more</span>`;
+        return `<span class="currency-name"><i class="fas fa-globe"></i> ${countries.slice(0, 2).join(', ')} +${countries.length - 2} more</span>`;
     },
+
 
     // Get all expenses for a specific trip
     getAllExpensesForTrip: function(tripId) {
@@ -2943,7 +3580,7 @@ renderChecklistView: async function(defaultTab = 'view-checklist') {
     appArea.innerHTML = `
         <div class="card checklist-view">
             <div class="trip-header-bar">
-                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary">&larr; Back to Dashboard</button>
+                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary"><span class="btn-icon"><i class="fas fa-arrow-left"></i></span> Back to Dashboard</button>
             </div>
             
             <h1 class="trip-view-title">
@@ -3038,7 +3675,7 @@ async renderViewChecklistTab() {
                                         <button class="help-btn" 
                                                 data-item-id="${itemId}"
                                                 title="Get helpful resources and links">
-                                            📋 Resources
+                                            <i class="fas fa-lightbulb"></i> Resources
                                         </button>
                                     </div>
                                 </div>
@@ -3287,7 +3924,7 @@ bindChecklistEvents() {
                 return;
             }
 
-            // 🔄 NEW: Refresh checklist from server
+            // ðŸ”„ NEW: Refresh checklist from server
             const refreshBtn = e.target.closest('#refresh-checklist');
             if (refreshBtn && checklistViewRoot.contains(refreshBtn)) {
                 try {
@@ -3300,7 +3937,7 @@ bindChecklistEvents() {
                         console.error('Failed to load checklist dataset:', loadResult.error);
                         return false;
                     }
-                    this.showSuccess('Got more suggestions from our servers ✅');
+                    this.showSuccess('Got more suggestions from our servers');
                       // view refresh with new data.
                     this.renderChecklistView('customize-checklist');
 
@@ -3405,7 +4042,7 @@ showChecklistHelp(tags, description, links = []) {
                           transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                    onmouseover="this.style.backgroundColor='var(--primary-hover)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)';"
                    onmouseout="this.style.backgroundColor='var(--primary-color)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
-                    ${this.escapeHtml(link.label)} <span style="font-size: 0.8rem;">↗</span>
+                    ${this.escapeHtml(link.label)} <span style="font-size: 0.8rem;"><i class="fas fa-external-link-alt"></i></span>
                 </a>`;
             }
         });
@@ -3422,5 +4059,1956 @@ showChecklistHelp(tags, description, links = []) {
     // Show modal with HTML content
     this.showMessage('Helpful Resources', content, false, true);
 }
+,
+
+// ============================================================================
+// ITINERARY FEATURE - Add to app.js
+// ============================================================================
+
+// Add these methods to your AppManager object
+
+// ============================================================================
+// 1. RENDER ITINERARY VIEW
+// ============================================================================
+renderItineraryView: function(defaultTab = 'plan') {
+    const appArea = document.getElementById('app-area');
+    if (!this.activeTrip) return;
+
+    const status = this.getTripStatusTag(this.activeTrip);
+    const statusHtml = status ? `<span class="trip-tag ${status.className}">${status.label}</span>` : "";
+
+    appArea.innerHTML = `
+        <div class="card expense-view">
+            <div class="trip-header-bar">
+                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary btn-with-icon">
+                    <span class="btn-icon"><i class="fas fa-arrow-left"></i></span> Back to Dashboard
+                </button>
+            </div>
+            
+            <h1 class="trip-view-title">
+                Trip: <span style="color: var(--primary-color);">${this.activeTrip.name}</span>
+                ${statusHtml}
+            </h1>
+
+            <div class="tab-header">
+                <button class="tab-btn ${defaultTab === 'plan' ? 'active' : ''}" data-tab="plan-itinerary">
+                    <i class="fa-solid fa-book" style="margin-right: 4px;"></i> Plan
+                </button>
+
+                <button class="tab-btn ${defaultTab === 'track' ? 'active' : ''}" data-tab="track-itinerary">
+                    <i class="fa-solid fa-check" style="margin-right: 4px;"></i> Track
+                </button>
+
+            </div>
+
+            <div id="plan-itinerary" class="tab-content ${defaultTab === 'plan' ? 'active' : ''}">
+                ${this.renderPlanItineraryTab()}
+            </div>
+
+            <div id="track-itinerary" class="tab-content ${defaultTab === 'track' ? 'active' : ''}">
+                ${this.renderTrackItineraryTab()}
+            </div>
+        </div>
+    `;
+
+    // Tab switching
+    document.querySelectorAll('.expense-view .tab-header .tab-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const card = button.closest('.card');
+            card.querySelectorAll('.tab-header .tab-btn').forEach(btn => btn.classList.remove('active'));
+            card.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            button.classList.add('active');
+            const tabContentId = button.dataset.tab;
+            const tabContent = document.getElementById(tabContentId);
+            if (tabContent) tabContent.classList.add('active');
+        });
+    });
+
+    // Back button
+    document.getElementById('back-to-dashboard-btn').addEventListener('click', () => {
+        this.currentTripView = 'dashboard';
+        this.renderApp();
+    });
+
+    this.bindItineraryEvents();
+    this.scrollToTop();
+},
+
+// ============================================================================
+// 2. PLAN TAB - Add Activities
+// ============================================================================
+renderPlanItineraryTab: function() {
+    const activities = this.getItineraryActivities();
+    const tripDays = this.calculateTripDays();
+
+    return `
+        <p class="currency-name mb-4">Plan your daily activities</p>
+        
+        <form id="itinerary-form">
+            <input type="hidden" id="editing-activity-id">
+            <input type="hidden" id="selected-activity-type">
+            
+            <div class="form-group">
+                <label for="activity-day"><i class="fas fa-calendar"></i> Day</label>
+                <select id="activity-day" required>
+                    ${tripDays.map((day, idx) => `
+                        <option value="${idx}">${day.label}</option>
+                    `).join('')}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="activity-name">Activity Name *</label>
+                <input type="text" id="activity-name" placeholder="e.g., Visit Sensoji Temple" required>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Type *</label>
+                <div id="quick-activity-type-buttons">
+                    ${this.renderQuickSelectButtons([' Sightseeing', ' Food', ' Transport', ' Stay', ' Shopping', ' Other'], 'activity-type')}
+                </div>
+            </div>
+            
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="planned-cost"><i class="fas fa-money-bill"></i> Planned Cost</label>
+                    <input type="number" id="planned-cost" step="0.01" min="0" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="planned-currency"><i class="fas fa-coins"></i> Currency</label>
+                    <select id="planned-currency">
+                        ${this.activeTrip.currencies.map(curr => `
+                            <option value="${curr}" ${curr === this.activeTrip.baseCurrency ? 'selected' : ''}>
+                                ${curr} - ${AppConfig.config.currencyNames[curr] || curr}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="activity-url"><i class="fas fa-link"></i> URL (Optional)</label>
+                <input type="url" id="activity-url" placeholder="https://...">
+            </div>
+            
+            <div class="form-group">
+                <label for="activity-notes"><i class="fas fa-note-sticky"></i> Notes (Optional)</label>
+                <textarea id="activity-notes" rows="2" placeholder="Any details or reminders..."></textarea>
+            </div>
+            
+            <div class="expense-form-reset">
+                <button type="submit" class="btn btn-primary btn-with-icon" id="save-activity-btn">
+                    <span class="btn-icon">+</span> Add Activity
+                </button>
+                <button type="button" id="reset-itinerary-btn" class="btn btn-secondary">Reset</button>
+            </div>
+        </form>
+        
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);">
+        
+        <h3 style="margin-bottom: 1rem;">Planned Activities</h3>
+        <div id="activities-list">
+            ${this.renderActivitiesByDay(activities, 'plan')}
+        </div>
+    `;
+},
+
+// ============================================================================
+// 3. TRACK TAB - Complete Activities
+// ============================================================================
+renderTrackItineraryTab: function() {
+    const activities = this.getItineraryActivities();
+    
+    if (activities.length === 0) {
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
+                <h3 class="empty-state-title">No Activities Planned</h3>
+                <p class="empty-state-message">Switch to the Plan tab to add activities to your itinerary first.</p>
+            </div>
+        `;
+    }
+
+    return `
+        <p class="currency-name mb-4">Track your activities and create expenses</p>
+        <div id="track-activities-list">
+            ${this.renderActivitiesByDay(activities, 'track')}
+        </div>
+    `;
+},
+
+// ============================================================================
+// 4. RENDER ACTIVITIES BY DAY
+// ============================================================================
+renderActivitiesByDay: function(activities, mode = 'plan') {
+    if (activities.length === 0) {
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
+                <h3 class="empty-state-title">No Activities Yet</h3>
+                <p class="empty-state-message">Start planning by adding your first activity above!</p>
+            </div>
+        `;
+    }
+
+    const tripDays = this.calculateTripDays();
+    const activitiesByDay = {};
+    
+    activities.forEach(activity => {
+        if (!activitiesByDay[activity.day]) {
+            activitiesByDay[activity.day] = [];
+        }
+        activitiesByDay[activity.day].push(activity);
+    });
+
+    let html = '';
+    
+    Object.keys(activitiesByDay).sort((a, b) => parseInt(a) - parseInt(b)).forEach(dayNum => {
+        const dayActivities = activitiesByDay[dayNum];
+        const dayInfo = tripDays[parseInt(dayNum)];
+        const completedCount = dayActivities.filter(a => a.status === 'completed').length;
+        
+        html += `
+            <div class="day-section">
+                <h3 class="day-header" data-day="${dayNum}">
+                    ${dayInfo.label}
+                    ${mode === 'track' ? `<span style="font-size: 0.85rem; font-weight: 400; color: var(--text-light);"> (${completedCount}/${dayActivities.length} done)</span>` : ''}
+                   <span class="day-toggle"><i class="fas fa-chevron-down"></i></span>
+                </h3>
+                <div class="day-activities">
+                    ${dayActivities.map(activity => this.renderActivityCard(activity, mode)).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    return html;
+},
+
+// ============================================================================
+// 5. RENDER ACTIVITY CARD
+// ============================================================================
+renderActivityCard: function(activity, mode = 'plan') {
+    // Extract icon HTML if present in type
+    const typeIcon = activity.type.split(' ')[0]; // Gets the <i> tag or emoji
+    const typeName = activity.type.substring(activity.type.indexOf('>') + 1);
+    
+    // Extract domain from URL
+    const getDomain = (url) => {
+        if (!url) return null;
+        try {
+            const urlObj = new URL(url);
+            return urlObj.hostname.replace('www.', '');
+        } catch (e) {
+            return url;
+        }
+    };
+    
+    const domain = getDomain(activity.url);
+    
+    if (mode === 'plan') {
+        return `
+            <div class="activity-card" data-activity-id="${activity.id}">
+                <div class="activity-header">
+                    <div>
+                        <span class="activity-icon">${typeIcon}</span>
+                        <strong>${this.escapeHtml(activity.name)}</strong>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="btn-icon-small edit-activity-btn" data-id="${activity.id}" title="Edit"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon-small delete-activity-btn" data-id="${activity.id}" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="activity-details">
+                    <div>Type: ${typeName}</div>
+                    <div>Planned: ${activity.plannedCost || 0} ${activity.plannedCurrency}</div>
+                    ${activity.url ? `<div><a href="${activity.url}" target="_blank" rel="noopener"><i class="fas fa-link"></i> ${domain}</a></div>` : ''}
+                    ${activity.notes ? `<div class="activity-notes">${this.escapeHtml(activity.notes)}</div>` : ''}
+                </div>
+            </div>
+        `;
+    } else {
+        // Track mode
+        const isCompleted = activity.status === 'completed';
+        const isSkipped = activity.status === 'skipped';
+        
+        return `
+            <div class="activity-card ${isCompleted ? 'completed' : ''} ${isSkipped ? 'skipped' : ''}" data-activity-id="${activity.id}">
+                <div class="activity-header">
+                    <div>
+                        <span class="activity-icon">${isCompleted ? '<i class="fas fa-check-circle"></i>' : isSkipped ? '<i class="fas fa-minus-circle"></i>' : typeIcon}</span>
+                        <strong>${this.escapeHtml(activity.name)}</strong>
+                        ${isCompleted ? '<span class="status-badge completed">Completed</span>' : ''}
+                        ${isSkipped ? '<span class="status-badge skipped">Skipped</span>' : ''}
+                    </div>
+                </div>
+                <div class="activity-details">
+                    <div>Type: ${typeName} | Planned: ${activity.plannedCost || 0} ${activity.plannedCurrency}</div>
+                    ${activity.url ? `<div><a href="${activity.url}" target="_blank" rel="noopener"><i class="fas fa-link"></i> ${domain}</a></div>` : ''}
+                    ${activity.notes ? `<div class="activity-notes">${this.escapeHtml(activity.notes)}</div>` : ''}
+                    ${isCompleted && activity.completionNotes ? `<div class="activity-notes">Completion: ${this.escapeHtml(activity.completionNotes)}</div>` : ''}
+                </div>
+                ${!isCompleted && !isSkipped ? `
+                    <div class="activity-tracking">
+                        <button class="btn btn-success btn-full complete-activity-btn" data-id="${activity.id}">
+                            <i class="fas fa-check"></i> Mark Complete & Add Expense
+                        </button>
+                        <button class="btn btn-secondary btn-full skip-activity-btn" data-id="${activity.id}">
+                            Skip Activity
+                        </button>
+                    </div>
+                ` : ''}
+                ${isCompleted && activity.rating ? `
+                    <div class="activity-rating">Rating: ${'<i class="fas fa-star"></i>'.repeat(activity.rating)}</div>
+                ` : ''}
+            </div>
+        `;
+    }
+},
+
+// ============================================================================
+// 6. CALCULATE TRIP DAYS
+// ============================================================================
+calculateTripDays: function() {
+    const start = new Date(this.activeTrip.start || this.activeTrip.startDate);
+    const end = new Date(this.activeTrip.end || this.activeTrip.endDate);
+    const days = [];
+    
+    let current = new Date(start);
+    let dayNum = 0;
+    
+    while (current <= end) {
+        days.push({
+            number: dayNum,
+            date: new Date(current),
+            label: `Day ${dayNum} - ${current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+        });
+        current.setDate(current.getDate() + 1);
+        dayNum++;
+    }
+    
+    return days;
+},
+
+// ============================================================================
+// 7. STORAGE HELPERS
+// ============================================================================
+getItineraryStorageKey: function() {
+    return `lipikit_itinerary_${this.activeTrip.id}`;
+},
+
+getItineraryActivities: function() {
+    try {
+        const data = localStorage.getItem(this.getItineraryStorageKey());
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        console.error('Failed to load itinerary:', e);
+        return [];
+    }
+},
+
+saveItineraryActivities: function(activities) {
+    try {
+        localStorage.setItem(this.getItineraryStorageKey(), JSON.stringify(activities));
+        return true;
+    } catch (e) {
+        console.error('Failed to save itinerary:', e);
+        this.showError('Failed to save activity. Storage might be full.');
+        return false;
+    }
+},
+
+// ============================================================================
+// 8. ADD/EDIT ACTIVITY
+// ============================================================================
+saveActivity: function() {
+    const editingId = document.getElementById('editing-activity-id').value;
+    const isEditing = !!editingId;
+    
+    const activityData = {
+        id: isEditing ? editingId : `act-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        day: parseInt(document.getElementById('activity-day').value),
+        name: document.getElementById('activity-name').value.trim(),
+        type: document.getElementById('selected-activity-type').value,
+        plannedCost: parseFloat(document.getElementById('planned-cost').value) || 0,
+        plannedCurrency: document.getElementById('planned-currency').value,
+        url: document.getElementById('activity-url').value.trim(),
+        notes: document.getElementById('activity-notes').value.trim(),
+        status: 'planned',
+        createdAt: isEditing ? null : new Date().toISOString()
+    };
+    
+    // Validation
+    if (!activityData.name || !activityData.type) {
+        this.showError('Please fill in activity name and type');
+        return;
+    }
+    
+    const activities = this.getItineraryActivities();
+    
+    if (isEditing) {
+        const index = activities.findIndex(a => a.id === editingId);
+        if (index >= 0) {
+            // Preserve tracking data if exists
+            activityData.status = activities[index].status;
+            activityData.actualCost = activities[index].actualCost;
+            activityData.actualCurrency = activities[index].actualCurrency;
+            activityData.rating = activities[index].rating;
+            activityData.completionNotes = activities[index].completionNotes;
+            activityData.completedAt = activities[index].completedAt;
+            activityData.linkedExpenseId = activities[index].linkedExpenseId;
+            activityData.createdAt = activities[index].createdAt;
+            
+            activities[index] = activityData;
+        }
+    } else {
+        activities.push(activityData);
+    }
+    
+    if (this.saveItineraryActivities(activities)) {
+        this.showSuccess(isEditing ? 'Activity updated!' : 'Activity added!');
+        this.resetItineraryForm();
+        this.renderItineraryView('plan');
+    }
+},
+
+editActivity: function(activityId) {
+    const activities = this.getItineraryActivities();
+    const activity = activities.find(a => a.id === activityId);
+    
+    if (!activity) return;
+    
+    // Populate form
+    document.getElementById('editing-activity-id').value = activity.id;
+    document.getElementById('activity-day').value = activity.day;
+    document.getElementById('activity-name').value = activity.name;
+    document.getElementById('planned-cost').value = activity.plannedCost || '';
+    document.getElementById('planned-currency').value = activity.plannedCurrency;
+    document.getElementById('activity-url').value = activity.url || '';
+    document.getElementById('activity-notes').value = activity.notes || '';
+    
+    // Set type
+    document.getElementById('selected-activity-type').value = activity.type;
+    document.querySelectorAll('#quick-activity-type-buttons .quick-select-btn').forEach(btn => {
+        if (btn.dataset.value === activity.type) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Update button text
+    document.getElementById('save-activity-btn').innerHTML = '<span class="btn-icon">ðŸ’¾</span> Update Activity';
+    
+    // Scroll to form
+    document.getElementById('itinerary-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+},
+
+deleteActivity: function(activityId) {
+    if (!confirm('Are you sure you want to delete this activity?')) return;
+    
+    const activities = this.getItineraryActivities().filter(a => a.id !== activityId);
+    
+    if (this.saveItineraryActivities(activities)) {
+        this.showSuccess('Activity deleted');
+        this.renderItineraryView('plan');
+    }
+},
+
+resetItineraryForm: function() {
+    const form = document.getElementById('itinerary-form');
+    if (form) form.reset();
+    
+    document.getElementById('editing-activity-id').value = '';
+    document.getElementById('selected-activity-type').value = '';
+    document.querySelectorAll('.quick-select-btn.active').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('save-activity-btn').innerHTML = '<span class="btn-icon">+</span> Add Activity';
+    
+    // Reset to base currency
+    document.getElementById('planned-currency').value = this.activeTrip.baseCurrency;
+},
+
+// ============================================================================
+// 9. COMPLETE ACTIVITY CREATE EXPENSE
+// ============================================================================
+showCompleteActivityModal: function(activityId) {
+    const activities = this.getItineraryActivities();
+    const activity = activities.find(a => a.id === activityId);
+    
+    if (!activity) return;
+    
+    const tripDays = this.calculateTripDays();
+    const dayInfo = tripDays[activity.day];
+    const expenseDate = dayInfo.date.toISOString().split('T')[0];
+    
+    // Map activity type to expense category
+    const typeToCategory = {
+        'ðŸ›ï¸ Sightseeing': 'Activities',
+        'ðŸœ Food': 'Food',
+        'ðŸš‡ Transport': 'Transport',
+        'ðŸ¨ Stay': 'Accommodation',
+        'ðŸ›ï¸ Shopping': 'Shopping',
+        'ðŸ“Œ Other': 'Other'
+    };
+    
+    const category = typeToCategory[activity.type] || 'Other';
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'complete-activity-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Complete Activity & Add Expense</h2>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                <strong>${this.escapeHtml(activity.name)}</strong><br>
+                Day ${activity.day} | Planned: ${activity.plannedCost || 0} ${activity.plannedCurrency}
+            </p>
+            
+            <form id="complete-activity-form">
+                <input type="hidden" id="completing-activity-id" value="${activityId}">
+                <input type="hidden" id="expense-date-hidden" value="${expenseDate}">
+                <input type="hidden" id="expense-category-hidden" value="${category}">
+                <input type="hidden" id="selected-expense-mode">
+                
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="actual-cost"><i class="fas fa-money-bill"></i> Actual Cost *</label>
+                        <input type="number" id="actual-cost" step="0.01" min="0" value="${activity.plannedCost || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actual-currency"><i class="fas fa-coins"></i> Currency</label>
+                        <select id="actual-currency">
+                            ${this.activeTrip.currencies.map(curr => `
+                                <option value="${curr}" ${curr === activity.plannedCurrency ? 'selected' : ''}>${curr}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-credit-card"></i> Payment Mode *</label>
+                    <div id="quick-expense-mode-buttons">
+                        ${this.renderQuickSelectButtons(AppConfig.config.modes, 'expense-mode')}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-star"></i> Rating (Optional)</label>
+                    <div class="rating-buttons">
+                        ${[1,2,3,4,5].map(star => `
+                            <button type="button" class="rating-btn" data-rating="${star}"><i class="fas fa-star" style="color: gold;"></i></button>
+                        `).join('')}
+                    </div>
+                    <input type="hidden" id="activity-rating" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="completion-notes"><i class="fas fa-note-sticky"></i> Notes (Optional)</label>
+                    <textarea id="completion-notes" rows="2" placeholder="How was it?"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('complete-activity-modal').remove()">Cancel</button>
+                    <button type="submit" class="btn btn-success btn-with-icon">
+                        <span class="btn-icon"><i class="fas fa-check"></i></span> Complete & Add Expense
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Rating buttons
+    modal.querySelectorAll('.rating-btn').forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+            modal.querySelectorAll('.rating-btn').forEach((b, i) => {
+                b.style.opacity = i <= idx ? '1' : '0.3';
+            });
+            document.getElementById('activity-rating').value = idx + 1;
+        });
+    });
+    
+    // Quick select for payment mode
+    modal.querySelectorAll('#quick-expense-mode-buttons .quick-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.querySelectorAll('#quick-expense-mode-buttons .quick-select-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('selected-expense-mode').value = btn.dataset.value;
+        });
+    });
+    
+    // Form submit
+    modal.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.completeActivity(activityId);
+    });
+    
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+},
+
+completeActivity: function(activityId) {
+    const activities = this.getItineraryActivities();
+    const activity = activities.find(a => a.id === activityId);
+    
+    if (!activity) return;
+    
+    const actualCost = parseFloat(document.getElementById('actual-cost').value);
+    const actualCurrency = document.getElementById('actual-currency').value;
+    const paymentMode = document.getElementById('selected-expense-mode').value;
+    const rating = parseInt(document.getElementById('activity-rating').value) || 0;
+    const completionNotes = document.getElementById('completion-notes').value.trim();
+    
+    if (!actualCost || actualCost < 0 || !paymentMode) {
+        this.showError('Please enter actual cost and select payment mode');
+        return;
+    }
+    
+    const tripDays = this.calculateTripDays();
+    const dayInfo = tripDays[activity.day];
+    const expenseDate = dayInfo.date.toISOString().split('T')[0];
+    
+    // Build structured notes
+    const structuredNotes = this.buildItineraryExpenseNotes(activity, {
+        rating,
+        completionNotes,
+        completedAt: new Date().toISOString()
+    });
+    
+    // Create expense
+    const expenseData = {
+        tripId: this.activeTrip.id,
+        expenseDate: expenseDate,
+        amount: actualCost,
+        currency: actualCurrency,
+        category: document.getElementById('expense-category-hidden').value,
+        place: activity.name,
+        notes: structuredNotes,
+        location: 'N/A',
+        mode: paymentMode,
+        id: `exp-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        linkedActivityId: activityId
+    };
+    
+    // Save expense
+    this.saveDataLocally(expenseData, 'unsyncedExpenses');
+    
+    // Update activity
+    activity.status = 'completed';
+    activity.actualCost = actualCost;
+    activity.actualCurrency = actualCurrency;
+    activity.rating = rating;
+    activity.completionNotes = completionNotes;
+    activity.completedAt = new Date().toISOString();
+    activity.linkedExpenseId = expenseData.id;
+    
+    this.saveItineraryActivities(activities);
+    
+    // Close modal
+    document.getElementById('complete-activity-modal').remove();
+    
+    this.showSuccess('Activity completed and expense added!');
+    this.renderItineraryView('track');
+},
+
+skipActivity: function(activityId) {
+    if (!confirm('Skip this activity? You can still mark it complete later.')) return;
+    
+    const activities = this.getItineraryActivities();
+    const activity = activities.find(a => a.id === activityId);
+    
+    if (activity) {
+        activity.status = 'skipped';
+        this.saveItineraryActivities(activities);
+        this.showSuccess('Activity marked as skipped');
+        this.renderItineraryView('track');
+    }
+},
+
+// ============================================================================
+// 10. BUILD STRUCTURED EXPENSE NOTES
+// ============================================================================
+buildItineraryExpenseNotes: function(activity, trackingData) {
+    const lines = [
+        'ðŸŽ¯ ITINERARY ACTIVITY',
+        `Activity: ${activity.name}`,
+        `Day: ${activity.day}`,
+        `Type: ${activity.type}`,
+        `URL: ${activity.url || 'N/A'}`,
+        `Planned: ${activity.plannedCost || 0} ${activity.plannedCurrency}`,
+        `Rating: ${trackingData.rating ? '<i class="fas fa-star"></i>'.repeat(trackingData.rating) : 'Not rated'}`,
+        `Notes: ${trackingData.completionNotes || 'None'}`,
+        `Completed: ${new Date(trackingData.completedAt).toLocaleString()}`
+    ];
+    
+    return lines.join('\n');
+},
+
+// ============================================================================
+// 11. BIND ITINERARY EVENTS
+// ============================================================================
+bindItineraryEvents: function() {
+    const appArea = document.getElementById('app-area');
+    if (!appArea) return;
+    
+    // Form submit
+    const form = document.getElementById('itinerary-form');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveActivity();
+        });
+    }
+    
+    // Reset button
+    const resetBtn = document.getElementById('reset-itinerary-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => this.resetItineraryForm());
+    }
+    
+    // Quick select buttons
+    appArea.querySelectorAll('#quick-activity-type-buttons .quick-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            appArea.querySelectorAll('#quick-activity-type-buttons .quick-select-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('selected-activity-type').value = btn.dataset.value;
+        });
+    });
+    
+    // Edit activity
+    appArea.querySelectorAll('.edit-activity-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.editActivity(btn.dataset.id));
+    });
+    
+    // Delete activity
+    appArea.querySelectorAll('.delete-activity-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.deleteActivity(btn.dataset.id));
+    });
+    
+    // Complete activity
+    appArea.querySelectorAll('.complete-activity-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.showCompleteActivityModal(btn.dataset.id));
+    });
+    
+    // Skip activity
+    appArea.querySelectorAll('.skip-activity-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.skipActivity(btn.dataset.id));
+    });
+    
+    // Day section toggle
+    appArea.querySelectorAll('.day-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const daySection = header.closest('.day-section');
+            const activities = daySection.querySelector('.day-activities');
+            const toggle = header.querySelector('.day-toggle');
+            
+            if (activities.style.display === 'none') {
+                activities.style.display = 'block';
+                toggle.innerHTML = '<i class="fas fa-chevron-up"></i>';  // Up arrow when expanded
+            } else {
+                activities.style.display = 'none';
+                toggle.innerHTML = '<i class="fas fa-chevron-down"></i>';  // Down arrow when collapsed
+            }
+        });
+    });
+},
+
+// ============================================================================
+// 12. UPDATE DASHBOARD TO ENABLE ITINERARY
+// ============================================================================
+// ADD THIS TO YOUR renderTripDashboardView() function
+// Replace the disabled itinerary card with:
+
+/*
+<a href="#" class="feature-card" id="feature-itinerary-btn">
+    <div class="feature-icon">ðŸ“…</div>
+    <div class="feature-title">Itinerary</div>
+</a>
+*/
+
+// Then in the event bindings section, add:
+/*
+document.getElementById('feature-itinerary-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    this.renderItineraryView('plan');
+});
+*/
+
+
+
+
+/// ============================================================================
+// 1. RENDER DOCUMENT MANAGER VIEW - Improved UI
+// ============================================================================
+renderDocumentManagerView: function() {
+    const appArea = document.getElementById('app-area');
+    if (!this.activeTrip) return;
+
+    const status = this.getTripStatusTag(this.activeTrip);
+    const statusHtml = status ? `<span class="trip-tag ${status.className}">${status.label}</span>` : "";
+
+    appArea.innerHTML = `
+        <div class="card document-manager-view">
+            <div class="trip-header-bar">
+                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary btn-with-icon">
+                    <span class="btn-icon"><i class="fas fa-arrow-left"></i></span> Back to Dashboard
+                </button>
+            </div>
+            
+            <h1 class="trip-view-title">
+                Trip: <span style="color: var(--primary-color);">${this.escapeHtml(this.activeTrip.name)}</span>
+                ${statusHtml}
+            </h1>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <button id="add-document-btn" class="btn btn-primary btn-with-icon">
+                    <span class="btn-icon">+</span> Add Document
+                </button>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
+                <input type="text" 
+                       id="document-search" 
+                       placeholder="🔍 Search documents..." 
+                       value="${this.currentDocumentSearch}"
+                       style="flex: 1; min-width: 200px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+                
+                <select id="document-type-filter" style="min-width: 150px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);">
+                    <option value="all">All Types</option>
+                    ${this.documentTypes.map(type => `
+                        <option value="${type}" ${this.currentDocumentFilter === type ? 'selected' : ''}>
+                            ${type}
+                        </option>
+                    `).join('')}
+                </select>
+            </div>
+
+            <div id="documents-list" style="display: grid; gap: 1rem;">
+                ${this.renderDocumentsList()}
+            </div>
+        </div>
+    `;
+
+    // Bind events
+    document.getElementById('back-to-dashboard-btn').addEventListener('click', () => {
+        this.currentTripView = 'dashboard';
+        this.renderApp();
+    });
+
+    document.getElementById('add-document-btn').addEventListener('click', () => {
+        this.showAddDocumentModal();
+    });
+
+    document.getElementById('document-search').addEventListener('input', (e) => {
+        this.currentDocumentSearch = e.target.value;
+        this.refreshDocumentsList();
+    });
+
+    document.getElementById('document-type-filter').addEventListener('change', (e) => {
+        this.currentDocumentFilter = e.target.value;
+        this.refreshDocumentsList();
+    });
+
+    this.bindDocumentEvents();
+    this.scrollToTop();
+    this.initializeAds();
+},
+
+// ============================================================================
+// 2. RENDER DOCUMENTS LIST
+// ============================================================================
+renderDocumentsList: function() {
+    const documents = this.getFilteredDocuments();
+    
+    if (documents.length === 0) {
+        return `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: var(--bg-light); border-radius: var(--border-radius); border: 2px dashed var(--border-color);">
+                <div style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;">📄</div>
+                <h3 style="color: var(--text-medium); margin-bottom: 0.5rem; font-weight: 600;">No Documents Found</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                    ${this.currentDocumentSearch || this.currentDocumentFilter !== 'all' 
+                        ? 'Try adjusting your search or filter criteria.' 
+                        : 'Start by clicking "Add Document" to upload your first travel document.'}
+                </p>
+            </div>
+        `;
+    }
+
+    return documents.map(doc => this.renderDocumentCard(doc)).join('');
+},
+
+// ============================================================================
+// 6. UPDATED RENDER DOCUMENT CARD - Show lock/unsecured status
+// ============================================================================
+renderDocumentCard: function(doc) {
+    const typeIcon = this.getDocumentTypeIcon(doc.type);
+    const isInVault = doc.vaultStatus === 'copied';
+    
+    const statusBadge = isInVault 
+        ? '<span class="document-status-badge secured"><i class="fas fa-lock"></i> SECURED</span>'
+        : '<span class="document-status-badge unsecured"><i class="fas fa-exclamation-triangle"></i> ON DEVICE</span>';
+        
+    // Generate thumbnail or type indicator
+    let thumbnailContent = '';
+    if (doc.fileType && doc.fileType.startsWith('image/') && doc.thumbnailUrl) {
+        thumbnailContent = `
+            <div class="document-thumbnail" style="background-image: url('${doc.thumbnailUrl}');">
+                <div class="document-thumbnail-overlay">
+                    <i class="fas fa-search-plus"></i>
+                </div>
+            </div>
+        `;
+    } else if (doc.fileType === 'application/pdf') {
+        thumbnailContent = `
+            <div class="document-thumbnail pdf-thumbnail">
+                <i class="fas fa-file-pdf"></i>
+                <span>PDF</span>
+            </div>
+        `;
+    } else {
+        thumbnailContent = `
+            <div class="document-icon">
+                ${typeIcon}
+            </div>
+        `;
+    }
+
+    return `
+        <div class="document-card" data-doc-id="${doc.id}">
+            ${thumbnailContent}
+            
+            <div class="document-details">
+                <div class="document-name">${this.escapeHtml(doc.name)}</div>
+                <div class="document-meta">
+                    ${doc.type} • ${this.formatFileSize(doc.fileSize)} • ${new Date(doc.addedAt).toLocaleDateString()}
+                </div>
+                ${doc.tags ? `<div class="document-tags">Tags: ${this.escapeHtml(doc.tags)}</div>` : ''}
+                <div class="document-status">
+                    ${statusBadge}
+                </div>
+                ${!isInVault ? `
+                    <div class="document-warning">
+                        <i class="fas fa-info-circle"></i> Stored on your device
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="document-actions">
+                <button class="btn btn-sm btn-primary view-doc-btn" 
+                        data-doc-id="${doc.id}"
+                        title="View document details">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                
+                <button class="btn btn-sm btn-secondary replace-vault-btn" 
+                        data-doc-id="${doc.id}"
+                        title="Update document">
+                    <i class="fas fa-sync"></i> Update
+                </button>
+                
+                <button class="btn btn-sm btn-danger delete-doc-btn" 
+                        data-doc-id="${doc.id}"
+                        title="Delete document">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+},
+// ============================================================================
+// 7. SHOW ADD DOCUMENT MODAL - Update to capture full path
+// ============================================================================
+showAddDocumentModal: function() {
+    document.body.insertAdjacentHTML('beforeend', `
+        <div class="modal" id="add-document-modal">
+            <div class="modal-content">
+                <span class="close-button" style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; line-height: 1;">&times;</span>
+                
+                <h2>Add Travel Document</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    Upload and organize your travel documents. Documents on your device show their location.
+                </p>
+                
+                <form id="add-document-form">
+                    <div class="form-group">
+                        <label for="doc-name">Document Name *</label>
+                        <input type="text" id="doc-name" placeholder="e.g., US Passport, Visa Approval" required>
+                        <small class="currency-name">Give your document a memorable name</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doc-type">Document Type *</label>
+                        <select id="doc-type" required>
+                            <option value="">Select type...</option>
+                            ${this.documentTypes.map(type => `
+                                <option value="${type}">${this.getDocumentTypeIcon(type)} ${type}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doc-tags">Tags (Optional)</label>
+                        <input type="text" id="doc-tags" placeholder="e.g., important, visa, 2025">
+                        <small class="currency-name">Separate multiple tags with commas</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doc-file">Select File *</label>
+                        <input type="file" id="doc-file" accept="image/*,.pdf,.doc,.docx" required>
+                        <small class="currency-name">
+                            <i class="fas fa-info-circle"></i> Supported: Images, PDF, DOC files. 
+                            The file's location will be saved for easy access.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" style="background: rgba(34, 197, 94, 0.1); padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--success-color);">
+                        <p style="margin: 0; color: var(--success-color); font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-shield-alt"></i> Documents are securely encrypted and stored in your local vault.
+                        </p>
+                        <small class="currency-name" style="color: var(--text-medium);">
+                            Your files are protected with strong encryption and available offline.
+                        </small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary close-modal-btn">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            + Add Document
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `);
+
+    const modal = document.getElementById('add-document-modal');
+    const form = document.getElementById('add-document-form');
+    const closeBtn = modal.querySelector('.close-button');
+    const cancelBtn = modal.querySelector('.close-modal-btn');
+
+    const closeModal = () => {
+        if (modal && modal.parentNode) modal.remove();
+    };
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleAddDocument();
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+},
+
+// ============================================================================
+// 5. HANDLE ADD DOCUMENT
+// ============================================================================
+handleAddDocument: async function() {
+    const modal = document.getElementById('add-document-modal');
+    if (!modal) return;
+
+    const nameInput = modal.querySelector('#doc-name');
+    const typeSelect = modal.querySelector('#doc-type');
+    const tagsInput = modal.querySelector('#doc-tags');
+    const fileInput = modal.querySelector('#doc-file');
+
+    const name = nameInput.value.trim();
+    const type = typeSelect.value;
+    const tags = tagsInput.value.trim();
+    const file = fileInput.files[0];
+    const copyToVault = true; // Always use vault storage
+
+    if (!name || !type || !file) {
+        this.showError('Please fill in all required fields');
+        return;
+    }
+
+    const doc = {
+        id: `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        tripId: this.activeTrip.id,
+        name,
+        type,
+        tags,
+        // Store both the filename AND a reference to the full path
+        path: file.name,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        webkitPath: file.webkitRelativePath || file.name, // Full path if available
+        lastModified: file.lastModified,
+        vaultStatus: copyToVault ? 'copying' : 'not-copied',
+        addedAt: new Date().toISOString(),
+        lastModified: new Date().toISOString(),
+        // NEW: Store file reference for opening
+        fileHandle: null // Will be set if File System API is available
+    };
+
+    try {
+        // Generate thumbnail if it's an image
+        if (file.type.startsWith('image/')) {
+            const thumbnail = await this.generateThumbnail(file);
+            doc.thumbnailUrl = thumbnail;
+        }
+
+        // Try to store file handle for direct access (Chromium browsers)
+        if ('showOpenFilePicker' in window) {
+            doc.fileHandle = await this.getFileHandle(file);
+        }
+
+        await this.saveDocument(doc);
+        
+        if (copyToVault) {
+            await this.copyDocumentToVault(doc.id, file);
+        }
+        
+        if (modal.parentNode) modal.remove();
+        this.showSuccess(`Document "${name}" added successfully!`);
+        this.refreshDocumentsList();
+    } catch (error) {
+        console.error('Error adding document:', error);
+        this.showError('Failed to add document: ' + error.message);
+    }
+},
+
+// ============================================================================
+// 2. GENERATE THUMBNAIL - Create a thumbnail for image files
+// ============================================================================
+generateThumbnail: function(file) {
+    return new Promise((resolve) => {
+        if (!file.type.startsWith('image/')) {
+            resolve(null);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                // Create canvas for resizing
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate dimensions for thumbnail (max 200px on the longest side)
+                const maxSize = 200;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+                
+                // Set canvas dimensions and draw image
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to data URL
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                resolve(dataUrl);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+},
+
+// ============================================================================
+// 3. GET FILE HANDLE - For File System Access API (Chromium)
+// ============================================================================
+getFileHandle: async function(file) {
+    try {
+        // This is a workaround - we can't directly get handle from File object
+        // But we can use this for reference
+        if (file.handle) {
+            return file.handle;
+        }
+        return null;
+    } catch (e) {
+        console.warn('File handle not available:', e);
+        return null;
+    }
+},
+
+// ============================================================================
+// 8. ADD TO VAULT - For existing unsecured documents
+// ============================================================================
+handleAddToVault: async function(documentId) {
+    const documents = this.getTripDocuments();
+    const doc = documents.find(d => d.id === documentId);
+    
+    if (!doc) {
+        this.showError('Document not found');
+        return;
+    }
+
+    // Create file input to select file
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,.pdf,.doc,.docx';
+    
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        try {
+            await this.copyDocumentToVault(documentId, file);
+            this.showSuccess('Document secured in vault!');
+            this.refreshDocumentsList();
+        } catch (error) {
+            this.showError('Failed to secure document: ' + error.message);
+        }
+    });
+    
+    fileInput.click();
+},
+
+// ============================================================================
+// 9. REPLACE IN VAULT
+// ============================================================================
+handleReplaceInVault: async function(documentId) {
+    const documents = this.getTripDocuments();
+    const doc = documents.find(d => d.id === documentId);
+    
+    if (!doc || doc.vaultStatus !== 'copied') {
+        this.showError('Document not in vault');
+        return;
+    }
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,.pdf,.doc,.docx';
+    
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        try {
+            await this.copyDocumentToVault(documentId, file);
+            this.showSuccess('Vault copy replaced!');
+            this.refreshDocumentsList();
+        } catch (error) {
+            this.showError('Failed to replace vault copy: ' + error.message);
+        }
+    });
+    
+    fileInput.click();
+},
+// ============================================================================
+// 6. VAULT MANAGEMENT - IndexedDB
+// ============================================================================
+initDocumentVaultDB: async function(tripId) { // Correct: Removed AppManager.
+    const dbName = `lipikit_vault_${tripId}`;
+    
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1);
+        
+        request.onerror = () => reject(new Error(`Vault DB open failed: ${request.error}`));
+        request.onsuccess = () => resolve(request.result);
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('vault')) {
+                const store = db.createObjectStore('vault', { keyPath: 'documentId' });
+                store.createIndex('tripId', 'tripId', { unique: false });
+            }
+        };
+    });
+},
+
+// ============================================================================
+// 10. VAULT MANAGEMENT
+// ============================================================================
+
+copyDocumentToVault: async function(documentId, file) {
+    const documents = this.getTripDocuments();
+    const doc = documents.find(d => d.id === documentId);
+    if (!doc) {
+        throw new Error('Document not found');
+    }
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const db = await this.getVaultDB(this.activeTrip.id);
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(['vault'], 'readwrite');
+            const store = tx.objectStore('vault');
+            const vaultEntry = {
+                documentId: documentId,
+                tripId: this.activeTrip.id,
+                fileName: file.name,
+                fileType: file.type,
+                fileData: arrayBuffer,
+                copiedAt: new Date().toISOString()
+            };
+            const request = store.put(vaultEntry);
+            request.onerror = () => reject(new Error(`Vault save failed: ${request.error}`));
+            request.onsuccess = () => {
+                doc.vaultStatus = 'copied';
+                doc.lastVaultCopy = new Date().toISOString();
+                this.updateDocument(doc);
+                resolve(true);
+            };
+        });
+    } catch (error) {
+        console.error('Error copying to vault:', error);
+        throw error;
+    }
+},
+
+retrieveFromVault: async function(documentId) {
+    try {
+        const db = await this.getVaultDB(this.activeTrip.id);
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(['vault'], 'readonly');
+            const store = tx.objectStore('vault');
+            const request = store.get(documentId);
+            request.onerror = () => reject(new Error(`Vault retrieve failed: ${request.error}`));
+            request.onsuccess = () => resolve(request.result);
+        });
+    } catch (error) {
+        console.error('Error retrieving from vault:', error);
+        throw error;
+    }
+},
+
+getVaultDB: async function(tripId) {
+    if (!this.vaultDatabases) this.vaultDatabases = {};
+    if (!this.vaultDatabases[tripId]) {
+        this.vaultDatabases[tripId] = await this.initDocumentVaultDB(tripId);
+    }
+    return this.vaultDatabases[tripId];
+},
+
+// ============================================================================
+// 11. STORAGE HELPERS
+// ============================================================================
+getDocumentStorageKey: function() {
+    return `lipikit_documents_${this.activeTrip.id}`;
+},
+
+getTripDocuments: function() {
+    try {
+        const data = localStorage.getItem(this.getDocumentStorageKey());
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        console.error('Failed to load documents:', e);
+        return [];
+    }
+},
+
+saveDocument: function(document) {
+    try {
+        const documents = this.getTripDocuments();
+        documents.push(document);
+        localStorage.setItem(this.getDocumentStorageKey(), JSON.stringify(documents));
+        return true;
+    } catch (e) {
+        console.error('Failed to save document:', e);
+        throw new Error('Storage error: ' + e.message);
+    }
+},
+
+updateDocument: function(updatedDoc) {
+    try {
+        const documents = this.getTripDocuments();
+        const index = documents.findIndex(d => d.id === updatedDoc.id);
+        
+        if (index >= 0) {
+            documents[index] = updatedDoc;
+            localStorage.setItem(this.getDocumentStorageKey(), JSON.stringify(documents));
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error('Failed to update document:', e);
+        throw new Error('Storage error: ' + e.message);
+    }
+},
+
+deleteDocument: async function(documentId) {
+    try {
+        const documents = this.getTripDocuments();
+        const filtered = documents.filter(d => d.id !== documentId);
+        localStorage.setItem(this.getDocumentStorageKey(), JSON.stringify(filtered));
+        
+        try {
+            const db = await this.getVaultDB(this.activeTrip.id);
+            const tx = db.transaction(['vault'], 'readwrite');
+            const store = tx.objectStore('vault');
+            store.delete(documentId);
+        } catch (e) {
+            console.warn('Document not in vault:', e);
+        }
+        
+        return true;
+    } catch (e) {
+        console.error('Failed to delete document:', e);
+        throw new Error('Delete error: ' + e.message);
+    }
+},
+
+// ============================================================================
+// 12. FILTERING & SEARCH
+// ============================================================================
+getFilteredDocuments: function() {
+    let documents = this.getTripDocuments();
+    
+    if (this.currentDocumentFilter !== 'all') {
+        documents = documents.filter(doc => doc.type === this.currentDocumentFilter);
+    }
+    
+    if (this.currentDocumentSearch) {
+        const search = this.currentDocumentSearch.toLowerCase();
+        documents = documents.filter(doc => 
+            doc.name.toLowerCase().includes(search) ||
+            doc.type.toLowerCase().includes(search) ||
+            (doc.tags && doc.tags.toLowerCase().includes(search))
+        );
+    }
+    
+    documents.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+    return documents;
+},
+
+refreshDocumentsList: function() {
+    const listContainer = document.getElementById('documents-list');
+    if (listContainer) {
+        listContainer.innerHTML = this.renderDocumentsList();
+        this.bindDocumentEvents();
+    }
+},
+
+// ============================================================================
+// 13. EVENT BINDING - Fixed modal closing
+// ============================================================================
+bindDocumentEvents: function() {
+    // View document
+    document.querySelectorAll('.view-doc-btn').forEach(btn => {
+        btn.removeEventListener('click', this._viewDocHandler);
+        this._viewDocHandler = () => this.viewDocument(btn.dataset.docId);
+        btn.addEventListener('click', this._viewDocHandler);
+    });
+    
+    // Add to vault
+    document.querySelectorAll('.add-to-vault-btn').forEach(btn => {
+        btn.removeEventListener('click', this._addToVaultHandler);
+        this._addToVaultHandler = () => this.handleAddToVault(btn.dataset.docId);
+        btn.addEventListener('click', this._addToVaultHandler);
+    });
+    
+    // Replace vault
+    document.querySelectorAll('.replace-vault-btn').forEach(btn => {
+        btn.removeEventListener('click', this._replaceVaultHandler);
+        this._replaceVaultHandler = () => this.handleReplaceInVault(btn.dataset.docId);
+        btn.addEventListener('click', this._replaceVaultHandler);
+    });
+    
+    // Delete
+    document.querySelectorAll('.delete-doc-btn').forEach(btn => {
+        btn.removeEventListener('click', this._deleteDocHandler);
+        this._deleteDocHandler = async () => {
+            const confirmed = await this.showMessage(
+                'Delete Document',
+                'Are you sure you want to delete this document? It will also be removed from vault if present.',
+                true
+            );
+            if (confirmed) {
+                try {
+                    await this.deleteDocument(btn.dataset.docId);
+                    this.showSuccess('Document deleted');
+                    this.refreshDocumentsList();
+                } catch (error) {
+                    this.showError('Failed to delete: ' + error.message);
+                }
+            }
+        };
+        btn.addEventListener('click', this._deleteDocHandler);
+    });
+},
+
+
+// ============================================================================
+// 3. VIEW DOCUMENT - Open or Show Full Path
+// ============================================================================
+viewDocument: async function(documentId) {
+    const documents = this.getTripDocuments();
+    const doc = documents.find(d => d.id === documentId);
+    
+    if (!doc) {
+        this.showError('Document not found');
+        return;
+    }
+    
+    try {
+        if (doc.vaultStatus === 'copied') {
+            // Open from vault
+            const vaultEntry = await this.retrieveFromVault(documentId);
+            if (vaultEntry && vaultEntry.fileData) {
+                const blob = new Blob([vaultEntry.fileData], { type: vaultEntry.fileType });
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                // Clean up after a delay
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+            } else {
+                this.showError('Document not found in vault');
+            }
+        } else {
+            // For unsecured documents - show full details and copy path option
+            this.showUnsecuredDocumentModal(doc);
+        }
+    } catch (error) {
+        console.error('Error viewing document:', error);
+        this.showError('Failed to open document: ' + error.message);
+    }
+},
+
+// ============================================================================
+// 4. SHOW UNSECURED DOCUMENT MODAL - With Path & Copy Options
+// ============================================================================
+showUnsecuredDocumentModal: function(doc) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'unsecured-doc-modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <span style="font-size: 2rem;">${this.getDocumentTypeIcon(doc.type)}</span>
+                ${this.escapeHtml(doc.name)}
+            </h2>
+            
+            <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--border-radius-sm); margin-bottom: 1.5rem;">
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Type</strong>
+                        <div>${doc.type}</div>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">File Name</strong>
+                        <div style="word-break: break-all; font-family: monospace; font-size: 0.9rem;">${this.escapeHtml(doc.fileName)}</div>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">File Size</strong>
+                        <div>${this.formatFileSize(doc.fileSize)}</div>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Full Path on System</strong>
+                        <div style="background: white; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border-color); word-break: break-all; font-family: monospace; font-size: 0.85rem; color: #666;">
+                            ${this.escapeHtml(doc.webkitPath || doc.path || 'Path not available')}
+                        </div>
+                        <button id="copy-path-btn" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;">
+                            <i class="fas fa-copy"></i> Copy Path
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Added</strong>
+                        <div>${new Date(doc.addedAt).toLocaleString()}</div>
+                    </div>
+                    
+                    ${doc.tags ? `
+                        <div>
+                            <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Tags</strong>
+                            <div>${this.escapeHtml(doc.tags)}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Status</strong>
+                        <div>
+                            <span style="background: #f97316; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; display: inline-block; font-size: 0.85rem;">
+                                <i class="fas fa-exclamation-triangle"></i> Not Secured in Vault
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #fef3c7; border: 1px solid #fcd34d; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+                <p style="margin: 0; font-size: 0.9rem; color: #92400e;">
+                    <strong><i class="fas fa-info-circle"></i> Note:</strong> This document is stored on your local device. 
+                    Use the path above to locate it in your file system. To access it securely from any device, 
+                    <strong>add it to the vault</strong>.
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="document.getElementById('unsecured-doc-modal').remove()">
+                    Close
+                </button>
+                <button class="btn btn-success" id="open-in-explorer-btn">
+                    <i class="fas fa-folder-open"></i> Open Location
+                </button>
+                <button class="btn btn-primary" id="add-to-vault-from-modal-btn">
+                    <i class="fas fa-lock"></i> Add to Vault
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Copy path button
+    const copyPathBtn = modal.querySelector('#copy-path-btn');
+    if (copyPathBtn) {
+        copyPathBtn.addEventListener('click', () => {
+            const pathText = doc.webkitPath || doc.path || 'Path not available';
+            navigator.clipboard.writeText(pathText).then(() => {
+                this.showSuccess('Path copied to clipboard!');
+            }).catch(() => {
+                this.showError('Failed to copy path');
+            });
+        });
+    }
+    
+    // Open in file explorer button
+    const openBtn = modal.querySelector('#open-in-explorer-btn');
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            // Note: Due to browser security, we can't directly open file explorer
+            // But we can show instructions on how to find it
+            this.showFileLocationInstructions(doc);
+        });
+    }
+    
+    // Add to vault button
+    const addToVaultBtn = modal.querySelector('#add-to-vault-from-modal-btn');
+    if (addToVaultBtn) {
+        addToVaultBtn.addEventListener('click', async () => {
+            modal.remove();
+            await this.handleAddToVault(doc.id);
+        });
+    }
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+},
+
+// ============================================================================
+// 5. SHOW FILE LOCATION INSTRUCTIONS
+// ============================================================================
+showFileLocationInstructions: function(doc) {
+    const isWindows = navigator.platform.indexOf('Win') > -1;
+    const isMac = navigator.platform.indexOf('Mac') > -1;
+    
+    let instructions = '';
+    
+    if (isWindows) {
+        instructions = `
+            <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Windows Instructions:</h4>
+            <ol style="margin-left: 1.5rem;">
+                <li>Press <strong>Windows + E</strong> to open File Explorer</li>
+                <li>Press <strong>Ctrl + L</strong> to open the address bar</li>
+                <li>Paste the path you copied above and press <strong>Enter</strong></li>
+                <li>The file will be highlighted in the folder</li>
+            </ol>
+        `;
+    } else if (isMac) {
+        instructions = `
+            <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Mac Instructions:</h4>
+            <ol style="margin-left: 1.5rem;">
+                <li>Open <strong>Finder</strong></li>
+                <li>Press <strong>Cmd + Shift + G</strong> to open "Go to Folder"</li>
+                <li>Paste the path you copied above and press <strong>Enter</strong></li>
+                <li>The file will open in Finder</li>
+            </ol>
+        `;
+    } else {
+        instructions = `
+            <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">File Location:</h4>
+            <p>The full path to your file has been copied to your clipboard. 
+            Use your system's file manager to navigate to this location.</p>
+        `;
+    }
+
+    const pathText = doc.webkitPath || doc.path || 'Path not available';
+    
+    const helpModal = document.createElement('div');
+    helpModal.className = 'modal';
+    helpModal.id = 'file-location-help-modal';
+    helpModal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <h2><i class="fas fa-folder-open"></i> How to Find Your File</h2>
+            
+            <div style="background: #f0f9ff; border: 1px solid #bfdbfe; padding: 1rem; border-radius: 4px; margin: 1rem 0;">
+                <p style="margin: 0; font-size: 0.9rem;">
+                    <strong>File Path:</strong><br>
+                    <code style="display: block; background: white; padding: 0.5rem; margin-top: 0.5rem; border-radius: 4px; word-break: break-all; font-family: monospace;">
+                        ${this.escapeHtml(pathText)}
+                    </code>
+                </p>
+            </div>
+
+            ${instructions}
+
+            <div style="background: #f3e8ff; border: 1px solid #ddd6fe; padding: 1rem; border-radius: 4px; margin-top: 1.5rem;">
+                <p style="margin: 0; font-size: 0.85rem; color: #6b21a8;">
+                    <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Consider adding this document to the Vault 
+                    so you can access it securely from any device without needing to locate it manually.
+                </p>
+            </div>
+
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="document.getElementById('file-location-help-modal').remove()">
+                    Got It
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(helpModal);
+    
+    helpModal.addEventListener('click', (e) => {
+        if (e.target === helpModal) helpModal.remove();
+    });
+},
+
+
+// ============================================================================
+// 5. SHOW DOCUMENT DETAILS MODAL
+// ============================================================================
+showDocumentDetailsModal: function(doc) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'doc-details-modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <span style="font-size: 2rem;">${this.getDocumentTypeIcon(doc.type)}</span>
+                ${this.escapeHtml(doc.name)}
+            </h2>
+            
+            <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--border-radius-sm); margin-bottom: 1.5rem;">
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Type</strong>
+                        <div>${doc.type}</div>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">File Name</strong>
+                        <div style="word-break: break-all; font-family: monospace; font-size: 0.9rem;">${this.escapeHtml(doc.fileName)}</div>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">File Size</strong>
+                        <div>${this.formatFileSize(doc.fileSize)}</div>
+                    </div>
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Added</strong>
+                        <div>${new Date(doc.addedAt).toLocaleString()}</div>
+                    </div>
+                    
+                    ${doc.tags ? `
+                        <div>
+                            <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Tags</strong>
+                            <div>${this.escapeHtml(doc.tags)}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div>
+                        <strong style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.25rem;">Status</strong>
+                        <div>
+                            ${doc.vaultStatus === 'copied' 
+                                ? '<span style="background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; display: inline-block; font-size: 0.85rem;">🔒 Secured in Vault</span>'
+                                : '<span style="background: #f97316; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; display: inline-block; font-size: 0.85rem;">⚠️ Not Secured</span>'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="document.getElementById('doc-details-modal').remove()">
+                    Close
+                </button>
+                ${doc.vaultStatus === 'copied' ? `
+                    <button class="btn btn-success download-from-vault-btn" data-doc-id="${doc.id}">
+                        ⬇️ Download from Vault
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Download handler
+    const downloadBtn = modal.querySelector('.download-from-vault-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', async () => {
+            try {
+                const vaultEntry = await this.retrieveFromVault(doc.id);
+                const blob = new Blob([vaultEntry.fileData], { type: vaultEntry.fileType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = vaultEntry.fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+                this.showSuccess('Document downloaded');
+            } catch (error) {
+                this.showError('Download failed: ' + error.message);
+            }
+        });
+    }
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+},
+handleVaultAction: function(documentId) {
+    const documents = this.getTripDocuments();
+    const doc = documents.find(d => d.id === documentId);
+    if (!doc) return;
+
+    const isInVault = doc.vaultStatus === 'copied';
+    const action = isInVault ? 'replace' : 'copy';
+
+    // Use insertAdjacentHTML to ensure DOM is parsed immediately
+    document.body.insertAdjacentHTML('beforeend', `
+        <div class="modal" id="vault-action-modal">
+            <div class="modal-content">
+                <h2>${isInVault ? 'Replace in Vault' : 'Copy to Vault'}</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    ${isInVault 
+                        ? 'Upload a new version to replace the existing vault copy.' 
+                        : 'Copy this document to the secure vault for safe storage.'}
+                </p>
+                
+                <form id="vault-action-form">
+                    <div class="form-group">
+                        <label for="vault-file">Select File *</label>
+                        <input type="file" 
+                               id="vault-file" 
+                               accept="image/*,.pdf,.doc,.docx" 
+                               required>
+                        <small class="currency-name">Current: ${doc.fileName}</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="cancel-vault-action" class="btn btn-secondary">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            ${isInVault ? 'Replace in Vault' : 'Copy to Vault'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `);
+
+    const modal = document.getElementById('vault-action-modal');
+    const form = document.getElementById('vault-action-form');
+
+    // Bind submit
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const fileInput = modal.querySelector('#vault-file');
+        if (!fileInput || !fileInput.files[0]) {
+            this.showError('Please select a file');
+            return;
+        }
+
+        try {
+            await this.copyDocumentToVault(documentId, fileInput.files[0]);
+            modal.remove();
+            this.showSuccess(`Document ${isInVault ? 'replaced' : 'copied'} to vault!`);
+            this.refreshDocumentsList();
+        } catch (error) {
+            this.showError('Vault operation failed: ' + error.message);
+        }
+    });
+
+    // Cancel
+    document.getElementById('cancel-vault-action').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    // Close on backdrop
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+},
+
+
+
+handleDeleteDocument: async function(documentId) { // Correct: Removed AppManager.
+    const documents = this.getTripDocuments();
+    const doc = documents.find(d => d.id === documentId);
+    
+    if (!doc) return;
+    
+    const confirmed = await this.showMessage(
+        'Delete Document',
+        `Are you sure you want to delete "${doc.name}"? This will also remove it from the vault if present.`,
+        true
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+        await this.deleteDocument(documentId);
+        this.showSuccess('Document deleted successfully');
+        this.refreshDocumentsList();
+    } catch (error) {
+        this.showError('Failed to delete document: ' + error.message);
+    }
+},
+
+// ============================================================================
+// 14. HELPERS
+// ============================================================================
+getDocumentTypeIcon: function(type) {
+    const icons = {
+        'ID Proof': '<i class="fas fa-id-card"></i>',
+        'Passport': '<i class="fas fa-passport"></i>',
+        'Visa': '<i class="fas fa-file-contract"></i>',
+        'Flight Ticket': '<i class="fas fa-plane"></i>',
+        'Hotel Booking': '<i class="fas fa-hotel"></i>',
+        'Train Ticket': '<i class="fas fa-train"></i>',
+        'Insurance': '<i class="fas fa-shield"></i>',
+        'Vaccination Certificate': '<i class="fas fa-syringe"></i>',
+        'Receipt': '<i class="fas fa-receipt"></i>',
+        'Itinerary': '<i class="fas fa-calendar-alt"></i>',
+        'Other': '<i class="fas fa-paperclip"></i>'
+    };
+    return icons[type] || '<i class="fas fa-file"></i>';
+},
+
+
+formatFileSize: function(bytes) {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+},
+
+truncatePath: function(path, maxLength = 40) { // Correct: Removed AppManager.
+    if (!path || path.length <= maxLength) return path;
+    return '...' + path.slice(-maxLength);
+} // NOTE: This is the last method. You should place the final '};' after this block.
 
 };

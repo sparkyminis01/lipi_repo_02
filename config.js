@@ -3,22 +3,153 @@ const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v0.0.9',
-        appDescription: 'All-in-one travel manager for expenses, checklists, itineraries, documents, and attractions – secure and friendly. by SparkyMinis.com via LipiKit ',
+        appVersion: 'v1.0.0',
+        appDescription: 'All-in-one Travel Manager App',
         companyName: 'LipiKit',
+        defaultTheme: 'ocean',
+        currentTheme: 'ocean',
         
-        // Trip Tracker Color Theme (SOOTHING VIBRANT theme)
-        colors: {
-            primary: '#14B8A6',
-            primaryHover: '#0D9488',
-            secondary: '#334155',
-            secondaryHover: '#1E293B',
-            success: '#22C55E',
-            successHover: '#15803D',
-            danger: '#E11D48',
-            dangerHover: '#9F1239',
-            backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
-            headerGradient: 'linear-gradient(to right, #14B8A6, #334155)'
+        // Multiple Color Themes
+        themes: {
+            // 1. Soothing Vibrant (Default - Light)
+            soothingVibrant: {
+                primary: '#14B8A6',
+                primaryHover: '#0D9488',
+                secondary: '#334155',
+                secondaryHover: '#1E293B',
+                success: '#22C55E',
+                successHover: '#15803D',
+                danger: '#E11D48',
+                dangerHover: '#9F1239',
+                backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+                headerGradient: 'linear-gradient(to right, #14B8A6, #334155)'
+            },
+            
+            // 2. Corporate (Light - Professional blues)
+            corporate: {
+                primary: '#1E40AF',
+                primaryHover: '#1E3A8A',
+                secondary: '#1F2937',
+                secondaryHover: '#111827',
+                success: '#059669',
+                successHover: '#047857',
+                danger: '#DC2626',
+                dangerHover: '#B91C1C',
+                backgroundGradient: 'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',
+                headerGradient: 'linear-gradient(to right, #1E40AF, #1F2937)'
+            },
+            
+            // 3. Formal (Light - Neutral grays)
+            formal: {
+                primary: '#6B7280',
+                primaryHover: '#4B5563',
+                secondary: '#374151',
+                secondaryHover: '#1F2937',
+                success: '#10B981',
+                successHover: '#059669',
+                danger: '#EF4444',
+                dangerHover: '#DC2626',
+                backgroundGradient: 'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',
+                headerGradient: 'linear-gradient(to right, #6B7280, #374151)'
+            },
+            
+            // 4. Professional (Light - Deep navy)
+            professional: {
+                primary: '#1E3A8A',
+                primaryHover: '#1E40AF',
+                secondary: '#111827',
+                secondaryHover: '#030712',
+                success: '#059669',
+                successHover: '#047857',
+                danger: '#DC2626',
+                dangerHover: '#B91C1C',
+                backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+                headerGradient: 'linear-gradient(to right, #1E3A8A, #111827)'
+            },
+            
+            // 5. Peaceful (Light - Pastel blues/greens)
+            peaceful: {
+                primary: '#60A5FA',
+                primaryHover: '#3B82F6',
+                secondary: '#475569',
+                secondaryHover: '#334155',
+                success: '#34D399',
+                successHover: '#10B981',
+                danger: '#F87171',
+                dangerHover: '#EF4444',
+                backgroundGradient: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
+                headerGradient: 'linear-gradient(to right, #60A5FA, #475569)'
+            },
+            
+            // 6. Vibrant (Light - Bright orange/yellow)
+            vibrant: {
+                primary: '#F59E0B',
+                primaryHover: '#D97706',
+                secondary: '#1F2937',
+                secondaryHover: '#111827',
+                success: '#10B981',
+                successHover: '#059669',
+                danger: '#EF4444',
+                dangerHover: '#DC2626',
+                backgroundGradient: 'linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%)',
+                headerGradient: 'linear-gradient(to right, #F59E0B, #1F2937)'
+            },
+            
+            // 7. Earthy (Light - Browns/greens)
+            earthy: {
+                primary: '#15803D',
+                primaryHover: '#166534',
+                secondary: '#92400E',
+                secondaryHover: '#7C2D12',
+                success: '#22C55E',
+                successHover: '#16A34A',
+                danger: '#DC2626',
+                dangerHover: '#B91C1C',
+                backgroundGradient: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)',
+                headerGradient: 'linear-gradient(to right, #15803D, #92400E)'
+            },
+            
+            // 8. Ocean (Light - Cool blues)
+            ocean: {
+                primary: '#0EA5E9',
+                primaryHover: '#0284C7',
+                secondary: '#1E40AF',
+                secondaryHover: '#1E3A8A',
+                success: '#10B981',
+                successHover: '#059669',
+                danger: '#F87171',
+                dangerHover: '#EF4444',
+                backgroundGradient: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                headerGradient: 'linear-gradient(to right, #0EA5E9, #1E40AF)'
+            },
+            
+            // 9. Sunset (Light - Oranges/pinks)
+            sunset: {
+                primary: '#F97316',
+                primaryHover: '#EA580C',
+                secondary: '#7C2D12',
+                secondaryHover: '#9A3412',
+                success: '#FBBF24',
+                successHover: '#D97706',
+                danger: '#EF4444',
+                dangerHover: '#DC2626',
+                backgroundGradient: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
+                headerGradient: 'linear-gradient(to right, #F97316, #7C2D12)'
+            },
+            
+            // 10. Dark (Single dark variant - Dark grays/blues)
+            dark: {
+                primary: '#60A5FA',
+                primaryHover: '#3B82F6',
+                secondary: '#F1F5F9',
+                secondaryHover: '#E2E8F0',
+                success: '#34D399',
+                successHover: '#10B981',
+                danger: '#F87171',
+                dangerHover: '#EF4444',
+                backgroundGradient: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                headerGradient: 'linear-gradient(to right, #60A5FA, #F1F5F9)'
+            }
         },
         
         // Firebase Configuration
@@ -100,7 +231,8 @@ const AppConfig = {
             unsyncedExpenses: 'unsyncedExpenses',
             syncedExpenses: 'syncedExpenses',
             conversionRates: 'tripConversionRatesBase',
-            appSettings: 'lipikit_trip_settings'
+            appSettings: 'lipikit_trip_settings',
+            selectedTheme: 'appSelectedTheme'
         },
         
         // External Links
@@ -138,6 +270,11 @@ const AppConfig = {
     },
     
     init: function() {
+        // Load selected theme from localStorage
+        const savedTheme = localStorage.getItem(this.config.storageKeys.selectedTheme) || this.config.defaultTheme;
+        if (this.config.themes[savedTheme]) {
+            this.config.currentTheme = savedTheme;
+        }
         this.applyConfiguration();
         this.applyTheme();
         this.updateAppInfo();
@@ -157,7 +294,7 @@ const AppConfig = {
         if (metaDesc) metaDesc.content = this.config.appDescription;
         
         const themeColor = document.querySelector('meta[name="theme-color"]');
-        if (themeColor) themeColor.content = this.config.colors.primary;
+        if (themeColor) themeColor.content = this.config.themes[this.config.currentTheme].primary;
         
         const appVersion = document.getElementById('app-version');
         const appVersionFooter = document.getElementById('app-version-footer');
@@ -166,14 +303,46 @@ const AppConfig = {
     },
     
     applyTheme: function() {
+        const currentColors = this.config.themes[this.config.currentTheme];
+        if (!currentColors) return;
+        
         const root = document.documentElement;
-        root.style.setProperty('--primary-color', this.config.colors.primary);
-        root.style.setProperty('--primary-hover', this.config.colors.primaryHover);
-        root.style.setProperty('--background-gradient', this.config.colors.backgroundGradient);
-        if (this.config.colors.headerGradient) {
-            root.style.setProperty('--header-gradient', this.config.colors.headerGradient);
+        root.style.setProperty('--primary-color', currentColors.primary);
+        root.style.setProperty('--primary-hover', currentColors.primaryHover);
+        root.style.setProperty('--secondary-color', currentColors.secondary);
+        root.style.setProperty('--secondary-hover', currentColors.secondaryHover);
+        root.style.setProperty('--success-color', currentColors.success);
+        root.style.setProperty('--success-hover', currentColors.successHover);
+        root.style.setProperty('--danger-color', currentColors.danger);
+        root.style.setProperty('--danger-hover', currentColors.dangerHover);
+        root.style.setProperty('--background-gradient', currentColors.backgroundGradient);
+        if (currentColors.headerGradient) {
+            root.style.setProperty('--header-gradient', currentColors.headerGradient);
         }
-        document.body.style.background = this.config.colors.backgroundGradient;
+        document.body.style.background = currentColors.backgroundGradient;
+    },
+    
+    // Theme Toggle Function
+    setTheme: function(themeName) {
+        if (this.config.themes[themeName]) {
+            this.config.currentTheme = themeName;
+            localStorage.setItem(this.config.storageKeys.selectedTheme, themeName);
+            this.applyTheme();
+            // Optionally trigger a custom event for UI updates
+            window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: themeName } }));
+            console.log(`Theme switched to: ${themeName}`);
+            return true;
+        }
+        console.error(`Invalid theme: ${themeName}`);
+        return false;
+    },
+    
+    getCurrentTheme: function() {
+        return this.config.currentTheme;
+    },
+    
+    getAvailableThemes: function() {
+        return Object.keys(this.config.themes);
     },
     
     updateAppInfo: function() {

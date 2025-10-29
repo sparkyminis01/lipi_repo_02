@@ -1091,15 +1091,64 @@
 }
 
 .expense-view .quick-select-btn {
-    padding: var(--space-xs) var(--space-sm);
-    margin: var(--space-xs);
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
+    border-radius: 20px;
+    background: white;
+    color: var(--text-medium);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.expense-view .quick-select-btn:hover {
+    background: #f5f5fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .expense-view .quick-select-btn.active {
-    background-color: var(--primary-color);
+    background: var(--primary-color);
     color: white;
+    border-color: var(--primary-color);
+    font-weight: 500;
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn,
+#quick-expense-category-buttons .quick-select-btn,
+#quick-expense-currency-buttons .quick-select-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 0.6rem 1rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    color: var(--text-medium);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0.25rem;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn:hover,
+#quick-expense-category-buttons .quick-select-btn:hover,
+#quick-expense-currency-buttons .quick-select-btn:hover {
+    background: #f5f5fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn.active,
+#quick-expense-category-buttons .quick-select-btn.active,
+#quick-expense-currency-buttons .quick-select-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    font-weight: 500;
 }
 
 /* List styles */
@@ -1722,3 +1771,1438 @@
     }
 }
 
+/* ============================================================================
+   ITINERARY FEATURE STYLES - Add to appstyle.css
+   ============================================================================ */
+
+/* Day sections */
+.day-section {
+    margin-bottom: 1.5rem;
+}
+
+.day-header {
+    background: var(--bg-light);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+    border: 1px solid var(--border-color);
+}
+
+.day-header:hover {
+    background: #f0f0f0;
+}
+
+.day-toggle {
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    transition: transform 0.2s;
+}
+
+.day-activities {
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Activity cards */
+.activity-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+.activity-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.activity-card.completed {
+    background: #f0fdf4;
+    border-color: var(--success-color);
+}
+
+.activity-card.skipped {
+    background: #f9fafb;
+    opacity: 0.7;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.activity-icon {
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon-small {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-icon-small:hover {
+    background: var(--bg-light);
+}
+
+.activity-details {
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.activity-details a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.activity-details a:hover {
+    text-decoration: underline;
+}
+
+.activity-notes {
+    font-style: italic;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.activity-tracking {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.activity-rating {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-medium);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.skipped {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+/* Rating buttons */
+.rating-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.rating-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.3;
+}
+
+.rating-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Complete activity modal */
+#complete-activity-modal .modal-content {
+    max-width: 500px;
+}
+
+#complete-activity-modal .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Payment mode buttons in modal */
+#complete-activity-modal #quick-expense-mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-light);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn:hover {
+    background: #e9e9f0;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+/* Empty state for itinerary */
+.itinerary-view .empty-state {
+    margin-top: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .day-header {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .activity-card {
+        padding: 0.75rem;
+    }
+    
+    .activity-tracking {
+        gap: 0.75rem;
+    }
+    
+    #complete-activity-modal .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .rating-buttons {
+        justify-content: space-between;
+    }
+}
+
+/* Tab content specific to itinerary */
+.itinerary-view .tab-content {
+    padding-top: 1rem;
+}
+
+.itinerary-view #quick-activity-type-buttons .quick-select-btn {
+    min-width: auto;
+    flex: 1;
+}
+
+/* Activity tracking button styles */
+.activity-tracking .btn {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+}
+
+/* Itinerary form enhancements */
+#itinerary-form .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 480px) {
+    #itinerary-form .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================================
+   ITINERARY FEATURE STYLES - Add to appstyle.css
+   ============================================================================ */
+
+/* Day sections */
+.day-section {
+    margin-bottom: 1.5rem;
+}
+
+.day-header {
+    background: var(--bg-light);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+    border: 1px solid var(--border-color);
+}
+
+.day-header:hover {
+    background: #f0f0f0;
+}
+
+.day-toggle {
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    transition: transform 0.2s;
+}
+
+.day-activities {
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Activity cards */
+.activity-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+.activity-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.activity-card.completed {
+    background: #f0fdf4;
+    border-color: var(--success-color);
+}
+
+.activity-card.skipped {
+    background: #f9fafb;
+    opacity: 0.7;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.activity-icon {
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon-small {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-icon-small:hover {
+    background: var(--bg-light);
+}
+
+.activity-details {
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.activity-details a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.activity-details a:hover {
+    text-decoration: underline;
+}
+
+.activity-notes {
+    font-style: italic;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.activity-tracking {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.activity-rating {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-medium);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.skipped {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+/* Rating buttons */
+.rating-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.rating-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.3;
+}
+
+.rating-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Complete activity modal */
+#complete-activity-modal .modal-content {
+    max-width: 500px;
+}
+
+#complete-activity-modal .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Payment mode buttons in modal */
+#complete-activity-modal #quick-expense-mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-light);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn:hover {
+    background: #e9e9f0;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#complete-activity-modal #quick-expense-mode-buttons .quick-select-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+/* Empty state for itinerary */
+.itinerary-view .empty-state {
+    margin-top: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .day-header {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .activity-card {
+        padding: 0.75rem;
+    }
+    
+    .activity-tracking {
+        gap: 0.75rem;
+    }
+    
+    #complete-activity-modal .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .rating-buttons {
+        justify-content: space-between;
+    }
+}
+
+/* Tab content specific to itinerary */
+.itinerary-view .tab-content {
+    padding-top: 1rem;
+}
+
+.itinerary-view #quick-activity-type-buttons .quick-select-btn {
+    min-width: auto;
+    flex: 1;
+}
+
+/* Activity tracking button styles */
+.activity-tracking .btn {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+}
+
+/* Itinerary form enhancements */
+#itinerary-form .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 480px) {
+    #itinerary-form .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================================
+   DOCUMENT MANAGER STYLES - Add to appstyle.css
+   ============================================================================ */
+
+/* Document Manager Container */
+.document-manager-view {
+    width: 100%;
+}
+
+/* Document Controls */
+.document-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: var(--border-radius-sm);
+}
+
+.document-filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.document-filters input,
+.document-filters select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem;
+}
+
+/* Documents Grid */
+.documents-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* ============================================================================
+   DOCUMENT CARDS
+   ============================================================================ */
+.document-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+
+.document-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-color);
+}
+
+/* Document Icon */
+/* Document Thumbnails */
+.document-thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border: 1px solid var(--border-color);
+}
+
+.document-thumbnail-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.document-thumbnail:hover .document-thumbnail-overlay {
+    opacity: 1;
+}
+
+.pdf-thumbnail {
+    flex-direction: column;
+    background: #f8f9fa;
+    color: #e74c3c;
+    font-size: 1.5rem;
+}
+
+.pdf-thumbnail span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+    color: #7f8c8d;
+}
+
+.document-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    color: var(--primary-color);
+    background: rgba(147, 51, 234, 0.1);
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.document-card:hover .document-icon {
+    transform: scale(1.05);
+}
+
+/* Document Details */
+.document-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.document-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-dark);
+    line-height: 1.3;
+}
+
+.document-meta {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.document-tags {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+    background: var(--bg-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+/* Status Badges */
+.document-status {
+    margin: 0.75rem 0;
+}
+
+.document-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+
+.document-status-badge.secured {
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.document-status-badge.unsecured {
+    background: rgba(249, 115, 22, 0.1);
+    color: #9a3412;
+}
+
+.document-status-badge i {
+    font-size: 0.9em;
+}
+
+/* Warning Message */
+.document-warning {
+    font-size: 0.8rem;
+    color: #b45309;
+    background: #fffbeb;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-right: 2px solid #fbbf24;
+}
+
+.document-warning i {
+    color: #d97706;
+}
+
+/* Document Actions */
+.document-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    min-width: 120px;
+}
+
+.document-actions .btn {
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.document-actions .btn i {
+    font-size: 0.9em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .document-card {
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+    
+    .document-actions {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .document-actions .btn {
+        flex: 1;
+        min-width: 100px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .document-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .document-actions {
+        display: none;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .document-card,
+    .document-icon {
+        transition: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .document-card {
+        border-width: 2px;
+    }
+}
+
+/* Document Type Badge */
+.document-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Document Tags */
+.document-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.document-tags .tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: #e0f2fe;
+    color: #0369a1;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.document-path {
+    font-size: 0.85rem;
+    color: var(--text-medium);
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+    background: var(--bg-light);
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.document-meta {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+/* Vault Status Badges */
+.vault-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.vault-badge.secured {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.vault-badge.not-secured {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Document Actions */
+.document-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.document-actions .btn {
+    flex: 1;
+    min-width: 80px;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.btn-sm {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.6rem !important;
+}
+
+/* Empty State for Documents */
+.document-manager-view .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    margin: 2rem 0;
+}
+
+.document-manager-view .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.document-manager-view .empty-state-title {
+    color: var(--text-medium);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.document-manager-view .empty-state-message {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Modal Enhancements for Document Manager */
+#add-document-modal .form-group input[type="file"],
+#vault-action-modal .form-group input[type="file"] {
+    padding: 0.75rem;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background: var(--bg-light);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#add-document-modal .form-group input[type="file"]:hover,
+#vault-action-modal .form-group input[type="file"]:hover {
+    border-color: var(--primary-color);
+    background: white;
+}
+
+/* View Document Modal */
+#view-document-modal .modal-content {
+    max-width: 600px;
+}
+
+#view-document-modal code {
+    background: var(--bg-light);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    word-break: break-all;
+}
+
+/* Button Icon */
+.btn-with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    font-size: 1.1em;
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+    .document-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .document-filters {
+        flex: 1;
+        max-width: 500px;
+    }
+}
+
+@media (min-width: 768px) {
+    .documents-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .document-actions {
+        flex-wrap: nowrap;
+    }
+}
+
+@media (min-width: 1024px) {
+    .documents-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .document-card {
+        padding: 1rem;
+    }
+    
+    .document-icon {
+        font-size: 2rem;
+    }
+    
+    .document-name {
+        font-size: 1rem;
+    }
+    
+    .document-actions {
+        flex-direction: column;
+    }
+    
+    .document-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .document-actions,
+    .document-controls {
+        display: none;
+    }
+    
+    .document-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .vault-badge {
+        border: 1px solid #000;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .document-card,
+    .document-actions .btn {
+        transition: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .document-card {
+        border-width: 2px;
+    }
+    
+    .vault-badge {
+        border-width: 2px;
+    }
+}
+/* Icon spacing */
+i.fas {
+  margin-right: 0.35rem;
+  margin-left: 0.1rem;
+}
+
+/* Icon colors (optional) */
+.btn i.fas {
+  opacity: 0.95;
+}
+
+/* Loading overlay */
+#app-loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-message {
+    color: white;
+    font-size: 1rem;
+    margin: 0;
+    text-align: center;
+}
+
+/* Toast animations */
+@keyframes slideInToast {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutToast {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+}
+
+/* Mobile responsive toast */
+@media (max-width: 768px) {
+    #toast-container {
+        left: 1rem !important;
+        right: 1rem !important;
+        max-width: none !important;
+    }
+}
+
+/* Modal styling */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal.hidden {
+    display: none;
+    pointer-events: none;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    pointer-events: auto;
+    z-index: 1001;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease-out;
+}
+
+.modal-content * {
+    pointer-events: auto;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Close button styling */
+.close-button {
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: red;
+}
+
+/* Form actions styling */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-actions .btn {
+    min-width: 100px;
+}
+
+@media (min-width: 768px) {
+    #documents-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    #documents-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .activity-card {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 1.25rem;
+    }
+    
+    .activity-header {
+        flex: 0 0 220px;
+        margin-bottom: 0;
+        padding-right: 1.25rem;
+        border-right: 1px solid #f0f0f0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .activity-details {
+        flex: 1;
+        padding: 0 1.25rem;
+        margin: 0;
+        border-right: 1px solid #f0f0f0;
+    }
+    
+    .activity-tracking {
+        flex: 0 0 200px;
+        padding-left: 1.25rem;
+        margin: 0;
+        border-top: none;
+        border-left: 1px solid #f0f0f0;
+        justify-content: center;
+    }
+    
+    .activity-actions {
+        margin-top: 0.75rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .btn-full {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        background-color: var(--success-color, #22C55E);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .btn-full:hover {
+        background-color: #3e8e41;
+    }
+}
+
+/* ============================================================================
+   MODAL BUTTON STYLES - Payment Mode and Rating Buttons
+   ============================================================================ */
+
+.payment-mode-btn,
+.rating-btn {
+    pointer-events: auto !important;
+    z-index: 1002 !important;
+    position: relative;
+}
+
+.payment-mode-btn {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f0f0f0;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-mode-btn:hover {
+    background: #e0e0e0;
+    border-color: #999;
+}
+
+.payment-mode-btn:active {
+transform: scale(0.98);
+}
+
+.rating-btn {
+background: white;
+border: 2px solid #e0e0e0;
+font-size: 1.5rem;
+border-radius: 8px;
+width: 3rem;
+height: 3rem;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: all 0.2s ease;
+color: #FFD700;
+margin: 0 0.25rem;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.rating-btn:hover {
+background: #e0e0e0;
+border-color: #999;
+transform: translateY(-1px);
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: #FFD700;
+    background-color: #FFF9C4;
+}
+
+.rating-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal action buttons - Cancel and Complete */
+.cancel-btn,
+.complete-btn {
+    pointer-events: auto !important;
+    z-index: 1003 !important;
+    cursor: pointer !important;
+    min-height: 44px !important;
+    font-weight: 600 !important;
+}
+
+.cancel-btn {
+    background: var(--secondary-color) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.cancel-btn:hover {
+    background: var(--secondary-hover) !important;
+    transform: translateY(-1px);
+}
+
+.complete-btn {
+    background: var(--success-color) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.complete-btn:hover {
+    background: var(--success-hover) !important;
+    transform: translateY(-1px);
+}

@@ -3,47 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="LipiKit PWA - Modern productivity apps for business, personal, and travel needs">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛩️</text></svg>">  
-  <title id="page-title">LipiKit App</title>
+  <meta name="description" content="LipiKit Trips - Track expenses, manage checklists, and plan your perfect trip">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">  
+  <title id="page-title">LipiKit Trips</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#9333ea">
+  <meta name="theme-color" content="#14B8A6">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="appstyle.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="font-awesome.min.css" />
+
   <style>
-    /* Loading Spinner */
-    #app-loading {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.9);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.3s ease-out;
-    }
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #9333ea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .loading-text {
-      color: #4a4a4a;
-      font-size: 1.1em;
-      margin-top: 10px;
-    }
+    /* Loading spinner styles are now in style.css */
   </style>
   
   <!-- CryptoJS for PIN validation -->
@@ -53,22 +24,21 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  
-  <!-- Google AdSense -->
-  <!--script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6822234477749633" crossorigin="anonymous"></script>-->
 </head>
 <body>
   <!-- Loading Spinner -->
   <div id="app-loading">
-    <div class="spinner"></div>
-    <div class="loading-text">Loading TRIPS...</div>
+    <div class="loading-logo">
+      <img src="logo-trip-expense-tracker.png" alt="LipiKit Trips" class="logo-image">
+      <div class="spinner"></div>
+    </div>
+    <div class="loading-text">Loading your travel companion...</div>
   </div>
 
   <div class="container">
     <!-- Header -->
     <header class="header">
       <div class="logo" onclick="location.reload()" style="cursor: pointer; user-select: none; display: flex; align-items: center; gap: 12px;">
-        
         <div>
           <span class="company-name" id="company-name">LipiKit</span>
           <span class="app-name" id="app-name">Trips</span>
@@ -109,63 +79,137 @@
       </div>
     </div>
 
-    <!-- Info Blocks -->
+    <!-- Compact Info Blocks -->
     <div class="info-grid">
       <div class="info-block" id="app-info-block"></div>
       <div class="info-block">
-        <h2>LipiKit</h2>
-        <h3>Productivity Apps for Everyone</h3>
-        <p>Discover our suite of powerful apps designed for business, personal, and travel productivity.</p>
-        <p>A curated collection of powerful, offline-first applications designed to enhance your productivity and simplify complex workflows.</p>
-        <p>Built with modern web technologies and a focus on user experience, our apps deliver professional-grade functionality with consumer-friendly interfaces.</p>
-        <a href="https://lipikit.com" class="btn btn-primary" target="_blank">Explore All Apps</a>
-      </div>
+  <h2><i class="fas fa-heart" style="color: var(--success-color); margin-right: 0.5rem;"></i> Support LipiKit | Unlimited Trips</h2>
+  <h3>To Keep Enjoying Free Apps</h3>
+  <p>LipiKit is built ad-free and accessible for everyone—personalized travel planners, content editing suites, fitness trackers, and design prototypes, all in active development to spark joy in daily routines.</p>
+  <p>Your support fuels AI-driven updates like smarter itineraries and seamless integrations, ensuring these tools stay free and evolving for travelers, creators, and dreamers alike.</p>
+  <div style="display: flex; gap: 0.5rem; flex-direction: column; margin-top: 1rem;">
+  <a href="https://razorpay.me/@dhanesh123" class="btn btn-primary" target="_blank" style="padding: 0.75rem 2rem; font-size: 1.1em; border-radius: 30px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+      <i class="fab fa-patreon"></i> Support LipiKit
+  </a>
+  <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_RZFSPdB6dMFgbp" async> </script> </form>
+  <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-medium); text-align: center; font-style: italic;">
+    Quick: Just enter your name, email & phone on the secure Razorpay page—we'll send a thank-you receipt!
+  </p>
+  <a href="https://rzp.io/rzp/NiFP60q" class="btn btn-primary" target="_blank" style="padding: 0.75rem 2rem; font-size: 1.1em; border-radius: 30px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+    <i class="fab fa-patreon"></i> Buy Pro Plan (Unlimited Trips)
+  </a>
+    <p style="margin-top: 1rem; font-size: 1rem; color: var(--text-medium); text-align: center; font-style: italic;"> Other ways to Get Pro Plan: <br>
+Reach out to <a href="mailto:connect@sparkyminis.com" style="text-decoration: none; color: var(--primary-color);">connect@SparkyMinis.com</a>.  </p>
+  </div>
+
+</div>
+      
       <div class="info-block">
-        <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="text-align: center; margin-bottom: 1rem;">
           <a href="https://sparkyminis.com" target="_blank" style="text-decoration: none;">
-            <img src="logo.png" alt="SparkyMinis" style="height: 150px; width: auto; margin: 0 auto 1rem; display: block;">
-            <h2 style="margin: 0; color: var(--primary-color);">SparkyMinis Media-Tech</h2>
+            <img src="logo.png" alt="SparkyMinis" style="height: 120px; width: auto; margin: 0 auto 0.5rem; display: block;">
+            <h2 style="margin: 0; color: var(--primary-color); font-size: 1.1rem;">LipiKit by SparkyMinis</h2>
           </a>
         </div>
-        <p>We are SparkyMinis - Ethical AI Media-Tech for Nourished Lives</p>
-        <p>Need help with your app? Want to suggest a new feature? Looking for business partnerships?</p>
-        <p>Ready to ignite your project? Whether it's a custom AI workshop, media partnership. We're here to co-create intentional impact.</p>
-        <a href="mailto:connect@sparkyminis.com" class="btn btn-success">Email Support</a>
-        <a href="https://MadeByPriyanka.com" class="btn btn-secondary" target="_blank">Founder's Desk</a>
+        <h3>Catalog of Productivity Apps for Everyone. Powered by <a href="https://sparkyminis.com" target="_blank" style="text-decoration: none;">SparkyMinis Media-Tech</a>. </h3>
+        <p>SparkyMinis crafts AI-powered tools and vibrant content to empower intentional living.</p>
+        <p>Personalized travel planners, content editing suites, fitness trackers, and design prototypes—all in active development to spark joy in daily routines.</p>
+        <p>AI-driven business tools for HR teams and startups: Automated recruitment platforms, workflow optimizers, and analytics dashboards, primarily subscription-based for seamless scaling.</p>
+        <a href="https://lipikit.com" class="btn btn-primary" target="_blank"
+        style="padding: 0.75rem 2rem; font-size: 1.1em; border-radius: 30px; font-weight: 600;">Explore All Apps</a>
+        <a href="mailto:connect@sparkyminis.com" class="btn btn-success"
+        style="padding: 0.75rem 2rem; font-size: 1.1em; border-radius: 30px; font-weight: 600;">Contact Support</a>
       </div>
-      
     </div>
 
-    <!-- FAQ -->
-    <div class="faq-section">
+    <!-- FAQ - Collapsible by default -->
+    <div class="faq-section collapsed">
       <h2>Frequently Asked Questions</h2>
       <div id="faq-container"></div>
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- Compact Footer -->
   <footer class="footer">
     <p>&copy; 2025 SparkyMinis Media-Tech LLP. All Rights Reserved.</p>
     <div class="footer-links">
-      <a href="https://lipikit.com" target="_blank">LipiKit App Catalog</a> |
+      <a href="https://lipikit.com" target="_blank">LipiKit</a> |
       <a href="https://lipikit.com/privacy" target="_blank">Privacy</a> |
       <a href="https://lipikit.com/terms" target="_blank">Terms</a>
     </div>
-    <p id="app-version"></p>
+    <p id="app-version" style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.8;"></p>
   </footer>
 
   <!-- Load app scripts -->
   <script>
-    // Hide loading spinner when all scripts are loaded
-    window.addEventListener('load', function() {
-      // Small delay to ensure everything is properly initialized
-      setTimeout(function() {
-        const loading = document.getElementById('app-loading');
-        if (loading) {
-          loading.style.opacity = '0';
-          setTimeout(() => loading.remove(), 300); // Match the transition duration
+    // Global function to show loading spinner
+    function showAppLoading() {
+      const loadingElement = document.getElementById('app-loading');
+      if (loadingElement) {
+        // Force reflow to ensure the element is rendered before adding the class
+        void loadingElement.offsetHeight;
+        loadingElement.classList.add('visible');
+      }
+    }
+
+    // Global function to hide loading spinner
+    function hideAppLoading() {
+      const loadingElement = document.getElementById('app-loading');
+      if (loadingElement) {
+        loadingElement.classList.remove('visible');
+        loadingElement.classList.add('hidden');
+        // Remove from DOM after animation completes
+        setTimeout(() => {
+          loadingElement.style.display = 'none';
+        }, 500);
+      }
+    }
+
+    // Safety timeout to ensure spinner hides even if app fails to load
+    let appLoaded = false;
+    const LOADING_TIMEOUT = 10000; // 10 seconds
+
+    // Wait a small amount of time before showing the spinner to prevent flash on fast loads
+    let showSpinnerTimeout = setTimeout(() => {
+      showAppLoading();
+    }, 100);
+
+    // Set a timeout to hide the spinner after max duration
+    const loadingTimeout = setTimeout(() => {
+      if (!appLoaded) {
+        console.warn('App initialization taking too long, forcing spinner to hide');
+        hideAppLoading();
+      }
+    }, LOADING_TIMEOUT);
+
+    // Expose function to window for app.js to call
+    window.appReady = function() {
+      if (!appLoaded) {
+        appLoaded = true;
+        clearTimeout(loadingTimeout);
+        clearTimeout(showSpinnerTimeout);
+        hideAppLoading();
+      }
+    };
+
+    // Handle DOM ready state
+    document.addEventListener('DOMContentLoaded', function() {
+      // If the spinner hasn't been shown yet, show it now
+      clearTimeout(showSpinnerTimeout);
+      showAppLoading();
+      
+      // If app.js hasn't called appReady within 1 second of DOMContentLoaded,
+      // we'll show a warning but keep the spinner going until appReady is called
+      setTimeout(() => {
+        if (!appLoaded) {
+          console.log('DOM loaded, waiting for app to initialize...');
+          // Update loading text to indicate we're still working
+          const loadingText = document.querySelector('#app-loading .loading-text');
+          if (loadingText) {
+            loadingText.textContent = 'Finalizing your experience...';
+          }
         }
-      }, 500);
+      }, 1000);
     });
   </script>
   <script src="config.js"></script>
@@ -190,7 +234,7 @@
       if(typeof AppManager!=='undefined') AppManager.init();
     });
 
-    // Helper functions for modals
+    // KEEP ONLY THESE - HTML form modals only
     function showModal(id){
       document.getElementById(id).classList.remove('hidden');
     }
@@ -217,12 +261,7 @@
       showModal('confirmation-modal');
     }
     
-    // Close modals when clicking outside
-    document.addEventListener('click', function(e){
-      if(e.target.classList.contains('modal')){
-        hideModal(e.target.id);
-      }
-    });
+
   </script>
   
   <!-- Service Worker Registration -->
@@ -237,5 +276,440 @@
       });
     }
   </script>
+
+<!-- ============================================================================
+     COMPLETE MODAL MANAGEMENT - Replace entire script section in (index).html
+     
+     This version:
+     1. Separates HTML modals from app.js dynamic modals
+     2. Fixes event propagation issues
+     3. Allows proper button/close functionality
+     4. Handles escape key correctly
+     ============================================================================ -->
+
+<script>
+// ============================================================================
+// MODAL MANAGEMENT SYSTEM v2 - Complete Rewrite
+// ============================================================================
+
+/**
+ * Safe modal hiding function - respects app.js modals
+ * @param {string} modalId - ID of modal to hide
+ * @returns {boolean} - Success status
+ */
+function hideModal(modalId) {
+    try {
+        let modal = null;
+        
+        if (modalId) {
+            modal = document.getElementById(modalId);
+        } else {
+            // Find ONLY HTML-based modals (not app-modal class)
+            modal = document.querySelector('.modal:not(.app-modal):not(.hidden)');
+        }
+        
+        if (!modal) {
+            console.debug(`Modal not found: ${modalId}`);
+            return false;
+        }
+        
+        // Safety checks
+        if (!modal.classList) {
+            console.warn('Modal element does not have classList');
+            return false;
+        }
+        
+        if (modal.classList.contains('hidden')) {
+            return true;
+        }
+        
+        // Hide the modal
+        modal.classList.add('hidden');
+        console.debug(`Modal hidden: ${modalId || 'unknown'}`);
+        return true;
+    } catch (error) {
+        console.error('Error hiding modal:', error);
+        return false;
+    }
+}
+
+/**
+ * Safe modal showing function
+ * @param {string} modalId - ID of modal to show
+ * @returns {boolean} - Success status
+ */
+function showModal(modalId) {
+    try {
+        const modal = document.getElementById(modalId);
+        
+        if (!modal) {
+            console.warn(`Modal with ID '${modalId}' not found`);
+            return false;
+        }
+        
+        if (!modal.classList) {
+            console.warn('Modal element does not have classList');
+            return false;
+        }
+        
+        modal.classList.remove('hidden');
+        console.debug(`Modal shown: ${modalId}`);
+        return true;
+    } catch (error) {
+        console.error('Error showing modal:', error);
+        return false;
+    }
+}
+
+/**
+ * Close all HTML modals (not app-modal class)
+ */
+function closeAllModals() {
+    try {
+        const modals = document.querySelectorAll('.modal:not(.app-modal)');
+        modals.forEach(modal => {
+            if (modal.id) {
+                hideModal(modal.id);
+            }
+        });
+        console.debug('All HTML modals closed');
+    } catch (error) {
+        console.error('Error closing all modals:', error);
+    }
+}
+
+// ============================================================================
+// EVENT HANDLERS - Global modal control
+// ============================================================================
+
+/**
+ * Handle clicks outside modal content
+ * Only closes HTML modals, not app-modals
+ */
+document.addEventListener('click', (e) => {
+    try {
+        // Skip if no target
+        if (!e.target || !e.target.classList) {
+            return;
+        }
+        
+        // CRITICAL: Skip app-modal class (app.js dynamic modals)
+        if (e.target.classList.contains('app-modal')) {
+            return;
+        }
+        
+        // Only process HTML modals
+        if (e.target.classList.contains('modal') && !e.target.classList.contains('app-modal')) {
+            const modalContent = e.target.querySelector('.modal-content');
+            
+            if (modalContent) {
+                // Check if click was outside content
+                if (!modalContent.contains(e.target)) {
+                    // Clicked on background, close it
+                    hideModal(e.target.id);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error in backdrop click handler:', error);
+    }
+}, false);
+
+/**
+ * Stop propagation for app-modal content clicks ONLY
+ * Prevents clicks inside app-modal from closing it
+ * Does NOT interfere with HTML modals
+ */
+document.addEventListener('click', (e) => {
+    try {
+        const appModal = e.target.closest('.modal.app-modal');
+        if (appModal) {
+            const modalContent = e.target.closest('.modal-content');
+            if (modalContent) {
+                // Only stop propagation for app-modal content
+                e.stopPropagation();
+            }
+        }
+    } catch (error) {
+        console.error('Error in content click handler:', error);
+    }
+}, true); // Capture phase to intercept early
+
+/**
+ * Handle Escape key - closes HTML modals only
+ */
+document.addEventListener('keydown', (e) => {
+    try {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            // Only close HTML modals, not app-modals
+            const openModals = document.querySelectorAll('.modal:not(.app-modal):not(.hidden)');
+            
+            if (openModals.length > 0) {
+                // Close the last (top) modal
+                const topModal = openModals[openModals.length - 1];
+                if (topModal.id) {
+                    hideModal(topModal.id);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error in Escape key handler:', error);
+    }
+});
+
+// ============================================================================
+// HELPER FUNCTION - For app.js to use
+// ============================================================================
+
+/**
+ * Setup button groups for app.js modals
+ * Handles click events with proper event propagation
+ * 
+ * Usage:
+ * setupButtonGroup(container, dataType, onSelect);
+ * 
+ * Example:
+ * setupButtonGroup(
+ *     document.querySelector('#quick-expense-mode-buttons'),
+ *     'expense-mode',
+ *     (value) => { document.getElementById('selected-expense-mode').value = value; }
+ * );
+ */
+function setupButtonGroup(container, dataType, onSelect) {
+    if (!container) {
+        console.warn('Container not found for button group');
+        return;
+    }
+    
+    const buttons = container.querySelectorAll(`[data-type="${dataType}"], [data-value]`);
+    
+    if (buttons.length === 0) {
+        console.warn(`No buttons found for dataType: ${dataType}`);
+        return;
+    }
+    
+    buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // CRITICAL: Prevent event from bubbling
+            e.stopPropagation();
+            e.preventDefault();
+            
+            // Remove active state from all buttons
+            buttons.forEach(b => {
+                b.style.background = 'var(--bg-light)';
+                b.style.borderColor = 'var(--border-color)';
+                b.style.color = 'var(--text-dark)';
+                b.classList.remove('active');
+            });
+            
+            // Add active state to clicked button
+            btn.style.background = 'var(--primary-color)';
+            btn.style.borderColor = 'var(--primary-color)';
+            btn.style.color = 'white';
+            btn.classList.add('active');
+            
+            // Call the callback with value
+            const value = btn.dataset.value;
+            if (onSelect && typeof onSelect === 'function') {
+                onSelect(value);
+            }
+            
+            console.debug(`Button selected: ${dataType} = ${value}`);
+        }, false);
+    });
+}
+
+/**
+ * Setup rating buttons for app.js modals
+ * 
+ * Usage:
+ * setupRatingButtons(container, onRate);
+ * 
+ * Example:
+ * setupRatingButtons(
+ *     document.querySelector('.rating-buttons'),
+ *     (rating) => { document.getElementById('activity-rating').value = rating; }
+ * );
+ */
+function setupRatingButtons(container, onRate) {
+    if (!container) {
+        console.warn('Container not found for rating buttons');
+        return;
+    }
+    
+    const buttons = container.querySelectorAll('.rating-btn, button[data-rating]');
+    
+    if (buttons.length === 0) {
+        console.warn('No rating buttons found');
+        return;
+    }
+    
+    buttons.forEach((btn, idx) => {
+        btn.addEventListener('click', (e) => {
+            // CRITICAL: Prevent event from bubbling
+            e.stopPropagation();
+            e.preventDefault();
+            
+            // Update visual state for all buttons
+            buttons.forEach((b, i) => {
+                b.style.opacity = i <= idx ? '1' : '0.3';
+            });
+            
+            // Call callback with rating
+            const rating = idx + 1;
+            if (onRate && typeof onRate === 'function') {
+                onRate(rating);
+            }
+            
+            console.debug(`Rating selected: ${rating} stars`);
+        }, false);
+    });
+}
+
+// ============================================================================
+// EXPOSE FUNCTIONS TO WINDOW
+// ============================================================================
+
+window.hideModal = hideModal;
+window.showModal = showModal;
+window.closeAllModals = closeAllModals;
+window.setupButtonGroup = setupButtonGroup;
+window.setupRatingButtons = setupRatingButtons;
+
+console.log('Modal management system initialized');
+
+</script>
+
+<!-- ============================================================================
+     CSS FOR MODALS - Add this to your stylesheet if not already present
+     ============================================================================ -->
+
+<style>
+/* Modal container */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.modal.hidden {
+    display: none;
+    pointer-events: none;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    pointer-events: auto;
+    z-index: 1001;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content * {
+    pointer-events: auto;
+}
+
+/* Close button */
+.close-button {
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: red;
+}
+
+/* Form actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-actions .btn {
+    min-width: 100px;
+}
+
+/* App modals - same styling */
+.modal.app-modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.modal.app-modal.hidden {
+    display: none;
+    pointer-events: none;
+}
+</style>
+
+<!-- ============================================================================
+     NOTES FOR app.js IMPLEMENTATION
+     ============================================================================
+
+When creating modals in app.js, do the following:
+
+1. Add app-modal class:
+   modal.className = 'modal app-modal';
+
+2. For button groups, after creating modal:
+   setupButtonGroup(
+       modal.querySelector('#quick-expense-mode-buttons'),
+       'expense-mode',
+       (value) => {
+           document.getElementById('selected-expense-mode').value = value;
+       }
+   );
+
+3. For rating buttons, after creating modal:
+   setupRatingButtons(
+       modal.querySelector('.rating-buttons'),
+       (rating) => {
+           document.getElementById('activity-rating').value = rating;
+       }
+   );
+
+4. For showMessage modal, add app-modal class to the modal element
+
+This ensures:
+✅ Close buttons work
+✅ Cancel buttons work
+✅ X buttons work
+✅ Rating selection works
+✅ Payment mode selection works
+✅ Global hideModal() doesn't interfere
+✅ Escape key closes only HTML modals
+✅ Click outside only closes HTML modals
+
+============================================================================ -->
+
 </body>
 </html>

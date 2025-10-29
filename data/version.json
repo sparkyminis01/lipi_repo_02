@@ -2,7 +2,7 @@
   "last_updated": "2025-10-12T05:45:00Z",
   "datasets": {
     "checklist_master": {
-      "version": "0.0.9",
+      "version": "1.0.0",
       "url": "/data/checklist_master.min.json"
     },
     "ads_master": {
@@ -28,6 +28,13 @@
     "attractions_master": {
       "version": "0.0.9",
       "url": "/data/attractions_master.min.json"
+    },
+    "user_plan": {
+      "version": "0.0.9",
+      "url": "/data/user_plan.min.json",
+      "lastModified": "2025-01-27T10:00:00Z",
+      "size": 3500,
+      "description": "User plan configuration (Free/Pro)"
     }
   }
 }
