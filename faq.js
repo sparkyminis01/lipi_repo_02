@@ -1,10 +1,4 @@
-// faq.js - Enhanced FAQ Manager with Collapsible Section
-const FAQManager = {
-faqs: [
-    // Pricing and Plans FAQs
-    {
-        question: "What's the difference between Free and Pro plans?",
-        answer: `
+const FAQManager={faqs:[{question:"What's the difference between Free and Pro plans?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>LipiKit offers two distinct plans to suit different travel needs:</p>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin: 1rem 0;">
@@ -32,11 +26,7 @@ faqs: [
                 </div>
                 <p style="margin-top: 1rem;">Upgrade to Pro to unlock the full potential of LipiKit and support our mission to create free, ad-free travel tools!</p>
             </div>
-        `
-    },
-    {
-        question: "How many trips can I create with the Free plan?",
-        answer: `
+        `},{question:"How many trips can I create with the Free plan?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>With the Free plan, you can create up to <strong>3 trips</strong> in total. This limit applies to both active and archived trips combined.</p>
                 <p>If you need to create more trips, you'll need to either:</p>
@@ -46,11 +36,7 @@ faqs: [
                 </ul>
                 <p>To upgrade, simply click on the <strong>'Get Pro'</strong> button in the app or visit our support page for more information.</p>
             </div>
-        `
-    },
-    {
-        question: "What payment methods do you accept for Pro?",
-        answer: `
+        `},{question:"What payment methods do you accept for Pro?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>We accept various payment methods for your convenience:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -62,11 +48,7 @@ faqs: [
                 <p>All payments are securely processed through our payment partner, Razorpay, ensuring your financial information is protected with bank-level security.</p>
                 <p>If you prefer alternative payment methods or need assistance, please contact us at <a href="mailto:connect@sparkyminis.com" style="color: var(--primary-color); text-decoration: none;">connect@sparkyminis.com</a>.</p>
             </div>
-        `
-    },
-    {
-        question: "How do I upgrade to the Pro plan?",
-        answer: `
+        `},{question:"How do I upgrade to the Pro plan?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Upgrading to LipiKit Pro is quick and easy:</p>
                 <ol style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -80,11 +62,7 @@ faqs: [
                     <p style="margin: 0;">💡 <strong>Pro Tip:</strong> Check for any ongoing promotions or discounts before upgrading!</p>
                 </div>
             </div>
-        `
-    },
-    {
-        question: "What happens to my data if I don't renew my Pro subscription?",
-        answer: `
+        `},{question:"What happens to my data if I don't renew my Pro subscription?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>If your Pro subscription expires:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -97,11 +75,7 @@ faqs: [
                 <p>If you choose to renew your Pro subscription in the future, all your premium features will be immediately restored.</p>
                 <p>We recommend exporting your trip data regularly as a backup, regardless of your subscription status.</p>
             </div>
-        `
-    },
-    {
-        question: "How can I support LipiKit without upgrading to Pro?",
-        answer: `
+        `},{question:"How can I support LipiKit without upgrading to Pro?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>We appreciate your support in any form! Here are ways you can help LipiKit grow:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -118,12 +92,7 @@ faqs: [
                     </a>
                 </div>
             </div>
-        `
-    },
-    // App-Specific FAQs
-    {
-        question: "How do I create a new trip?",
-        answer: `
+        `},{question:"How do I create a new trip?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Start planning your adventure by following these steps:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -137,11 +106,7 @@ faqs: [
                 </ul>
                 <p>Once created, your trip appears in the Trips list, where you can select it to access the dashboard for managing expenses, checklists, and more.</p>
             </div>
-        `
-    },
-    {
-        question: "What are the trip creation questions for?",
-        answer: `
+        `},{question:"What are the trip creation questions for?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>The questions help tailor your trip experience by personalizing your planning tools. They filter relevant <strong>checklists</strong>, <strong>attractions</strong>, and <strong>itineraries</strong> based on your responses (e.g., travel style, interests).</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -151,11 +116,7 @@ faqs: [
                 </ul>
                 <p>Skipping questions reduces tailored suggestions, such as curated packing lists or activity recommendations.</p>
             </div>
-        `
-    },
-    {
-        question: "How do I add an expense to a trip?",
-        answer: `
+        `},{question:"How do I add an expense to a trip?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Track your spending by adding expenses to your active trip:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -175,11 +136,7 @@ faqs: [
                 </ul>
                 <p>The app supports multiple currencies, automatically converting them to your trip's base currency for summaries, which you can view in the dashboard's Summary tab.</p>
             </div>
-        `
-    },
-    {
-        question: "How does currency conversion work?",
-        answer: `
+        `},{question:"How does currency conversion work?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Manage expenses across multiple currencies with ease:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -200,11 +157,7 @@ faqs: [
                 </ul>
                 <p>Access the Summary tab from the trip dashboard to view converted totals and detailed reports.</p>
             </div>
-        `
-    },
-    {
-        question: "How do I manage checklists for my trip?",
-        answer: `
+        `},{question:"How do I manage checklists for my trip?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Stay organized with trip-specific checklists:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -226,19 +179,11 @@ faqs: [
                 </ul>
                 <p>Switch to the Customize page anytime from the Checklist tab to add or edit items.</p>
             </div>
-        `
-    },
-    {
-        question: "Is this app free to use?",
-        answer: `
+        `},{question:"Is this app free to use?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p><strong>Yes!</strong> The app is completely free with no hidden charges, subscriptions, or premium features. All functionality is accessible to everyone.</p>
             </div>
-        `
-    },
-    {
-        question: "Does the app work offline?",
-        answer: `
+        `},{question:"Does the app work offline?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p><strong>Absolutely!</strong> As a Progressive Web App (PWA), the app works fully offline after your first visit.</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -247,11 +192,7 @@ faqs: [
                 </ul>
                 <p>Access the main Trips screen or any trip dashboard to use the app offline seamlessly.</p>
             </div>
-        `
-    },
-    {
-        question: "How is my data protected?",
-        answer: `
+        `},{question:"How is my data protected?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Your data privacy is a priority:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -267,11 +208,7 @@ faqs: [
                 </ul>
                 <p>Navigate to Settings from the main screen to manage your data securely.</p>
             </div>
-        `
-    },
-    {
-        question: "Can I install this app on my phone?",
-        answer: `
+        `},{question:"Can I install this app on my phone?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p><strong>Yes!</strong> Install the app for a native-like experience:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -281,11 +218,7 @@ faqs: [
                 </ul>
                 <p>Access the installed app from your phone's home screen, opening directly to the main Trips screen.</p>
             </div>
-        `
-    },
-    {
-        question: "How do I backup my data?",
-        answer: `
+        `},{question:"How do I backup my data?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>Keep your data safe with backups:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -296,11 +229,7 @@ faqs: [
                 </ul>
                 <p>Store the exported file securely and return to the main screen to continue using the app.</p>
             </div>
-        `
-    },
-    {
-        question: "Who can I contact for support?",
-        answer: `
+        `},{question:"Who can I contact for support?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>For help, reach out to our support team:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -309,11 +238,7 @@ faqs: [
                 </ul>
                 <p>From the main Trips screen, continue using the app while awaiting a response.</p>
             </div>
-        `
-    },
-    {
-        question: "What new features are coming soon?",
-        answer: `
+        `},{question:"What new features are coming soon?",answer:`
             <div style="color: var(--text-dark); line-height: 1.6; font-size: 0.9rem;">
                 <p>We're excited to roll out exciting updates! Here's a preview:</p>
                 <ul style="padding-left: var(--space-md); margin-bottom: var(--space-md);">
@@ -323,42 +248,7 @@ faqs: [
                 </ul>
                 <p>Stay tuned via app notifications or our support email for release dates!</p>
             </div>
-        `
-    }
-],
-    
-    init: function() {
-        this.renderFAQs();
-        this.bindEvents();
-        this.initCollapsible();
-    },
-    
-    initCollapsible: function() {
-        const faqSection = document.querySelector('.faq-section');
-        if (!faqSection) return;
-        
-        // Start collapsed by default
-        faqSection.classList.add('collapsed');
-        
-        // Add click handler to header
-        const header = faqSection.querySelector('h2');
-        if (header) {
-            header.addEventListener('click', () => {
-                faqSection.classList.toggle('collapsed');
-            });
-        }
-    },
-    
-    renderFAQs: function() {
-        const faqContainer = document.getElementById('faq-container');
-        if (!faqContainer) return;
-        
-        faqContainer.innerHTML = '';
-        
-        this.faqs.forEach((faq, index) => {
-            const faqItem = document.createElement('div');
-            faqItem.className = 'faq-item';
-            faqItem.innerHTML = `
+        `}],init:function(){this.renderFAQs();this.bindEvents();this.initCollapsible();},initCollapsible:function(){const faqSection=document.querySelector('.faq-section');if(!faqSection)return;faqSection.classList.add('collapsed');const header=faqSection.querySelector('h2');if(header){header.addEventListener('click',()=>{faqSection.classList.toggle('collapsed');});}},renderFAQs:function(){const faqContainer=document.getElementById('faq-container');if(!faqContainer)return;faqContainer.innerHTML='';this.faqs.forEach((faq,index)=>{const faqItem=document.createElement('div');faqItem.className='faq-item';faqItem.innerHTML=`
                 <div class="faq-question" data-faq-index="${index}">
                     <span>${faq.question}</span>
                     <span class="faq-toggle">+</span>
@@ -366,13 +256,7 @@ faqs: [
                 <div class="faq-answer">
                     ${faq.answer}
                 </div>
-            `;
-            faqContainer.appendChild(faqItem);
-        });
-        
-        // Add CSS for the toggle icon
-        const style = document.createElement('style');
-        style.textContent = `
+            `;faqContainer.appendChild(faqItem);});const style=document.createElement('style');style.textContent=`
             .faq-question {
                 display: flex;
                 justify-content: space-between;
@@ -408,115 +292,18 @@ faqs: [
                 outline: 2px solid var(--primary-color);
                 outline-offset: 2px;
             }
-        `;
-        document.head.appendChild(style);
-    },
-    
-    bindEvents: function() {
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.faq-question')) {
-                this.toggleFAQ(e.target.closest('.faq-question'));
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.target.closest('.faq-question') && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault();
-                this.toggleFAQ(e.target.closest('.faq-question'));
-            }
-        });
-    },
-    
-    toggleFAQ: function(questionElement) {
-        const faqItem = questionElement.closest('.faq-item');
-        const isOpen = faqItem.classList.contains('open');
-        
-        // Close all other FAQs (accordion behavior)
-        document.querySelectorAll('.faq-item.open').forEach(item => {
-            if (item !== faqItem) {
-                item.classList.remove('open');
-            }
-        });
-        
-        // Toggle current FAQ
-        faqItem.classList.toggle('open', !isOpen);
-        
-        // Update ARIA attributes for accessibility
-        questionElement.setAttribute('aria-expanded', !isOpen);
-        
-        // Make questions focusable for keyboard navigation
-        if (!questionElement.hasAttribute('tabindex')) {
-            questionElement.setAttribute('tabindex', '0');
-        }
-    },
-    
-    // Method to add custom FAQs for specific apps
-    addCustomFAQs: function(customFaqs) {
-        if (Array.isArray(customFaqs)) {
-            this.faqs = [...this.faqs, ...customFaqs];
-            this.renderFAQs();
-        }
-    },
-    
-    // Method to replace default FAQs with app-specific ones
-    setCustomFAQs: function(customFaqs) {
-        if (Array.isArray(customFaqs)) {
-            this.faqs = customFaqs;
-            this.renderFAQs();
-        }
-    },
-    
-    // Search functionality
-    searchFAQs: function(searchTerm) {
-        const normalizedSearch = searchTerm.toLowerCase().trim();
-        
-        if (!normalizedSearch) {
-            this.renderFAQs();
-            return;
-        }
-        
-        const filteredFAQs = this.faqs.filter(faq => 
-            faq.question.toLowerCase().includes(normalizedSearch) ||
-            faq.answer.toLowerCase().includes(normalizedSearch)
-        );
-        
-        this.renderFilteredFAQs(filteredFAQs, searchTerm);
-    },
-    
-    renderFilteredFAQs: function(faqs, searchTerm) {
-        const faqContainer = document.getElementById('faq-container');
-        if (!faqContainer) return;
-        
-        faqContainer.innerHTML = '';
-        
-        if (faqs.length === 0) {
-            faqContainer.innerHTML = `
+        `;document.head.appendChild(style);},bindEvents:function(){document.addEventListener('click',(e)=>{if(e.target.closest('.faq-question')){this.toggleFAQ(e.target.closest('.faq-question'));}});document.addEventListener('keydown',(e)=>{if(e.target.closest('.faq-question')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();this.toggleFAQ(e.target.closest('.faq-question'));}});},toggleFAQ:function(questionElement){const faqItem=questionElement.closest('.faq-item');const isOpen=faqItem.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(item=>{if(item!==faqItem){item.classList.remove('open');}});faqItem.classList.toggle('open',!isOpen);questionElement.setAttribute('aria-expanded',!isOpen);if(!questionElement.hasAttribute('tabindex')){questionElement.setAttribute('tabindex','0');}},addCustomFAQs:function(customFaqs){if(Array.isArray(customFaqs)){this.faqs=[...this.faqs,...customFaqs];this.renderFAQs();}},setCustomFAQs:function(customFaqs){if(Array.isArray(customFaqs)){this.faqs=customFaqs;this.renderFAQs();}},searchFAQs:function(searchTerm){const normalizedSearch=searchTerm.toLowerCase().trim();if(!normalizedSearch){this.renderFAQs();return;}
+const filteredFAQs=this.faqs.filter(faq=>faq.question.toLowerCase().includes(normalizedSearch)||faq.answer.toLowerCase().includes(normalizedSearch));this.renderFilteredFAQs(filteredFAQs,searchTerm);},renderFilteredFAQs:function(faqs,searchTerm){const faqContainer=document.getElementById('faq-container');if(!faqContainer)return;faqContainer.innerHTML='';if(faqs.length===0){faqContainer.innerHTML=`
                 <div style="text-align: center; padding: 2rem; color: #6b7280;">
                     <p>No FAQs found matching "${searchTerm}"</p>
                     <p style="font-size: 0.875rem; margin-top: 0.5rem;">Try a different search term or <a href="#" onclick="FAQManager.clearSearch()" style="color: var(--primary-color);">clear the search</a></p>
                 </div>
-            `;
-            return;
-        }
-        
-        const resultHeader = document.createElement('div');
-        resultHeader.style.cssText = 'margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 6px; font-size: 0.875rem;';
-        resultHeader.innerHTML = `
+            `;return;}
+const resultHeader=document.createElement('div');resultHeader.style.cssText='margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 6px; font-size: 0.875rem;';resultHeader.innerHTML=`
             <span style="color: var(--primary-color); font-weight: 500;">Search Results:</span> 
             Found ${faqs.length} FAQ${faqs.length !== 1 ? 's' : ''} matching "${searchTerm}"
             <button onclick="FAQManager.clearSearch()" style="float: right; background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 0.75rem;">Clear Search</button>
-        `;
-        faqContainer.parentNode.insertBefore(resultHeader, faqContainer);
-        
-        faqs.forEach((faq, index) => {
-            const faqItem = document.createElement('div');
-            faqItem.className = 'faq-item';
-            
-            // Highlight search term in question and answer
-            const highlightedQuestion = this.highlightSearchTerm(faq.question, searchTerm);
-            const highlightedAnswer = this.highlightSearchTerm(faq.answer, searchTerm);
-            
-            faqItem.innerHTML = `
+        `;faqContainer.parentNode.insertBefore(resultHeader,faqContainer);faqs.forEach((faq,index)=>{const faqItem=document.createElement('div');faqItem.className='faq-item';const highlightedQuestion=this.highlightSearchTerm(faq.question,searchTerm);const highlightedAnswer=this.highlightSearchTerm(faq.answer,searchTerm);faqItem.innerHTML=`
                 <div class="faq-question" data-faq-index="${index}">
                     <span>${highlightedQuestion}</span>
                     <span class="faq-toggle">+</span>
@@ -524,77 +311,10 @@ faqs: [
                 <div class="faq-answer">
                     ${highlightedAnswer}
                 </div>
-            `;
-            faqContainer.appendChild(faqItem);
-        });
-    },
-    
-    highlightSearchTerm: function(text, searchTerm) {
-        const escapedSearch = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\                    <li>From the <strong>main Trips screen</strong>, go to <strong');
-        const regex = new RegExp(`(${escapedSearch})`, 'gi');
-        return text.replace(regex, '<mark style="background: #fef3c7; padding: 0.1rem 0.2rem; border-radius: 2px;">$1</mark>');
-    },
-    
-    clearSearch: function() {
-        // Remove search result header if it exists
-        const searchHeader = document.querySelector('[onclick="FAQManager.clearSearch()"]');
-        if (searchHeader && searchHeader.parentNode) {
-            searchHeader.parentNode.remove();
-        }
-        
-        // Re-render all FAQs
-        this.renderFAQs();
-        
-        // Clear search input if it exists
-        const searchInput = document.getElementById('faq-search');
-        if (searchInput) {
-            searchInput.value = '';
-        }
-    },
-    
-    // Method to add a search box to the FAQ section
-    addSearchBox: function() {
-        const faqSection = document.querySelector('.faq-section');
-        if (!faqSection) return;
-        
-        const searchContainer = document.createElement('div');
-        searchContainer.style.cssText = 'margin-bottom: 1.5rem;';
-        searchContainer.innerHTML = `
+            `;faqContainer.appendChild(faqItem);});},highlightSearchTerm:function(text,searchTerm){const escapedSearch=searchTerm.replace(/[.*+?^${}()|[\]\\]/g,'\\                    <li>From the <strong>main Trips screen</strong>, go to <strong');const regex=new RegExp(`(${escapedSearch})`,'gi');return text.replace(regex,'<mark style="background: #fef3c7; padding: 0.1rem 0.2rem; border-radius: 2px;">$1</mark>');},clearSearch:function(){const searchHeader=document.querySelector('[onclick="FAQManager.clearSearch()"]');if(searchHeader&&searchHeader.parentNode){searchHeader.parentNode.remove();}
+this.renderFAQs();const searchInput=document.getElementById('faq-search');if(searchInput){searchInput.value='';}},addSearchBox:function(){const faqSection=document.querySelector('.faq-section');if(!faqSection)return;const searchContainer=document.createElement('div');searchContainer.style.cssText='margin-bottom: 1.5rem;';searchContainer.innerHTML=`
             <div class="form-group">
                 <label for="faq-search">Search FAQs</label>
                 <input type="text" id="faq-search" placeholder="Type to search questions and answers..." style="margin-bottom: 0;">
             </div>
-        `;
-        
-        const faqContainer = document.getElementById('faq-container');
-        faqSection.insertBefore(searchContainer, faqContainer);
-        
-        // Add search functionality
-        const searchInput = document.getElementById('faq-search');
-        let searchTimeout;
-        
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                this.searchFAQs(e.target.value);
-            }, 300);
-        });
-        
-        // Add keyboard navigation
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.clearSearch();
-                searchInput.blur();
-            }
-        });
-    },
-    
-    // Utility method to get FAQ data for export
-    exportFAQs: function() {
-        return {
-            faqs: this.faqs,
-            exportDate: new Date().toISOString(),
-            totalCount: this.faqs.length
-        };
-    }
-};
+        `;const faqContainer=document.getElementById('faq-container');faqSection.insertBefore(searchContainer,faqContainer);const searchInput=document.getElementById('faq-search');let searchTimeout;searchInput.addEventListener('input',(e)=>{clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>{this.searchFAQs(e.target.value);},300);});searchInput.addEventListener('keydown',(e)=>{if(e.key==='Escape'){this.clearSearch();searchInput.blur();}});},exportFAQs:function(){return{faqs:this.faqs,exportDate:new Date().toISOString(),totalCount:this.faqs.length};}};
