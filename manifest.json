@@ -26,10 +26,53 @@
   "scope": "/",
   "screenshots": [
     {
-      "src": "screenshot.jpg",
-      "sizes": "748x1600",
+      "src": "screenshot_1.jpg",
+      "sizes": "414x896",
       "type": "image/jpeg",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Trip Dashboard"
+    },
+    {
+      "src": "screenshot_2.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Add New Expense"
+    },
+    {
+      "src": "screenshot_3.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Expense Categories"
+    },
+    {
+      "src": "screenshot_4.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Trip Checklist"
+    },
+    {
+      "src": "screenshot_5.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Document Vault"
+    },
+    {
+      "src": "screenshot_wide_1.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Desktop Dashboard"
+    },
+    {
+      "src": "screenshot_wide_2.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Expense Analytics"
     }
   ]
 }

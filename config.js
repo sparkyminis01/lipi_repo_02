@@ -1,7 +1,369 @@
-const AppConfig={config:{appName:'Trips',appVersion:'v1.0.2',appDescription:'All-in-one Travel Companion App by SparkyMinis',companyName:'LipiKit',defaultTheme:'ocean',currentTheme:'ocean',themes:{soothingVibrant:{primary:'#14B8A6',primaryHover:'#0D9488',secondary:'#334155',secondaryHover:'#1E293B',success:'#22C55E',successHover:'#15803D',danger:'#E11D48',dangerHover:'#9F1239',backgroundGradient:'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',headerGradient:'linear-gradient(to right, #14B8A6, #334155)'},corporate:{primary:'#1E40AF',primaryHover:'#1E3A8A',secondary:'#1F2937',secondaryHover:'#111827',success:'#059669',successHover:'#047857',danger:'#DC2626',dangerHover:'#B91C1C',backgroundGradient:'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',headerGradient:'linear-gradient(to right, #1E40AF, #1F2937)'},formal:{primary:'#6B7280',primaryHover:'#4B5563',secondary:'#374151',secondaryHover:'#1F2937',success:'#10B981',successHover:'#059669',danger:'#EF4444',dangerHover:'#DC2626',backgroundGradient:'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',headerGradient:'linear-gradient(to right, #6B7280, #374151)'},professional:{primary:'#1E3A8A',primaryHover:'#1E40AF',secondary:'#111827',secondaryHover:'#030712',success:'#059669',successHover:'#047857',danger:'#DC2626',dangerHover:'#B91C1C',backgroundGradient:'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',headerGradient:'linear-gradient(to right, #1E3A8A, #111827)'},peaceful:{primary:'#60A5FA',primaryHover:'#3B82F6',secondary:'#475569',secondaryHover:'#334155',success:'#34D399',successHover:'#10B981',danger:'#F87171',dangerHover:'#EF4444',backgroundGradient:'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',headerGradient:'linear-gradient(to right, #60A5FA, #475569)'},vibrant:{primary:'#F59E0B',primaryHover:'#D97706',secondary:'#1F2937',secondaryHover:'#111827',success:'#10B981',successHover:'#059669',danger:'#EF4444',dangerHover:'#DC2626',backgroundGradient:'linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%)',headerGradient:'linear-gradient(to right, #F59E0B, #1F2937)'},earthy:{primary:'#15803D',primaryHover:'#166534',secondary:'#92400E',secondaryHover:'#7C2D12',success:'#22C55E',successHover:'#16A34A',danger:'#DC2626',dangerHover:'#B91C1C',backgroundGradient:'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)',headerGradient:'linear-gradient(to right, #15803D, #92400E)'},ocean:{primary:'#0EA5E9',primaryHover:'#0284C7',secondary:'#1E40AF',secondaryHover:'#1E3A8A',success:'#10B981',successHover:'#059669',danger:'#F87171',dangerHover:'#EF4444',backgroundGradient:'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',headerGradient:'linear-gradient(to right, #0EA5E9, #1E40AF)'},sunset:{primary:'#F97316',primaryHover:'#EA580C',secondary:'#7C2D12',secondaryHover:'#9A3412',success:'#FBBF24',successHover:'#D97706',danger:'#EF4444',dangerHover:'#DC2626',backgroundGradient:'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',headerGradient:'linear-gradient(to right, #F97316, #7C2D12)'},dark:{primary:'#60A5FA',primaryHover:'#3B82F6',secondary:'#F1F5F9',secondaryHover:'#E2E8F0',success:'#34D399',successHover:'#10B981',danger:'#F87171',dangerHover:'#EF4444',backgroundGradient:'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',headerGradient:'linear-gradient(to right, #60A5FA, #F1F5F9)'}},firebase:{apiKey:"AIzaSyA9nMEt2Q_FLPP6KQDPoKri6C5-f6dq50c",authDomain:"sparkyminis-auth.firebaseapp.com",projectId:"sparkyminis-auth",storageBucket:"sparkyminis-auth.firebasestorage.app",messagingSenderId:"207061052479",appId:"1:207061052479:web:0ede9db20747be25815c8a",measurementId:"G-7801T8LQ8L",collections:{users:'users'}},geoIp:{enabled:true,services:[{url:'https://ipapi.co/json/',name:'ipapi',timeout:5000},{url:'http://ip-api.com/json/',name:'ip-api',timeout:5000}],cacheKey:'lipikit_geo_cache',gracefulFallback:true},categories:["Food","Transport","Accommodation","Shopping","Activities","Groceries","Other"],currencies:["INR","USD","EUR","SGD","THB","MYR","VND","GBP","JPY","CAD","AUD"],currencyNames:{INR:"Indian Rupee",USD:"United States Dollar",EUR:"Euro",SGD:"Singapore Dollar",THB:"Thai Baht",MYR:"Malaysian Ringgit",VND:"Vietnamese Dong",GBP:"British Pound Sterling",JPY:"Japanese Yen",CAD:"Canadian Dollar",AUD:"Australian Dollar"},modes:["Cash","Credit Card","Prepaid Card"],googleForm:{expenseActionUrl:'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',expenseFields:{name:'entry.1731583832',tripName:'entry.1093227282',expenseDate:'entry.505163115',amount:'entry.1623455754',currency:'entry.1004211902',category:'entry.59253883',place:'entry.283121596',notes:'entry.261715790',location:'entry.56139846',mode:'entry.1829164279'},diagActionUrl:'https://docs.google.com/forms/d/e/1FAIpQLSfAbtJTg-IequMyIVZU_LaskIyfL9_lAhTdcDfl09MsBF1dIg/formResponse',diagFields:{installUserInfo:'entry.975398843',timestamp:'entry.626283681',eventData:'entry.738839204'}},hashedPins:["07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c","9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0","07334386287751ba02a4588c1a0875dbd074a61bd9e6ab7c48d244eacd0c99e0","0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c"],storageKeys:{installId:'lipikit_installId',cachedUsers:'lipikit_cached_firebase_users',activeUser:'lipikit_currentUser',appData:'lipikit_trip_data',trips:'tripList',activeTrip:'activeTrip',unsyncedExpenses:'unsyncedExpenses',syncedExpenses:'syncedExpenses',conversionRates:'tripConversionRatesBase',appSettings:'lipikit_trip_settings',selectedTheme:'appSelectedTheme'},links:{lipikit:'https://lipikit.com',founder:'https://MadeByPriyanka.com',support:'mailto:connect@sparkyminis.com',privacy:'https://lipikit.com/privacy',terms:'https://lipikit.com/terms'},exchangeRateApi:{primary:'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies',fallback:'https://latest.currency-api.pages.dev/v1/currencies'},features:{getIP:true,offlineMode:true,syncEnabled:true,locationCapture:true,exchangeRates:true},data:{dataUrl:"https://data.lipikit.com/",remoteDataFolder:"trips/",localDataFolder:"/data/",versionFileName:"version",datasetPrefix:"lipikit_data_",versionStorageKey:"version_json"},},init:function(){const savedTheme=localStorage.getItem(this.config.storageKeys.selectedTheme)||this.config.defaultTheme;if(this.config.themes[savedTheme]){this.config.currentTheme=savedTheme;}
-this.applyConfiguration();this.applyTheme();this.updateAppInfo();},applyConfiguration:function(){document.title=`${this.config.companyName} ${this.config.appName}`;const pageTitle=document.getElementById('page-title');if(pageTitle)pageTitle.textContent=document.title;const companyName=document.getElementById('company-name');const appName=document.getElementById('app-name');if(companyName)companyName.textContent=this.config.companyName;if(appName)appName.textContent=this.config.appName;const metaDesc=document.querySelector('meta[name="description"]');if(metaDesc)metaDesc.content=this.config.appDescription;const themeColor=document.querySelector('meta[name="theme-color"]');if(themeColor)themeColor.content=this.config.themes[this.config.currentTheme].primary;const appVersion=document.getElementById('app-version');const appVersionFooter=document.getElementById('app-version-footer');if(appVersion)appVersion.textContent=this.config.appVersion;if(appVersionFooter)appVersionFooter.textContent=this.config.appVersion;},applyTheme:function(){const currentColors=this.config.themes[this.config.currentTheme];if(!currentColors)return;const root=document.documentElement;root.style.setProperty('--primary-color',currentColors.primary);root.style.setProperty('--primary-hover',currentColors.primaryHover);root.style.setProperty('--secondary-color',currentColors.secondary);root.style.setProperty('--secondary-hover',currentColors.secondaryHover);root.style.setProperty('--success-color',currentColors.success);root.style.setProperty('--success-hover',currentColors.successHover);root.style.setProperty('--danger-color',currentColors.danger);root.style.setProperty('--danger-hover',currentColors.dangerHover);root.style.setProperty('--background-gradient',currentColors.backgroundGradient);if(currentColors.headerGradient){root.style.setProperty('--header-gradient',currentColors.headerGradient);}
-document.body.style.background=currentColors.backgroundGradient;},setTheme:function(themeName){if(this.config.themes[themeName]){this.config.currentTheme=themeName;localStorage.setItem(this.config.storageKeys.selectedTheme,themeName);this.applyTheme();window.dispatchEvent(new CustomEvent('themeChanged',{detail:{theme:themeName}}));console.log(`Theme switched to: ${themeName}`);return true;}
-console.error(`Invalid theme: ${themeName}`);return false;},getCurrentTheme:function(){return this.config.currentTheme;},getAvailableThemes:function(){return Object.keys(this.config.themes);},updateAppInfo:function(){const appInfoBlock=document.getElementById('app-info-block');if(appInfoBlock){appInfoBlock.innerHTML=`
+// config.js - Trip Tracker Configuration with Firebase
+const AppConfig = {
+    // App Configuration
+    config: {
+        appName: 'Trips',
+        appVersion: 'v1.0.3',
+        appDescription: 'All-in-one Travel Companion App by SparkyMinis',
+        companyName: 'LipiKit',
+        defaultTheme: 'ocean',
+        currentTheme: 'ocean',
+        
+        // Multiple Color Themes
+        themes: {
+            // 1. Soothing Vibrant (Default - Light)
+            soothingVibrant: {
+                primary: '#14B8A6',
+                primaryHover: '#0D9488',
+                secondary: '#334155',
+                secondaryHover: '#1E293B',
+                success: '#22C55E',
+                successHover: '#15803D',
+                danger: '#E11D48',
+                dangerHover: '#9F1239',
+                backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+                headerGradient: 'linear-gradient(to right, #14B8A6, #334155)'
+            },
+            
+            // 2. Corporate (Light - Professional blues)
+            corporate: {
+                primary: '#1E40AF',
+                primaryHover: '#1E3A8A',
+                secondary: '#1F2937',
+                secondaryHover: '#111827',
+                success: '#059669',
+                successHover: '#047857',
+                danger: '#DC2626',
+                dangerHover: '#B91C1C',
+                backgroundGradient: 'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',
+                headerGradient: 'linear-gradient(to right, #1E40AF, #1F2937)'
+            },
+            
+            // 3. Formal (Light - Neutral grays)
+            formal: {
+                primary: '#6B7280',
+                primaryHover: '#4B5563',
+                secondary: '#374151',
+                secondaryHover: '#1F2937',
+                success: '#10B981',
+                successHover: '#059669',
+                danger: '#EF4444',
+                dangerHover: '#DC2626',
+                backgroundGradient: 'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',
+                headerGradient: 'linear-gradient(to right, #6B7280, #374151)'
+            },
+            
+            // 4. Professional (Light - Deep navy)
+            professional: {
+                primary: '#1E3A8A',
+                primaryHover: '#1E40AF',
+                secondary: '#111827',
+                secondaryHover: '#030712',
+                success: '#059669',
+                successHover: '#047857',
+                danger: '#DC2626',
+                dangerHover: '#B91C1C',
+                backgroundGradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+                headerGradient: 'linear-gradient(to right, #1E3A8A, #111827)'
+            },
+            
+            // 5. Peaceful (Light - Pastel blues/greens)
+            peaceful: {
+                primary: '#60A5FA',
+                primaryHover: '#3B82F6',
+                secondary: '#475569',
+                secondaryHover: '#334155',
+                success: '#34D399',
+                successHover: '#10B981',
+                danger: '#F87171',
+                dangerHover: '#EF4444',
+                backgroundGradient: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
+                headerGradient: 'linear-gradient(to right, #60A5FA, #475569)'
+            },
+            
+            // 6. Vibrant (Light - Bright orange/yellow)
+            vibrant: {
+                primary: '#F59E0B',
+                primaryHover: '#D97706',
+                secondary: '#1F2937',
+                secondaryHover: '#111827',
+                success: '#10B981',
+                successHover: '#059669',
+                danger: '#EF4444',
+                dangerHover: '#DC2626',
+                backgroundGradient: 'linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%)',
+                headerGradient: 'linear-gradient(to right, #F59E0B, #1F2937)'
+            },
+            
+            // 7. Earthy (Light - Browns/greens)
+            earthy: {
+                primary: '#15803D',
+                primaryHover: '#166534',
+                secondary: '#92400E',
+                secondaryHover: '#7C2D12',
+                success: '#22C55E',
+                successHover: '#16A34A',
+                danger: '#DC2626',
+                dangerHover: '#B91C1C',
+                backgroundGradient: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)',
+                headerGradient: 'linear-gradient(to right, #15803D, #92400E)'
+            },
+            
+            // 8. Ocean (Light - Cool blues)
+            ocean: {
+                primary: '#0EA5E9',
+                primaryHover: '#0284C7',
+                secondary: '#1E40AF',
+                secondaryHover: '#1E3A8A',
+                success: '#10B981',
+                successHover: '#059669',
+                danger: '#F87171',
+                dangerHover: '#EF4444',
+                backgroundGradient: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                headerGradient: 'linear-gradient(to right, #0EA5E9, #1E40AF)'
+            },
+            
+            // 9. Sunset (Light - Oranges/pinks)
+            sunset: {
+                primary: '#F97316',
+                primaryHover: '#EA580C',
+                secondary: '#7C2D12',
+                secondaryHover: '#9A3412',
+                success: '#FBBF24',
+                successHover: '#D97706',
+                danger: '#EF4444',
+                dangerHover: '#DC2626',
+                backgroundGradient: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
+                headerGradient: 'linear-gradient(to right, #F97316, #7C2D12)'
+            },
+            
+            // 10. Dark (Single dark variant - Dark grays/blues)
+            dark: {
+                primary: '#60A5FA',
+                primaryHover: '#3B82F6',
+                secondary: '#F1F5F9',
+                secondaryHover: '#E2E8F0',
+                success: '#34D399',
+                successHover: '#10B981',
+                danger: '#F87171',
+                dangerHover: '#EF4444',
+                backgroundGradient: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                headerGradient: 'linear-gradient(to right, #60A5FA, #F1F5F9)'
+            }
+        },
+        
+        // Firebase Configuration
+        firebase: {
+            // TODO: Replace with your Firebase project credentials
+            apiKey: "AIzaSyA9nMEt2Q_FLPP6KQDPoKri6C5-f6dq50c",
+            authDomain: "sparkyminis-auth.firebaseapp.com",
+            projectId: "sparkyminis-auth",
+            storageBucket: "sparkyminis-auth.firebasestorage.app",
+            messagingSenderId: "207061052479",
+            appId: "1:207061052479:web:0ede9db20747be25815c8a",
+            measurementId: "G-7801T8LQ8L",
+            
+            collections: {
+                users: 'users'
+            }
+        },
+        
+        // Geo/IP Configuration
+        geoIp: {
+            enabled: true,
+            services: [
+                { url: 'https://ipapi.co/json/', name: 'ipapi', timeout: 5000 },
+                { url: 'http://ip-api.com/json/', name: 'ip-api', timeout: 5000 }
+            ],
+            cacheKey: 'lipikit_geo_cache',
+            gracefulFallback: true
+        },
+        
+        // Trip-specific configurations
+        categories: ["Food", "Transport", "Accommodation", "Shopping", "Activities", "Groceries", "Other"],
+        currencies: ["INR", "USD", "EUR", "SGD", "THB", "MYR", "VND", "GBP", "JPY", "CAD", "AUD"],
+        currencyNames: {
+            INR: "Indian Rupee", USD: "United States Dollar", EUR: "Euro", SGD: "Singapore Dollar",
+            THB: "Thai Baht", MYR: "Malaysian Ringgit", VND: "Vietnamese Dong", GBP: "British Pound Sterling",
+            JPY: "Japanese Yen", CAD: "Canadian Dollar", AUD: "Australian Dollar"
+        },
+        modes: ["Cash", "Credit Card", "Prepaid Card"],
+        
+        // Google Forms Configuration for Analytics & Data Sync
+        googleForm: {
+            expenseActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdkfyEAqMf5h0rLPWuXw1PmywLct2-3VbIfSQu4iyEc2bLo9Q/formResponse',
+            expenseFields: {
+                name: 'entry.1731583832',
+                tripName: 'entry.1093227282',
+                expenseDate: 'entry.505163115',
+                amount: 'entry.1623455754',
+                currency: 'entry.1004211902',
+                category: 'entry.59253883',
+                place: 'entry.283121596',
+                notes: 'entry.261715790',
+                location: 'entry.56139846',
+                mode: 'entry.1829164279'
+            },
+            diagActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfAbtJTg-IequMyIVZU_LaskIyfL9_lAhTdcDfl09MsBF1dIg/formResponse',
+            diagFields: {
+                installUserInfo: 'entry.975398843',
+                timestamp: 'entry.626283681',
+                eventData: 'entry.738839204'
+            }
+        },
+        
+        // PIN validation (hashed PINs for sync security)
+        hashedPins: [
+            "07625cda1ed6dad6aa4cf70c899207812c2b8bc99e2f0774bc321e9b6573113c",
+            "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0", 
+            "07334386287751ba02a4588c1a0875dbd074a61bd9e6ab7c48d244eacd0c99e0",
+            "0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c"
+        ],
+        
+        // Local Storage Keys
+        storageKeys: {
+            installId: 'lipikit_installId',
+            cachedUsers: 'lipikit_cached_firebase_users',
+            activeUser: 'lipikit_currentUser',
+            appData: 'lipikit_trip_data',
+            trips: 'tripList',
+            activeTrip: 'activeTrip',
+            unsyncedExpenses: 'unsyncedExpenses',
+            syncedExpenses: 'syncedExpenses',
+            conversionRates: 'tripConversionRatesBase',
+            appSettings: 'lipikit_trip_settings',
+            selectedTheme: 'appSelectedTheme'
+        },
+        
+        // External Links
+        links: {
+            lipikit: 'https://lipikit.com',
+            founder: 'https://MadeByPriyanka.com',
+            support: 'mailto:connect@sparkyminis.com',
+            privacy: 'https://lipikit.com/privacy',
+            terms: 'https://lipikit.com/terms'
+        },
+        
+        // API Configuration
+        exchangeRateApi: {
+            primary: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies',
+            fallback: 'https://latest.currency-api.pages.dev/v1/currencies'
+        },
+        
+        // Feature flags
+        features: {
+            getIP: true,
+            offlineMode: true,
+            syncEnabled: true,
+            locationCapture: true,
+            exchangeRates: true
+        },
+
+        data: {
+            dataUrl: "https://data.lipikit.com/",
+            remoteDataFolder: "trips/",
+            localDataFolder: "/data/",
+            versionFileName: "version",
+            datasetPrefix: "lipikit_data_",
+            versionStorageKey: "version_json"
+        },
+        screenshots: [
+            { title: 'Login', file: 'screenshot_1.jpg' },
+            { title: 'Logged in', file: 'screenshot_2.jpg' },
+            { title: 'Create Trip', file: 'screenshot_3.jpg' },
+            { title: 'Trip Dashboard page 1', file: 'screenshot_4.jpg' },
+            { title: 'Trip Dashboard page 2', file: 'screenshot_5.jpg' },
+            { title: 'Trip Dashboard page 3', file: 'screenshot_6.jpg' },
+            { title: 'Add Expense', file: 'screenshot_7.jpg' },
+            { title: 'Itinerary', file: 'screenshot_8.jpg' }, 
+            { title: 'Checklist', file: 'screenshot_9.jpg' },
+            { title: 'Documents', file: 'screenshot_10.jpg' },
+            { title: 'Add secure Document', file: 'screenshot_11.jpg' },
+            { title: 'Support', file: 'screenshot_12.jpg' },
+            { title: 'FAQs', file: 'screenshot_13.jpg' }
+        ],
+    },
+    
+    init: function() {
+        // Load selected theme from localStorage
+        const savedTheme = localStorage.getItem(this.config.storageKeys.selectedTheme) || this.config.defaultTheme;
+        if (this.config.themes[savedTheme]) {
+            this.config.currentTheme = savedTheme;
+        }
+        this.applyConfiguration();
+        this.applyTheme();
+        this.updateAppInfo();
+    },
+    
+    applyConfiguration: function() {
+        document.title = `${this.config.companyName} ${this.config.appName}`;
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = document.title;
+        
+        const companyName = document.getElementById('company-name');
+        const appName = document.getElementById('app-name');
+        if (companyName) companyName.textContent = this.config.companyName;
+        if (appName) appName.textContent = this.config.appName;
+        
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.content = this.config.appDescription;
+        
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        if (themeColor) themeColor.content = this.config.themes[this.config.currentTheme].primary;
+        
+        const appVersion = document.getElementById('app-version');
+        const appVersionFooter = document.getElementById('app-version-footer');
+        if (appVersion) appVersion.textContent = this.config.appVersion;
+        if (appVersionFooter) appVersionFooter.textContent = this.config.appVersion;
+    },
+    
+    applyTheme: function() {
+        const currentColors = this.config.themes[this.config.currentTheme];
+        if (!currentColors) return;
+        
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', currentColors.primary);
+        root.style.setProperty('--primary-hover', currentColors.primaryHover);
+        root.style.setProperty('--secondary-color', currentColors.secondary);
+        root.style.setProperty('--secondary-hover', currentColors.secondaryHover);
+        root.style.setProperty('--success-color', currentColors.success);
+        root.style.setProperty('--success-hover', currentColors.successHover);
+        root.style.setProperty('--danger-color', currentColors.danger);
+        root.style.setProperty('--danger-hover', currentColors.dangerHover);
+        root.style.setProperty('--background-gradient', currentColors.backgroundGradient);
+        if (currentColors.headerGradient) {
+            root.style.setProperty('--header-gradient', currentColors.headerGradient);
+        }
+        document.body.style.background = currentColors.backgroundGradient;
+    },
+    
+    // Theme Toggle Function
+    setTheme: function(themeName) {
+        if (this.config.themes[themeName]) {
+            this.config.currentTheme = themeName;
+            localStorage.setItem(this.config.storageKeys.selectedTheme, themeName);
+            this.applyTheme();
+            // Optionally trigger a custom event for UI updates
+            window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: themeName } }));
+            console.log(`Theme switched to: ${themeName}`);
+            return true;
+        }
+        console.error(`Invalid theme: ${themeName}`);
+        return false;
+    },
+    
+    getCurrentTheme: function() {
+        return this.config.currentTheme;
+    },
+    
+    getAvailableThemes: function() {
+        return Object.keys(this.config.themes);
+    },
+    
+    updateAppInfo: function() {
+        const appInfoBlock = document.getElementById('app-info-block');
+        if (appInfoBlock) {
+            appInfoBlock.innerHTML = `
                 <div style="text-align: center; margin-bottom: 1.5rem;">
                     <img src="logo-trip-expense-tracker.png" alt="${this.config.companyName} ${this.config.appName}" 
                          style="max-width: 200px; height: auto; margin: 0 auto 1rem; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
@@ -9,14 +371,214 @@ console.error(`Invalid theme: ${themeName}`);return false;},getCurrentTheme:func
                 </div>
                 <p style="font-size: 1.1em; line-height: 1.6; color: #4a4a4a;">${this.config.appDescription}</p>
                 <p style="line-height: 1.6; color: #555;">Track multi-currency expenses, manage smart checklists, and store all your travel documents securely in one place. Plan detailed itineraries, discover attractions, and keep your data safe on your own device – with support for multiple profiles to separate your personal and business trips.</p>
-                <div style="text-align: center; margin-top: 2rem;">
+                <div style="text-align: center; margin-top: 2rem; display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap;">
                     <button class="btn btn-primary" 
-                            onclick="document.getElementById('app-area').scrollIntoView({behavior: 'smooth', block: 'start'})"
+                            onclick="AppConfig.showScreenshots()"
                             style="padding: 0.75rem 2rem; font-size: 1.1em; border-radius: 30px; font-weight: 600;">
-                        Start Planning Your Trip
+                        See How It Works
                     </button>
+
                 </div>
-            `;}},sendDiagnostics:async function(event='S',userInfo=null,installId=null){if(!navigator.onLine||!this.config.features.getIP)return;try{const lipikitInstallId=installId||ProfileManager?.lipikit_installId||localStorage.getItem(this.config.storageKeys.installId);const userId=userInfo?userInfo.userId:'N';const displayName=userInfo?userInfo.displayName:'N';const installUserInfo=`${lipikitInstallId}|${userId}|${displayName}|${this.config.appVersion}`;const timestamp=new Date().toISOString();const deviceInfo=await this.getDeviceInfo();const eventData=`${event}|${deviceInfo}`;const formData=new FormData();formData.append(this.config.googleForm.diagFields.installUserInfo,installUserInfo);formData.append(this.config.googleForm.diagFields.timestamp,timestamp);formData.append(this.config.googleForm.diagFields.eventData,eventData);await fetch(this.config.googleForm.diagActionUrl,{method:'POST',mode:'no-cors',body:formData});console.log(`Trip Tracker diagnostics sent: ${event}`);}catch(error){console.error('Failed to send diagnostics:',error);}},getInstallId:function(){let installId=localStorage.getItem(this.config.storageKeys.installId);if(!installId){installId=`lipikit-${Date.now()}-${Math.random().toString(36).slice(2)}`;localStorage.setItem(this.config.storageKeys.installId,installId);}
-return installId;},getDeviceInfo:async function(){let deviceInfo=`ua:${navigator.userAgent.replace(/ /g,'_')};`;deviceInfo+=`p:${navigator.platform};`;deviceInfo+=`l:${navigator.language};`;deviceInfo+=`scr:${screen.width}x${screen.height}x${screen.colorDepth};`;deviceInfo+=`vp:${window.innerWidth}x${window.innerHeight};`;deviceInfo+=`dm:${window.matchMedia('(display-mode: standalone)').matches ? 'P' : 'B'};`;if(navigator.hardwareConcurrency)deviceInfo+=`hc:${navigator.hardwareConcurrency};`;if(navigator.deviceMemory)deviceInfo+=`dmem:${navigator.deviceMemory};`;deviceInfo+=`tz:${Intl.DateTimeFormat().resolvedOptions().timeZone};`;if(this.config.features.getIP){try{const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),5000);const response=await fetch('https://api.ipify.org?format=json',{signal:controller.signal});clearTimeout(timeoutId);const data=await response.json();deviceInfo+=`ip:${data.ip};`;}catch(error){deviceInfo+=`ip:N/A;`;}}
-return deviceInfo;},validatePIN:function(enteredPIN){if(!window.CryptoJS){console.error('CryptoJS library not loaded');return false;}
-const enteredPinHash=CryptoJS.SHA256(enteredPIN).toString();return this.config.hashedPins.includes(enteredPinHash);},getCurrencyName:function(currencyCode){return this.config.currencyNames[currencyCode]||currencyCode;},formatCurrency:function(amount,currencyCode){const numAmount=parseFloat(amount)||0;return`${numAmount.toLocaleString()} ${currencyCode}`;},generateUUID:function(){return'uuid-'+Date.now()+'-'+Math.random().toString(36).slice(2);},formatDate:function(date){return new Date(date).toISOString().split('T')[0];},debounce:function(func,wait){let timeout;return function executedFunction(...args){const later=()=>{clearTimeout(timeout);func(...args);};clearTimeout(timeout);timeout=setTimeout(later,wait);};},isOnline:function(){return navigator.onLine;}};
+            `;
+        }
+    },
+
+    ensureScreenshotsModal: function() {
+        if (document.getElementById('screenshots-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'screenshots-modal';
+        modal.className = 'modal hidden';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:920px; width:95%; padding:0; overflow:hidden;">
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-bottom:1px solid var(--border-color); background:var(--bg-light);">
+                    <div id="ss-title" style="font-weight:600; color:var(--secondary-color)"></div>
+                    <button id="ss-close" class="btn btn-secondary" style="min-width:auto; padding:.35rem .6rem; border-radius:8px;">Close</button>
+                </div>
+                <div style="position:relative; background:#000;">
+                    <img id="ss-image" src="" alt="Screenshot" style="display:block; width:100%; height:auto; max-height:70vh; object-fit:contain; background:#000;"/>
+                    <button id="ss-prev" class="btn btn-secondary" style="position:absolute; top:50%; left:8px; transform:translateY(-50%); min-width:auto; padding:.4rem .6rem;">‹</button>
+                    <button id="ss-next" class="btn btn-secondary" style="position:absolute; top:50%; right:8px; transform:translateY(-50%); min-width:auto; padding:.4rem .6rem;">›</button>
+                    <div id="ss-index" style="position:absolute; bottom:8px; right:12px; color:#fff; background:rgba(0,0,0,.45); padding:.25rem .5rem; border-radius:8px; font-size:.85rem;"></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        const closeBtn = modal.querySelector('#ss-close');
+        closeBtn.addEventListener('click', () => this.closeScreenshots());
+        const prevBtn = modal.querySelector('#ss-prev');
+        const nextBtn = modal.querySelector('#ss-next');
+        prevBtn.addEventListener('click', () => this.prevScreenshot());
+        nextBtn.addEventListener('click', () => this.nextScreenshot());
+        modal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.closeScreenshots();
+            if (e.key === 'ArrowLeft') this.prevScreenshot();
+            if (e.key === 'ArrowRight') this.nextScreenshot();
+        });
+        let startX = null;
+        const img = modal.querySelector('#ss-image');
+        img.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, {passive:true});
+        img.addEventListener('touchend', (e) => {
+            if (startX == null) return;
+            const dx = e.changedTouches[0].clientX - startX;
+            if (Math.abs(dx) > 40) { dx > 0 ? this.prevScreenshot() : this.nextScreenshot(); }
+            startX = null;
+        });
+    },
+
+    openScreenshots: function(startIndex) {
+        this.ensureScreenshotsModal();
+        this.ssIndex = Math.max(0, Math.min(startIndex || 0, this.config.screenshots.length - 1));
+        const modal = document.getElementById('screenshots-modal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        modal.setAttribute('tabindex', '-1');
+        modal.focus();
+        this.renderScreenshot();
+    },
+
+    closeScreenshots: function() {
+        const modal = document.getElementById('screenshots-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+    },
+
+    nextScreenshot: function() {
+        if (!this.config.screenshots || this.config.screenshots.length === 0) return;
+        this.ssIndex = (this.ssIndex + 1) % this.config.screenshots.length;
+        this.renderScreenshot();
+    },
+
+    prevScreenshot: function() {
+        if (!this.config.screenshots || this.config.screenshots.length === 0) return;
+        this.ssIndex = (this.ssIndex - 1 + this.config.screenshots.length) % this.config.screenshots.length;
+        this.renderScreenshot();
+    },
+
+    renderScreenshot: function() {
+        const modal = document.getElementById('screenshots-modal');
+        if (!modal) return;
+        const item = this.config.screenshots[this.ssIndex] || {};
+        const titleEl = modal.querySelector('#ss-title');
+        const imgEl = modal.querySelector('#ss-image');
+        const idxEl = modal.querySelector('#ss-index');
+        if (titleEl) titleEl.textContent = item.title || '';
+        if (imgEl) imgEl.src = item.file || '';
+        if (idxEl) idxEl.textContent = `${this.ssIndex + 1} / ${this.config.screenshots.length}`;
+    },
+
+    showScreenshots: function() {
+        this.openScreenshots(0);
+    },
+    
+    // Analytics & Diagnostics
+    sendDiagnostics: async function(event = 'S', userInfo = null, installId = null) {
+        if (!navigator.onLine || !this.config.features.getIP) return;
+        
+        try {
+            const lipikitInstallId = installId || ProfileManager?.lipikit_installId || localStorage.getItem(this.config.storageKeys.installId);
+            const userId = userInfo ? userInfo.userId : 'N';
+            const displayName = userInfo ? userInfo.displayName : 'N';
+            
+            const installUserInfo = `${lipikitInstallId}|${userId}|${displayName}|${this.config.appVersion}`;
+            const timestamp = new Date().toISOString();
+            const deviceInfo = await this.getDeviceInfo();
+            const eventData = `${event}|${deviceInfo}`;
+            
+            const formData = new FormData();
+            formData.append(this.config.googleForm.diagFields.installUserInfo, installUserInfo);
+            formData.append(this.config.googleForm.diagFields.timestamp, timestamp);
+            formData.append(this.config.googleForm.diagFields.eventData, eventData);
+            
+            await fetch(this.config.googleForm.diagActionUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            });
+            
+            console.log(`Trip Tracker diagnostics sent: ${event}`);
+        } catch (error) {
+            console.error('Failed to send diagnostics:', error);
+        }
+    },
+    
+    getInstallId: function() {
+        let installId = localStorage.getItem(this.config.storageKeys.installId);
+        if (!installId) {
+            installId = `lipikit-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            localStorage.setItem(this.config.storageKeys.installId, installId);
+        }
+        return installId;
+    },
+    
+    getDeviceInfo: async function() {
+        let deviceInfo = `ua:${navigator.userAgent.replace(/ /g,'_')};`;
+        deviceInfo += `p:${navigator.platform};`;
+        deviceInfo += `l:${navigator.language};`;
+        deviceInfo += `scr:${screen.width}x${screen.height}x${screen.colorDepth};`;
+        deviceInfo += `vp:${window.innerWidth}x${window.innerHeight};`;
+        deviceInfo += `dm:${window.matchMedia('(display-mode: standalone)').matches ? 'P' : 'B'};`;
+        
+        if (navigator.hardwareConcurrency) deviceInfo += `hc:${navigator.hardwareConcurrency};`;
+        if (navigator.deviceMemory) deviceInfo += `dmem:${navigator.deviceMemory};`;
+        
+        deviceInfo += `tz:${Intl.DateTimeFormat().resolvedOptions().timeZone};`;
+        
+        if (this.config.features.getIP) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                const response = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await response.json();
+                deviceInfo += `ip:${data.ip};`;
+            } catch (error) {
+                deviceInfo += `ip:N/A;`;
+            }
+        }
+        
+        return deviceInfo;
+    },
+    
+    validatePIN: function(enteredPIN) {
+        if (!window.CryptoJS) {
+            console.error('CryptoJS library not loaded');
+            return false;
+        }
+        
+        const enteredPinHash = CryptoJS.SHA256(enteredPIN).toString();
+        return this.config.hashedPins.includes(enteredPinHash);
+    },
+    
+    getCurrencyName: function(currencyCode) {
+        return this.config.currencyNames[currencyCode] || currencyCode;
+    },
+    
+    formatCurrency: function(amount, currencyCode) {
+        const numAmount = parseFloat(amount) || 0;
+        return `${numAmount.toLocaleString()} ${currencyCode}`;
+    },
+    
+    generateUUID: function() {
+        return 'uuid-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    },
+    
+    formatDate: function(date) {
+        return new Date(date).toISOString().split('T')[0];
+    },
+    
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    
+    isOnline: function() {
+        return navigator.onLine;
+    }
+};
