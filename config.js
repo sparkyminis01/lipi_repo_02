@@ -3,7 +3,7 @@ const AppConfig = {
     // App Configuration
     config: {
         appName: 'Trips',
-        appVersion: 'v1.0.3',
+        appVersion: 'v1.0.4',
         appDescription: 'All-in-one Travel Companion App by SparkyMinis',
         companyName: 'LipiKit',
         defaultTheme: 'ocean',

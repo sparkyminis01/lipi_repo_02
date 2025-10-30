@@ -30,49 +30,91 @@
       "sizes": "414x896",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Trip Dashboard"
+      "label": "Login"
     },
     {
       "src": "screenshot_2.jpg",
       "sizes": "414x896",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Add New Expense"
+      "label": "Logged in"
     },
     {
       "src": "screenshot_3.jpg",
       "sizes": "414x896",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Expense Categories"
+      "label": "Create Trip"
     },
     {
       "src": "screenshot_4.jpg",
       "sizes": "414x896",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Trip Checklist"
+      "label": "Trip Dashboard"
     },
     {
       "src": "screenshot_5.jpg",
       "sizes": "414x896",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Document Vault"
+      "label": "Trip Dashboard (Page 2)"
     },
     {
-      "src": "screenshot_wide_1.jpg",
+      "src": "screenshot_6.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Trip Dashboard (Page 3)"
+    },
+    {
+      "src": "screenshot_7.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Add Expense"
+    },
+    {
+      "src": "screenshot_8.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Itinerary"
+    },
+    {
+      "src": "screenshot_9.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Checklist"
+    },
+    {
+      "src": "screenshot_10.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Documents"
+    },
+    {
+      "src": "screenshot_11.jpg",
+      "sizes": "414x896",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Add Secure Document"
+    },
+    {
+      "src": "screenshot_12.jpg",
       "sizes": "1024x768",
       "type": "image/jpeg",
       "form_factor": "wide",
-      "label": "Desktop Dashboard"
+      "label": "Support"
     },
     {
-      "src": "screenshot_wide_2.jpg",
+      "src": "screenshot_13.jpg",
       "sizes": "1024x768",
       "type": "image/jpeg",
       "form_factor": "wide",
-      "label": "Expense Analytics"
+      "label": "FAQs"
     }
   ]
 }
